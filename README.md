@@ -2,7 +2,11 @@
 
 Современный Telegram бот, построенный на TypeScript с использованием библиотеки grammY.
 
-## ✨ Особенности
+## Deployment Status
+
+✅ **Latest Update:** Improved healthcheck and docker-compose configuration
+
+## Features
 
 - 🚀 **TypeScript** - полная типизация и безопасность
 - 🎯 **grammY** - современная библиотека для Telegram ботов
