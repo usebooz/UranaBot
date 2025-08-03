@@ -4,6 +4,12 @@ import { logger } from './utils/logger';
 import { setupCommands } from './commands';
 import { setupMiddlewares } from './middlewares';
 
+// Логируем старт приложения
+logger.info('🚀 Starting Uranabot...');
+logger.info(
+  `📋 Config: NODE_ENV=${config.environment}, LOG_LEVEL=${config.logLevel}`,
+);
+
 // Определяем типы для сессии
 interface SessionData {
   messageCount: number;
@@ -12,6 +18,7 @@ interface SessionData {
 type MyContext = Context & SessionFlavor<SessionData>;
 
 // Создаем экземпляр бота
+logger.info('🤖 Creating bot instance...');
 const bot = new Bot<MyContext>(config.botToken);
 
 // Включаем API логирование в debug режиме

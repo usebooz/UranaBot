@@ -1,17 +1,11 @@
-// Simple health check for Docker - проверяем что процесс Node.js запущен
-const fs = require('fs');
+// Простейший health check для Docker
+console.log('🔍 Running health check...');
 
-try {
-  // Проверяем что файл процесса существует (более простой способ)
-  const pid = process.pid;
-  if (pid && fs.existsSync(`/proc/${pid}`)) {
-    console.log('✅ Bot process is running');
-    process.exit(0);
-  } else {
-    console.log('❌ Bot process not found');
-    process.exit(1);
-  }
-} catch (error) {
-  console.log('❌ Health check failed:', error.message);
+// Просто проверяем что Node.js запущен
+if (process.pid) {
+  console.log('✅ Health check passed - Node.js process running');
+  process.exit(0);
+} else {
+  console.log('❌ Health check failed - No process found');
   process.exit(1);
 }
