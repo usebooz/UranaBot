@@ -1,29 +1,12 @@
-// Simple health check for Docker
-const http = require('http');
+// Simple health check for Docker - проверяем что процесс Node.js запущен
+const { execSync } = require('child_process');
 
-const options = {
-  hostname: 'localhost',
-  port: process.env.PORT || 3000,
-  path: '/health',
-  method: 'GET',
-  timeout: 2000,
-};
-
-const request = http.request(options, (res) => {
-  if (res.statusCode === 200) {
-    process.exit(0);
-  } else {
-    process.exit(1);
-  }
-});
-
-request.on('error', () => {
+try {
+  // Проверяем что наш основной процесс запущен
+  execSync('pgrep -f "node dist/index.js"', { stdio: 'pipe' });
+  console.log('✅ Bot process is running');
+  process.exit(0);
+} catch (error) {
+  console.log('❌ Bot process not found');
   process.exit(1);
-});
-
-request.on('timeout', () => {
-  request.destroy();
-  process.exit(1);
-});
-
-request.end();
+}

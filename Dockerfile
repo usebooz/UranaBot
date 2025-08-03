@@ -25,9 +25,6 @@ RUN chown -R uranabot:nodejs /app
 
 USER uranabot
 
-# Открываем порт
-EXPOSE 3000
-
 # Устанавливаем health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node dist/healthcheck.js
