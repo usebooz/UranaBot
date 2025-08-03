@@ -1,5 +1,5 @@
 import { Bot, Context, SessionFlavor } from 'grammy';
-import { logger } from '../utils/logger';
+import { logger } from '../utils/logger.js';
 
 interface SessionData {
   messageCount: number;
