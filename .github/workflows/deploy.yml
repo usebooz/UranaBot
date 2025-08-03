@@ -89,14 +89,14 @@ jobs:
         port: ${{ secrets.PORT || 22 }}
         script: |
           # Остановить существующий контейнер
-          docker compose -f /path/to/your/uranabot/docker-compose.yml down || true
+          docker compose -f /opt/uranabot/docker-compose.yml down || true
           
           # Загрузить новый образ
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           
-          # Обновить docker-compose.yml
-          cd /path/to/your/uranabot
+          # Перейти в директорию проекта
+          cd /opt/uranabot
           
           # Экспорт переменных окружения
           export BOT_TOKEN="${{ secrets.BOT_TOKEN }}"
