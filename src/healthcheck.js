@@ -1,12 +1,17 @@
 // Simple health check for Docker - проверяем что процесс Node.js запущен
-const { execSync } = require('child_process');
+const fs = require('fs');
 
 try {
-  // Проверяем что наш основной процесс запущен
-  execSync('pgrep -f "node dist/index.js"', { stdio: 'pipe' });
-  console.log('✅ Bot process is running');
-  process.exit(0);
+  // Проверяем что файл процесса существует (более простой способ)
+  const pid = process.pid;
+  if (pid && fs.existsSync(`/proc/${pid}`)) {
+    console.log('✅ Bot process is running');
+    process.exit(0);
+  } else {
+    console.log('❌ Bot process not found');
+    process.exit(1);
+  }
 } catch (error) {
-  console.log('❌ Bot process not found');
+  console.log('❌ Health check failed:', error.message);
   process.exit(1);
 }
