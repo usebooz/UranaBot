@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  uranabot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - BOT_TOKEN=${BOT_TOKEN}
+      - LOG_LEVEL=info
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - uranabot-network
+    healthcheck:
+      test: ["CMD", "node", "dist/healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  uranabot-network:
+    driver: bridge
+
+volumes:
+  uranabot-data:
