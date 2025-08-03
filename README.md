@@ -71,7 +71,7 @@
 2. **Запуск с Docker Compose**
 
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 ## 📋 Доступные команды
@@ -175,7 +175,7 @@ docker run -d --name uranabot -e BOT_TOKEN=your_token uranabot
 
 ```bash
 # Логи контейнера
-docker-compose logs -f uranabot
+docker compose logs -f uranabot
 
 # Логи конкретного контейнера
 docker logs uranabot
