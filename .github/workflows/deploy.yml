@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: usebooz/uranabot
 
 jobs:
   test:
@@ -96,12 +96,21 @@ jobs:
           # Остановить существующий контейнер
           docker compose down || true
           
-          # Загрузить новый образ
+          # Попробовать загрузить образ
+          echo "=== Trying to pull image ==="
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest; then
+            echo "✅ Image pulled successfully"
+            USE_REMOTE_IMAGE=true
+          else
+            echo "❌ Failed to pull image, will build locally"
+            USE_REMOTE_IMAGE=false
+          fi
           
-          # Создать docker-compose.yml автоматически
-          cat > docker-compose.yml << 'EOF'
+          # Создать docker-compose.yml в зависимости от способа запуска
+          if [ "$USE_REMOTE_IMAGE" = true ]; then
+            echo "=== Creating docker-compose.yml with remote image ==="
+            cat > docker-compose.yml << 'EOF'
           services:
             uranabot:
               image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
@@ -126,6 +135,38 @@ jobs:
           volumes:
             uranabot-data:
           EOF
+          else
+            echo "=== Creating docker-compose.yml with local build ==="
+            # Сначала клонируем репозиторий для локальной сборки
+            git clone https://github.com/${{ github.repository }}.git . || git pull
+            cat > docker-compose.yml << 'EOF'
+          services:
+            uranabot:
+              build:
+                context: .
+                dockerfile: Dockerfile
+              environment:
+                - NODE_ENV=production
+                - BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+                - LOG_LEVEL=info
+              restart: unless-stopped
+              networks:
+                - uranabot-network
+              healthcheck:
+                test: ["CMD", "node", "dist/healthcheck.js"]
+                interval: 30s
+                timeout: 3s
+                start_period: 5s
+                retries: 3
+
+          networks:
+            uranabot-network:
+              driver: bridge
+
+          volumes:
+            uranabot-data:
+          EOF
+          fi
 
           # Создать .env файл
           cat > .env << 'EOF'
