@@ -135,11 +135,28 @@ jobs:
           EOF
           
           # Запустить новый контейнер
+          echo "=== Starting container ==="
           docker compose up -d
           
+          # Проверить результат запуска
+          echo "=== Docker Compose Up Result ==="
+          echo "Exit code: $?"
+          
           # Показать статус
-          docker compose ps
+          echo "=== Container Status ==="
+          docker compose ps -a
+          
+          echo "=== Container Logs ==="
           docker compose logs --tail=50
+          
+          echo "=== Available Images ==="
+          docker images | grep uranabot || echo "No uranabot images found"
+          
+          echo "=== Docker Compose Config ==="
+          cat docker-compose.yml
+          
+          echo "=== Environment File ==="
+          cat .env
           
           # Очистка старых образов
           docker image prune -f
