@@ -88,21 +88,105 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.PORT || 22 }}
         script: |
+          # Создать директорию проекта если не существует
+          sudo mkdir -p /opt/uranabot
+          sudo chown $(whoami):$(whoami) /opt/uranabot
+          cd /opt/uranabot
+          
           # Остановить существующий контейнер
-          docker compose -f /opt/uranabot/docker-compose.yml down || true
+          docker compose down || true
           
           # Загрузить новый образ
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           
-          # Перейти в директорию проекта
-          cd /opt/uranabot
+          # Создать docker-compose.yml автоматически
+          cat > docker-compose.yml << 'EOF'
+          version: '3.8'
           
-          # Экспорт переменных окружения
-          export BOT_TOKEN="${{ secrets.BOT_TOKEN }}"
+          services:
+            uranabot:
+              image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+              environment:
+                - NODE_ENV=production
+                - BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+                - LOG_LEVEL=info
+                - PORT=3000
+              ports:
+                - "3000:3000"
+              restart: unless-stopped
+              networks:
+                - uranabot-network
+              healthcheck:
+                test: ["CMD", "node", "dist/healthcheck.js"]
+                interval: 30s
+                timeout: 10s
+                retries: 3
+                start_period: 40s
+          
+          networks:
+            uranabot-network:
+              driver: bridge
+          
+          volumes:
+            uranabot-data:
+          EOF
+          
+          # Создать .env файл
+          cat > .env << 'EOF'
+          BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+          NODE_ENV=production
+          LOG_LEVEL=info
+          PORT=3000
+          EOF
           
           # Запустить новый контейнер
           docker compose up -d
           
+          # Показать статус
+          docker compose ps
+          docker compose logs --tail=50
+          
           # Очистка старых образов
           docker image prune -f
+
+  health-check:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Wait for deployment and health check
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.PORT || 22 }}
+        script: |
+          cd /opt/uranabot
+          
+          # Ждем запуска контейнера
+          echo "Waiting for container to start..."
+          sleep 30
+          
+          # Проверяем статус контейнеров
+          echo "=== Container Status ==="
+          docker compose ps
+          
+          # Проверяем логи
+          echo "=== Recent Logs ==="
+          docker compose logs --tail=30
+          
+          # Проверяем health check
+          echo "=== Health Check ==="
+          docker compose exec -T uranabot node dist/healthcheck.js || echo "Health check failed"
+          
+          # Проверяем что бот отвечает
+          echo "=== Bot Status ==="
+          if docker compose logs | grep -q "Uranabot is running"; then
+            echo "✅ Bot is running successfully!"
+          else
+            echo "❌ Bot may not be running properly"
+            exit 1
+          fi
