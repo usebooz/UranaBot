@@ -68,8 +68,8 @@ async function main(): Promise<void> {
     logger.info('Bot commands set successfully');
 
     // Запускаем бота
-    await bot.start();
     logger.info('Uranabot is running!');
+    await bot.start();
   } catch (error) {
     logger.error('Failed to start bot:', error);
     process.exit(1);

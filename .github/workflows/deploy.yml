@@ -240,7 +240,8 @@ jobs:
           
           # Проверяем health check только если контейнер запущен
           echo "=== Health Check ==="
-          if docker compose ps | grep -q "running"; then
+          if docker compose ps | grep -q "Up"; then
+            echo "✅ Container is running, executing health check..."
             docker compose exec -T uranabot node dist/healthcheck.js || echo "Health check failed"
           else
             echo "❌ Container is not running, skipping health check"
@@ -248,7 +249,7 @@ jobs:
           
           # Проверяем что бот отвечает
           echo "=== Bot Status ==="
-          if docker compose logs | grep -q "Uranabot is running"; then
+          if docker compose logs | grep -q "Bot commands set successfully"; then
             echo "✅ Bot is running successfully!"
           else
             echo "❌ Bot may not be running properly"
