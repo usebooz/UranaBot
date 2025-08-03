@@ -1,4 +1,11 @@
-# Используем официальный Node.js образ
+# Используем оф# Build и создание пользователя для безопасности  
+RUN npm run build && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S uranabot -u 1001
+
+# Копируем healthcheck отдельно после сборки
+COPY src/healthcheck.js dist/
+RUN chown -R uranabot:nodejs /appй Node.js образ
 FROM node:18-alpine
 
 # Устанавливаем рабочую директорию
@@ -13,11 +20,14 @@ RUN npm ci --only=production
 # Копируем исходный код
 COPY . .
 
-# Компилируем TypeScript и создаем пользователя для безопасности
-RUN npm run build && \
-    addgroup -g 1001 -S nodejs && \
-    adduser -S uranabot -u 1001 && \
+# Build и создание пользователя для безопасности  
+RUN npm run build && 
+    addgroup -g 1001 -S nodejs && 
+    adduser -S uranabot -u 1001 && 
     chown -R uranabot:nodejs /app
+
+# Копируем healthcheck отдельно после сборки
+COPY src/healthcheck.js dist/
 
 USER uranabot
 
