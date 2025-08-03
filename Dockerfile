@@ -7,14 +7,15 @@ WORKDIR /app
 # Копируем package.json и package-lock.json
 COPY package*.json ./
 
-# Устанавливаем зависимости
-RUN npm ci --only=production
+# Устанавливаем ВСЕ зависимости для сборки
+RUN npm ci
 
 # Копируем исходный код
 COPY . .
 
 # Build и создание пользователя для безопасности  
 RUN npm run build && \
+    npm prune --production && \
     addgroup -g 1001 -S nodejs && \
     adduser -S uranabot -u 1001
 
