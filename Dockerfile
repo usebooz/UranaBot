@@ -13,15 +13,12 @@ RUN npm ci --only=production
 # Копируем исходный код
 COPY . .
 
-# Компилируем TypeScript
-RUN npm run build
+# Компилируем TypeScript и создаем пользователя для безопасности
+RUN npm run build && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S uranabot -u 1001 && \
+    chown -R uranabot:nodejs /app
 
-# Создаем пользователя для безопасности
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S uranabot -u 1001
-
-# Меняем владельца файлов
-RUN chown -R uranabot:nodejs /app
 USER uranabot
 
 # Открываем порт
