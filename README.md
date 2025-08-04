@@ -10,6 +10,8 @@
 
 - 🚀 **TypeScript** - полная типизация и безопасность
 - 🎯 **grammY** - современная библиотека для Telegram ботов
+- 🌐 **GraphQL** - интеграция с Sports.ru API
+- 🏗️ **Модульная архитектура** - расширяемая структура для новых API
 - 🧹 **ESLint + Prettier** - качество и консистентность кода
 - 🐳 **Docker** - контейнеризация и простой деплой
 - 🔄 **GitHub Actions** - автоматический CI/CD
@@ -102,13 +104,23 @@
 ```text
 uranabot/
 ├── src/
-│   ├── commands/           # Команды бота
+│   ├── api/               # API клиенты
+│   │   ├── sports-ru/     # Sports.ru GraphQL API
+│   │   │   ├── client.ts
+│   │   │   ├── queries.ts
+│   │   │   └── index.ts
 │   │   └── index.ts
-│   ├── middlewares/        # Middleware функции
+│   ├── base/              # Базовые классы
+│   │   ├── base-graphql-client.ts
+│   │   └── index.ts
+│   ├── commands/          # Команды бота
+│   │   └── index.ts
+│   ├── middlewares/       # Middleware функции
 │   │   └── index.ts
 │   ├── utils/             # Утилиты
 │   │   └── logger.ts
 │   ├── config.ts          # Конфигурация
+│   ├── types.ts           # TypeScript типы
 │   ├── index.ts           # Точка входа
 │   └── healthcheck.js     # Health check для Docker
 ├── .github/
@@ -133,6 +145,7 @@ NODE_ENV=development
 LOG_LEVEL=info
 PORT=3000
 BOT_TOKEN=your_telegram_bot_token_here
+SPORTS_API_URL=https://www.sports.ru/gql/graphql/
 ```
 
 ### GitHub Secrets
