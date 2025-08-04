@@ -8,6 +8,7 @@ interface Config {
   port: number;
   environment: 'development' | 'production';
   logLevel: 'debug' | 'info' | 'warn' | 'error';
+  sportsApiUrl: string;
 }
 
 function validateConfig(): Config {
@@ -21,12 +22,14 @@ function validateConfig(): Config {
     (process.env.NODE_ENV as 'development' | 'production') || 'development';
   const logLevel =
     (process.env.LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'info';
+  const sportsApiUrl = 'https://www.sports.ru/gql/graphql/';
 
   return {
     botToken,
     port,
     environment,
     logLevel,
+    sportsApiUrl,
   };
 }
 

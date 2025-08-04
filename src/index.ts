@@ -1,21 +1,15 @@
-import { Bot, Context, session, SessionFlavor } from 'grammy';
-import { config } from './config';
-import { logger } from './utils/logger';
-import { setupCommands } from './commands';
-import { setupMiddlewares } from './middlewares';
+import { Bot, session } from 'grammy';
+import { config } from './config.js';
+import { logger } from './utils/logger.js';
+import { setupCommands } from './commands/index.js';
+import { setupMiddlewares } from './middlewares/index.js';
+import type { MyContext, SessionData } from './types.js';
 
 // Логируем старт приложения
 logger.info('🚀 Starting Uranabot...');
 logger.info(
   `📋 Config: NODE_ENV=${config.environment}, LOG_LEVEL=${config.logLevel}`,
 );
-
-// Определяем типы для сессии
-interface SessionData {
-  // Пока сессия не используется, но оставляем для будущих функций
-}
-
-type MyContext = Context & SessionFlavor<SessionData>;
 
 // Создаем экземпляр бота
 logger.info('🤖 Creating bot instance...');

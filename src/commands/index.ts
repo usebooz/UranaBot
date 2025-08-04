@@ -1,11 +1,6 @@
-import { Bot, Context, SessionFlavor } from 'grammy';
-import { logger } from '../utils/logger';
-
-interface SessionData {
-  // Пока сессия не используется, но оставляем для будущих функций
-}
-
-type MyContext = Context & SessionFlavor<SessionData>;
+import { Bot } from 'grammy';
+import { logger } from '../utils/logger.js';
+import type { MyContext } from '../types.js';
 
 export function setupCommands(bot: Bot<MyContext>): void {
   // Команда /start

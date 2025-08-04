@@ -1,11 +1,6 @@
-import { Bot, Context, SessionFlavor } from 'grammy';
-import { logger } from '../utils/logger';
-
-interface SessionData {
-  // Пока сессия не используется, но оставляем для будущих функций
-}
-
-type MyContext = Context & SessionFlavor<SessionData>;
+import { Bot } from 'grammy';
+import { logger } from '../utils/logger.js';
+import type { MyContext } from '../types.js';
 
 export function setupMiddlewares(bot: Bot<MyContext>): void {
   // Middleware для логирования всех обновлений
@@ -49,7 +44,7 @@ export function setupMiddlewares(bot: Bot<MyContext>): void {
   // Middleware для инициализации сессии пользователя
   bot.use(async (ctx, next) => {
     if (!ctx.session) {
-      ctx.session = { messageCount: 0 };
+      ctx.session = {};
     }
     await next();
   });
