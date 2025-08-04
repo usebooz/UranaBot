@@ -7,6 +7,7 @@ services:
       - NODE_ENV=production
       - BOT_TOKEN=${BOT_TOKEN}
       - LOG_LEVEL=info
+      - SPORTS_API_URL=${SPORTS_API_URL}
     restart: unless-stopped
     networks:
       - uranabot-network

@@ -1,9 +1,9 @@
-import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 
 // Загружаем переменные окружения
 dotenv.config();
 
-interface Config {
+export interface Config {
   botToken: string;
   port: number;
   environment: 'development' | 'production';
@@ -17,12 +17,16 @@ function validateConfig(): Config {
     throw new Error('BOT_TOKEN environment variable is required');
   }
 
+  const sportsApiUrl = process.env.SPORTS_API_URL;
+  if (!sportsApiUrl) {
+    throw new Error('SPORTS_API_URL environment variable is required');
+  }
+
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   const environment =
     (process.env.NODE_ENV as 'development' | 'production') || 'development';
   const logLevel =
     (process.env.LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'info';
-  const sportsApiUrl = 'https://www.sports.ru/gql/graphql/';
 
   return {
     botToken,

@@ -118,6 +118,7 @@ jobs:
                 - NODE_ENV=production
                 - BOT_TOKEN=${{ secrets.BOT_TOKEN }}
                 - LOG_LEVEL=info
+                - SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
               restart: unless-stopped
               networks:
                 - uranabot-network
@@ -149,6 +150,7 @@ jobs:
                 - NODE_ENV=production
                 - BOT_TOKEN=${{ secrets.BOT_TOKEN }}
                 - LOG_LEVEL=info
+                - SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
               restart: unless-stopped
               networks:
                 - uranabot-network
@@ -171,6 +173,7 @@ jobs:
           # Создать .env файл
           cat > .env << 'EOF'
           BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+          SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
           NODE_ENV=production
           LOG_LEVEL=info
           EOF
