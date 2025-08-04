@@ -12,7 +12,7 @@ logger.info(
 
 // Определяем типы для сессии
 interface SessionData {
-  messageCount: number;
+  // Пока сессия не используется, но оставляем для будущих функций
 }
 
 type MyContext = Context & SessionFlavor<SessionData>;
@@ -33,7 +33,7 @@ if (config.logLevel === 'debug') {
 
 // Настраиваем сессии
 function initial(): SessionData {
-  return { messageCount: 0 };
+  return {};
 }
 
 bot.use(session({ initial }));
@@ -61,8 +61,6 @@ async function main(): Promise<void> {
     // Устанавливаем команды бота
     await bot.api.setMyCommands([
       { command: 'start', description: 'Запустить бота' },
-      { command: 'help', description: 'Показать справку' },
-      { command: 'stats', description: 'Показать статистику' },
     ]);
 
     logger.info('Bot commands set successfully');

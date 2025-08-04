@@ -2,7 +2,7 @@ import { Bot, Context, SessionFlavor } from 'grammy';
 import { logger } from '../utils/logger';
 
 interface SessionData {
-  messageCount: number;
+  // Пока сессия не используется, но оставляем для будущих функций
 }
 
 type MyContext = Context & SessionFlavor<SessionData>;
