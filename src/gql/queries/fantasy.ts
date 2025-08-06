@@ -8,8 +8,8 @@ import { graphql } from '../generated';
 /**
  * Query to get tournament (RPL) information with current season and tour
  */
-export const GET_TOURNAMENT_INFO = graphql(`
-  query GetTournamentInfo {
+export const GET_TOURNAMENT = graphql(`
+  query GetTournament {
     fantasyQueries {
       tournament(source: HRU, id: "russia") {
         metaTitle

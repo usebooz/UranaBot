@@ -1,8 +1,8 @@
-import type { GetTournamentInfoQuery } from '../gql';
+import type { GetTournamentQuery } from '../gql';
 
 // Type alias for convenience
 type Tournament = NonNullable<
-  GetTournamentInfoQuery['fantasyQueries']['tournament']
+  GetTournamentQuery['fantasyQueries']['tournament']
 >;
 
 /**

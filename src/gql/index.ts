@@ -11,6 +11,6 @@ export * from './generated';
 
 // Экспорт конкретных типов для удобства
 export type {
-  GetTournamentInfoQuery,
+  GetTournamentQuery,
   FantasyTourStatus,
 } from './generated/graphql';

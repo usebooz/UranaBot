@@ -1,8 +1,8 @@
 import { GraphQLClient } from 'graphql-request';
 import { logger } from '../utils/logger';
 import { config } from '../config';
-import { GET_TOURNAMENT_INFO } from '../gql';
-import type { GetTournamentInfoQuery } from '../gql';
+import { GET_TOURNAMENT } from '../gql';
+import type { GetTournamentQuery } from '../gql';
 
 /**
  * Repository for Sports.ru API
@@ -24,12 +24,12 @@ export class SportsRuRepository {
    * Fetch tournament information from Sports.ru API
    * @returns Raw tournament data from API
    */
-  async getTournamentInfo(): Promise<GetTournamentInfoQuery> {
+  async getTournamentInfo(): Promise<GetTournamentQuery> {
     try {
       logger.debug('Making GraphQL request to Sports.ru API');
 
       const response =
-        await this.client.request<GetTournamentInfoQuery>(GET_TOURNAMENT_INFO);
+        await this.client.request<GetTournamentQuery>(GET_TOURNAMENT);
 
       logger.debug('Sports.ru API response received', {
         tournamentId: response.fantasyQueries.tournament?.id,
