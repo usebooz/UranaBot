@@ -9,6 +9,7 @@ export interface Config {
   environment: 'development' | 'production';
   logLevel: 'debug' | 'info' | 'warn' | 'error';
   sportsApiUrl: string;
+  sportsTournamentWebname: string;
 }
 
 function validateConfig(): Config {
@@ -20,6 +21,13 @@ function validateConfig(): Config {
   const sportsApiUrl = process.env.SPORTS_API_URL;
   if (!sportsApiUrl) {
     throw new Error('SPORTS_API_URL environment variable is required');
+  }
+
+  const sportsTournamentWebname = process.env.SPORTS_TOURNAMENT_WEBNAME;
+  if (!sportsTournamentWebname) {
+    throw new Error(
+      'SPORTS_TOURNAMENT_WEBNAME environment variable is required',
+    );
   }
 
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -34,6 +42,7 @@ function validateConfig(): Config {
     environment,
     logLevel,
     sportsApiUrl,
+    sportsTournamentWebname,
   };
 }
 

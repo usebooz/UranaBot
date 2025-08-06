@@ -1,6 +1,6 @@
 import { Bot } from 'grammy';
-import { logger } from '../utils/logger.js';
-import type { MyContext } from '../types.js';
+import { logger } from '../utils/logger';
+import type { MyContext } from '../types';
 
 export function setupMiddlewares(bot: Bot<MyContext>): void {
   // Middleware для логирования всех обновлений

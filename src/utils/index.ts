@@ -1,2 +1,2 @@
 // Re-export utilities
-export { logger } from './logger.js';
+export { logger } from './logger';

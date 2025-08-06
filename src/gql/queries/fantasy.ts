@@ -1,0 +1,39 @@
+/**
+ * GraphQL query utilities for sports.ru API
+ * Using client preset for type-safe queries
+ */
+
+import { graphql } from '../generated';
+
+/**
+ * Query to get tournament (RPL) information with current season and tour
+ */
+export const GET_TOURNAMENT_INFO = graphql(`
+  query GetTournamentInfo {
+    fantasyQueries {
+      tournament(source: HRU, id: "russia") {
+        metaTitle
+        currentSeason {
+          id
+          isActive
+          currentTour {
+            id
+            name
+            status
+            startedAt
+            finishedAt
+            transfersStartedAt
+            transfersFinishedAt
+          }
+          statObject {
+            name
+            startDate
+            endDate
+            year
+          }
+        }
+        id
+      }
+    }
+  }
+`);
