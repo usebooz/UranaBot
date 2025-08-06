@@ -24,7 +24,7 @@ export class FantasyRepository {
    * Fetch tournament information from Sports.ru API
    * @returns Raw tournament data from API
    */
-  async getTournamentInfo(): Promise<TournamentQuery> {
+  async getTournament(): Promise<TournamentQuery> {
     try {
       logger.debug('Making GraphQL request to Sports.ru API');
 

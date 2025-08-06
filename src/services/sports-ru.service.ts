@@ -18,7 +18,7 @@ export class SportsFantasyService {
     try {
       logger.info('Processing tournament information request');
 
-      const response = await fantasyRepository.getTournamentInfo();
+      const response = await fantasyRepository.getTournament();
       const tournament = response.fantasyQueries.tournament;
 
       if (!tournament) {
