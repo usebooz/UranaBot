@@ -14,3 +14,5 @@ export type {
   GetTournamentQuery,
   FantasyTourStatus,
 } from './generated/graphql';
+
+export { FantasyIdSource } from './generated/graphql';

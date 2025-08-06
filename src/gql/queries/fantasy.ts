@@ -4,14 +4,16 @@
  */
 
 import { graphql } from '../generated';
+import { FantasyIdSource } from '../generated/graphql';
+import { config } from '../../config';
 
 /**
  * Query to get tournament (RPL) information with current season and tour
  */
-export const GET_TOURNAMENT = graphql(`
-  query GetTournament {
+export const TournamentQuery = graphql(`
+  query GetTournament($source: FantasyIDSource!, $id: ID!) {
     fantasyQueries {
-      tournament(source: HRU, id: "russia") {
+      tournament(source: $source, id: $id) {
         metaTitle
         currentSeason {
           id
@@ -37,3 +39,11 @@ export const GET_TOURNAMENT = graphql(`
     }
   }
 `);
+
+/**
+ * Default variables for the tournament query using config values
+ */
+export const TournamentVariables = {
+  source: FantasyIdSource.Hru,
+  id: config.sportsTournamentWebname,
+};
