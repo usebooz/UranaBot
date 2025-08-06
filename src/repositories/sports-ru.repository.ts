@@ -1,14 +1,14 @@
 import { GraphQLClient } from 'graphql-request';
 import { logger } from '../utils/logger';
 import { config } from '../config';
-import { TournamentQuery, TournamentVariables } from '../gql';
-import type { GetTournamentQuery } from '../gql';
+import { TOURNAMENT_QUERY, TOURNAMENT_VARIABLES } from '../gql';
+import type { TournamentQuery } from '../gql';
 
 /**
  * Repository for Sports.ru API
  * Handles direct API communication and data fetching
  */
-export class SportsRuRepository {
+export class FantasyRepository {
   private readonly client: GraphQLClient;
 
   constructor() {
@@ -24,13 +24,13 @@ export class SportsRuRepository {
    * Fetch tournament information from Sports.ru API
    * @returns Raw tournament data from API
    */
-  async getTournamentInfo(): Promise<GetTournamentQuery> {
+  async getTournamentInfo(): Promise<TournamentQuery> {
     try {
       logger.debug('Making GraphQL request to Sports.ru API');
 
-      const response = await this.client.request<GetTournamentQuery>(
-        TournamentQuery,
-        TournamentVariables,
+      const response = await this.client.request<TournamentQuery>(
+        TOURNAMENT_QUERY,
+        TOURNAMENT_VARIABLES,
       );
 
       logger.debug('Sports.ru API response received', {
@@ -46,4 +46,4 @@ export class SportsRuRepository {
 }
 
 // Export singleton instance
-export const sportsRuRepository = new SportsRuRepository();
+export const fantasyRepository = new FantasyRepository();

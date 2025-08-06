@@ -10,8 +10,8 @@ import { config } from '../../config';
 /**
  * Query to get tournament (RPL) information with current season and tour
  */
-export const TournamentQuery = graphql(`
-  query GetTournament($source: FantasyIDSource!, $id: ID!) {
+export const TOURNAMENT_QUERY = graphql(`
+  query Tournament($source: FantasyIDSource!, $id: ID!) {
     fantasyQueries {
       tournament(source: $source, id: $id) {
         metaTitle
@@ -43,7 +43,7 @@ export const TournamentQuery = graphql(`
 /**
  * Default variables for the tournament query using config values
  */
-export const TournamentVariables = {
+export const TOURNAMENT_VARIABLES = {
   source: FantasyIdSource.Hru,
   id: config.sportsTournamentWebname,
 };

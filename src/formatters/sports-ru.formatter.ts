@@ -1,9 +1,7 @@
-import type { GetTournamentQuery } from '../gql';
+import type { TournamentQuery } from '../gql';
 
 // Type alias for convenience
-type Tournament = NonNullable<
-  GetTournamentQuery['fantasyQueries']['tournament']
->;
+type Tournament = NonNullable<TournamentQuery['fantasyQueries']['tournament']>;
 
 /**
  * Formatter for presenting Sports.ru data to users

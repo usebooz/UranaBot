@@ -1,11 +1,9 @@
 import { logger } from '../utils/logger';
-import { sportsRuRepository } from '../repositories/sports-ru.repository';
-import type { GetTournamentQuery } from '../gql';
+import { fantasyRepository } from '../repositories/sports-ru.repository';
+import type { TournamentQuery } from '../gql';
 
 // Type alias for convenience
-type Tournament = NonNullable<
-  GetTournamentQuery['fantasyQueries']['tournament']
->;
+type Tournament = NonNullable<TournamentQuery['fantasyQueries']['tournament']>;
 
 /**
  * Service for working with Sports.ru Fantasy data
@@ -20,7 +18,7 @@ export class SportsFantasyService {
     try {
       logger.info('Processing tournament information request');
 
-      const response = await sportsRuRepository.getTournamentInfo();
+      const response = await fantasyRepository.getTournamentInfo();
       const tournament = response.fantasyQueries.tournament;
 
       if (!tournament) {
