@@ -10,7 +10,7 @@
 
 - 🚀 **TypeScript** - полная типизация и безопасность
 - 🎯 **grammY** - современная библиотека для Telegram ботов
-- 🌐 **GraphQL** - интеграция с Sports.ru API
+- 🌐 **GraphQL** - интеграция с sports.ru API
 - 🏗️ **Модульная архитектура** - расширяемая структура для новых API
 - 🧹 **ESLint + Prettier** - качество и консистентность кода
 - 🐳 **Docker** - контейнеризация и простой деплой
@@ -105,7 +105,7 @@
 uranabot/
 ├── src/
 │   ├── api/               # API клиенты
-│   │   ├── sports-ru/     # Sports.ru GraphQL API
+│   │   ├── sports-ru/     # sports.ru GraphQL API
 │   │   │   ├── client.ts
 │   │   │   ├── queries.ts
 │   │   │   └── index.ts

@@ -1,5 +1,5 @@
 /**
- * GraphQL query utilities for Sports.ru API
+ * GraphQL query utilities for sports.ru API
  * Use this to create your own queries when needed
  */
 

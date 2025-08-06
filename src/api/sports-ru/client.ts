@@ -2,11 +2,11 @@ import { BaseGraphQLClient } from '../../base/base-graphql-client.js';
 import { config } from '../../config.js';
 
 /**
- * Sports.ru GraphQL client
+ * sports.ru GraphQL client
  */
 class SportsRuClient extends BaseGraphQLClient {
   constructor() {
-    super(config.sportsApiUrl, 'Sports.ru');
+    super(config.sportsApiUrl, 'sports.ru');
   }
 }
 
