@@ -1,1 +1,1 @@
-export * from './sports-ru.repository';
+export * from './fantasy.repository';

@@ -1,5 +1,5 @@
 import { logger } from '../utils/logger';
-import { fantasyRepository } from '../repositories/sports-ru.repository';
+import { fantasyRepository } from '../repositories/fantasy.repository';
 import type { TournamentQuery } from '../gql';
 
 // Type alias for convenience
