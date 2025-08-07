@@ -1,17 +1,18 @@
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { FantasyRepository } from '../../src/repositories/fantasy.repository';
+import { describe, it, before, after } from 'node:test';
+import assert from 'node:assert';
+import { FantasyRepository } from '../../src/repositories/fantasy.repository.js';
 
 /**
  * Integration tests for Sports.ru API
  * These tests make real API calls and verify the actual behavior
- * Run with: npm test -- --testPathPattern=integration
+ * Run with: npm run test:integration
  *
  * Note: These tests may be skipped in CI if SKIP_INTEGRATION_TESTS=true
  */
 describe('Sports.ru API Integration', () => {
   let repository: FantasyRepository;
 
-  beforeAll(() => {
+  before(() => {
     // Skip integration tests if environment variable is set
     if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
       console.log('Skipping integration tests (SKIP_INTEGRATION_TESTS=true)');
@@ -21,7 +22,7 @@ describe('Sports.ru API Integration', () => {
     repository = new FantasyRepository();
   });
 
-  afterAll(() => {
+  after(() => {
     // Cleanup if needed
   });
 
@@ -33,34 +34,31 @@ describe('Sports.ru API Integration', () => {
       }
 
       const tournament = await repository.getTournamentByWebname('russia');
-      expect(tournament).toBeDefined();
+      assert.ok(tournament);
       // Verify the structure of real data
-      expect(tournament).toHaveProperty('id');
-      expect(tournament).toHaveProperty('metaTitle');
-      expect(typeof tournament?.id).toBe('string');
-      expect(typeof tournament?.metaTitle).toBe('string');
+      assert.ok(tournament.id);
+      assert.ok(tournament.metaTitle);
+      assert.strictEqual(typeof tournament.id, 'string');
+      assert.strictEqual(typeof tournament.metaTitle, 'string');
 
       // Check if current season exists and has proper structure
-      if (tournament?.currentSeason) {
-        expect(tournament?.currentSeason).toHaveProperty('id');
-        expect(tournament?.currentSeason).toHaveProperty('isActive');
-        expect(typeof tournament?.currentSeason.isActive).toBe('boolean');
+      if (tournament.currentSeason) {
+        assert.ok(tournament.currentSeason.id);
+        assert.ok(typeof tournament.currentSeason.isActive === 'boolean');
 
-        if (tournament?.currentSeason.statObject) {
-          expect(tournament?.currentSeason.statObject).toHaveProperty('name');
-          expect(typeof tournament?.currentSeason.statObject.name).toBe(
-            'string',
-          );
+        if (tournament.currentSeason.statObject) {
+          assert.ok(tournament.currentSeason.statObject.name);
+          assert.strictEqual(typeof tournament.currentSeason.statObject.name, 'string');
         }
       }
 
       console.log('✅ Successfully fetched tournament:', {
-        id: tournament?.id,
-        title: tournament?.metaTitle,
-        hasCurrentSeason: !!tournament?.currentSeason,
-        isActive: tournament?.currentSeason?.isActive,
+        id: tournament.id,
+        title: tournament.metaTitle,
+        hasCurrentSeason: !!tournament.currentSeason,
+        isActive: tournament.currentSeason?.isActive,
       });
-    }, 10000); // 10 second timeout for API calls
+    }); // 10 second timeout for API calls
 
     it('should handle non-existent tournament gracefully', async () => {
       if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
@@ -71,8 +69,8 @@ describe('Sports.ru API Integration', () => {
         'nonexistent-tournament-12345',
       );
 
-      expect(tournament).toBeNull();
-    }, 5000);
+      assert.strictEqual(tournament, null);
+    });
 
     it('should fetch data with correct GraphQL structure', async () => {
       if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
@@ -84,24 +82,19 @@ describe('Sports.ru API Integration', () => {
 
       if (tournament) {
         // Verify GraphQL response structure matches our types
-        expect(tournament).toEqual(
-          expect.objectContaining({
-            id: expect.any(String),
-            metaTitle: expect.any(String),
-          }),
-        );
+        assert.ok(tournament.id);
+        assert.ok(tournament.metaTitle);
+        assert.strictEqual(typeof tournament.id, 'string');
+        assert.strictEqual(typeof tournament.metaTitle, 'string');
 
         // Test that we can handle the currentSeason field properly
         if (tournament.currentSeason) {
-          expect(tournament.currentSeason).toEqual(
-            expect.objectContaining({
-              id: expect.any(String),
-              isActive: expect.any(Boolean),
-            }),
-          );
+          assert.ok(tournament.currentSeason.id);
+          assert.strictEqual(typeof tournament.currentSeason.id, 'string');
+          assert.strictEqual(typeof tournament.currentSeason.isActive, 'boolean');
         }
       }
-    }, 10000);
+    });
 
     it('should demonstrate GraphQL query optimization', async () => {
       if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
@@ -117,12 +110,12 @@ describe('Sports.ru API Integration', () => {
       console.log(`⏱️ API call took ${duration}ms`);
 
       // Reasonable performance expectation (adjust as needed)
-      expect(duration).toBeLessThan(5000); // 5 seconds max
+      assert.ok(duration < 5000, 'API call should take less than 5 seconds'); // 5 seconds max
 
       if (tournament) {
         // Verify we got the essential data without over-fetching
-        expect(tournament).toHaveProperty('id');
-        expect(tournament).toHaveProperty('metaTitle');
+        assert.ok(tournament.id);
+        assert.ok(tournament.metaTitle);
 
         // Log the actual structure we received
         console.log('📊 Received tournament structure:', {
@@ -134,7 +127,7 @@ describe('Sports.ru API Integration', () => {
             : [],
         });
       }
-    }, 10000);
+    });
   });
 
   describe('Error Handling', () => {
@@ -148,11 +141,11 @@ describe('Sports.ru API Integration', () => {
       const tournament = await repository.getTournamentByWebname('definitely-nonexistent-tournament-123456');
 
       // Should return null for legitimate "not found" GraphQL responses
-      expect(tournament).toBeNull();
+      assert.strictEqual(tournament, null);
       
       // API should return proper GraphQL error with NOT_FOUND code
       // which our error handling converts to null
-    }, 10000);
+    });
 
     it('should handle network timeouts gracefully', async () => {
       if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
@@ -165,8 +158,8 @@ describe('Sports.ru API Integration', () => {
 
       // Should return null only for legitimate "not found" GraphQL responses
       // Network timeouts and server errors should throw
-      expect(tournament).toBeNull();
-    }, 15000); // Longer timeout to test timeout handling
+      assert.strictEqual(tournament, null);
+    }); // Longer timeout to test timeout handling
 
     it('should handle malformed responses', async () => {
       if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
@@ -182,9 +175,9 @@ describe('Sports.ru API Integration', () => {
 
       for (const testCase of edgeCases) {
         const tournament = await repository.getTournamentByWebname(testCase);
-        expect(tournament).toBeNull();
+        assert.strictEqual(tournament, null);
       }
-    }, 10000);
+    });
   });
 });
 
