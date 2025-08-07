@@ -17,9 +17,8 @@ COPY . .
 RUN npm run build && \
     npm prune --production && \
     addgroup -g 1001 -S nodejs && \
-    adduser -S uranabot -u 1001
-
-RUN chown -R uranabot:nodejs /app
+    adduser -S uranabot -u 1001 && \
+    chown -R uranabot:nodejs /app
 
 USER uranabot
 
