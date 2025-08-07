@@ -43,7 +43,7 @@ export const TOURNAMENT_QUERY = graphql(`
 /**
  * Default variables for the tournament query using config values
  */
-export const TOURNAMENT_VARIABLES = {
+export const TOURNAMENT_RPL_VARIABLES = {
   source: FantasyIdSource.Hru,
-  id: config.sportsTournamentWebname,
+  id: config.sportsTournamentRpl,
 };

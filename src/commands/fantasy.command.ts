@@ -10,17 +10,12 @@ import { logger } from '../utils/logger';
  * - Service: process business logic
  * - Formatter: present data to user
  */
-export async function tournamentInfoCommand(ctx: MyContext): Promise<void> {
+export async function tournamentCommand(ctx: MyContext): Promise<void> {
   try {
-    // Show loading message (Presentation Layer)
-    await ctx.reply(sportsRuFormatter.formatLoadingMessage());
-
-    // Get and process data (Business Layer calls Data Layer)
-    const tournament = await sportsFantasyService.getCurrentTournamentInfo();
-
+    const tournament = await sportsFantasyService.getCurrentTournament();
     if (!tournament) {
       // Handle no data case (Presentation Layer)
-      await ctx.editMessageText(sportsRuFormatter.formatNoDataMessage());
+      await ctx.editMessageText(sportsRuFormatter.formatNoTournamentMessage());
       return;
     }
 

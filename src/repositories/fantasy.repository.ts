@@ -1,4 +1,4 @@
-import { TOURNAMENT_QUERY, TOURNAMENT_VARIABLES } from '../gql';
+import { TOURNAMENT_QUERY, TOURNAMENT_RPL_VARIABLES } from '../gql';
 import type { TournamentQuery } from '../gql';
 import { SportsRuRepository } from './base.repository';
 
@@ -11,11 +11,11 @@ export class FantasyRepository extends SportsRuRepository {
    * Fetch tournament information from Sports.ru API
    * @returns Raw tournament data from API
    */
-  async getTournament(): Promise<TournamentQuery> {
+  async getTournamentRpl(): Promise<TournamentQuery> {
     return this.executeQuery<TournamentQuery>(
       TOURNAMENT_QUERY,
-      TOURNAMENT_VARIABLES,
-      'getTournament',
+      TOURNAMENT_RPL_VARIABLES,
+      'getTournamentRpl',
     );
   }
 }

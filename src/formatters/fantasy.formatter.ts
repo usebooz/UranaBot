@@ -76,15 +76,8 @@ export class SportsRuFormatter {
   /**
    * Format "no data" message
    */
-  formatNoDataMessage(): string {
-    return '📭 Данные о турнире временно недоступны. Попробуйте позже.';
-  }
-
-  /**
-   * Format loading message
-   */
-  formatLoadingMessage(): string {
-    return '⏳ Загружаю информацию о турнире...';
+  formatNoTournamentMessage(): string {
+    return '❌ Нет информации о текущем турнире';
   }
 }
 

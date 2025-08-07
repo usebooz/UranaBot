@@ -14,24 +14,16 @@ export class SportsFantasyService {
    * Get current tournament information with validation
    * @returns Processed tournament data or null if not available
    */
-  async getCurrentTournamentInfo(): Promise<Tournament | null> {
+  async getCurrentTournament(): Promise<Tournament | null> {
     try {
-      logger.info('Processing tournament information request');
+      logger.info('Processing tournament request');
 
-      const response = await fantasyRepository.getTournament();
+      const response = await fantasyRepository.getTournamentRpl();
       const tournament = response.fantasyQueries.tournament;
 
       if (!tournament) {
         logger.warn('No tournament data available in API response');
         return null;
-      }
-
-      // Business logic validation
-      if (!tournament.currentSeason?.isActive) {
-        logger.warn('Tournament season is not active', {
-          tournamentId: tournament.id,
-          seasonActive: tournament.currentSeason?.isActive,
-        });
       }
 
       logger.info('Tournament information processed successfully', {

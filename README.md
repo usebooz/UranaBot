@@ -146,7 +146,7 @@ LOG_LEVEL=info
 PORT=3000
 BOT_TOKEN=your_telegram_bot_token_here
 SPORTS_API_URL=https://www.sports.ru/gql/graphql/
-SPORTS_TOURNAMENT_WEBNAME=your_tournament_webname_here
+SPORTS_TOURNAMENT_RPL=rpl_tournament_webname_here
 ```
 
 ### GitHub Secrets
