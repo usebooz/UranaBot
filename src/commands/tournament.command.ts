@@ -10,7 +10,7 @@ import { fantasyFormatter } from '../formatters';
  * - Formatter: present data to user
  */
 export async function tournamentCommand(ctx: MyContext): Promise<void> {
-  const tournament = await fantasyRplService.getTournament();
+  const tournament = await fantasyRplService.getTournamentRpl();
   const message = fantasyFormatter.formatTournamentToText(tournament);
 
   await ctx.reply(message);

@@ -8,12 +8,12 @@ type Tournament = TournamentQuery['fantasyQueries']['tournament'];
  * Service for working with RPL Fantasy tournament
  * Simple class for fetching tournament data
  */
-export class FantasyRplService {
+export class FantasyService {
   /**
    * Get tournament information from repository
    * @returns Tournament data or null if not available
    */
-  async getTournament(): Promise<Tournament> {
+  async getTournamentRpl(): Promise<Tournament> {
     const tournament = await fantasyRepository.getTournamentByWebname(
       config.sportsTournamentRpl,
     );
@@ -22,4 +22,4 @@ export class FantasyRplService {
 }
 
 // Export instance
-export const fantasyRplService = new FantasyRplService();
+export const fantasyRplService = new FantasyService();

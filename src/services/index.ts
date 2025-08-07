@@ -1,2 +1,5 @@
 // Re-export all services
-export { FantasyRplService, fantasyRplService } from './fantasy-rpl.service';
+export {
+  FantasyService as FantasyRplService,
+  fantasyRplService,
+} from './fantasy.service';

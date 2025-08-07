@@ -16,7 +16,7 @@ export class FantasyFormatter {
       return '🪦 РПЛ ВСЁ!';
     }
 
-    let text = `🇷🇺 ${tournament.metaTitle}` + '\n\n';
+    let text = `🏆 ${tournament.metaTitle}` + '\n\n';
 
     const { currentSeason } = tournament;
     if (!currentSeason) {
