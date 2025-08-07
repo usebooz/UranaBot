@@ -1,6 +1,10 @@
-import { TOURNAMENT_QUERY, TOURNAMENT_RPL_VARIABLES } from '../gql';
-import type { TournamentQuery } from '../gql';
+import {
+  TOURNAMENT_QUERY,
+  type TournamentQuery,
+  FantasyIdSource,
+} from '../gql';
 import { SportsRuRepository } from './base.repository';
+import { config } from '../config';
 
 /**
  * Repository for Fantasy Sports data from Sports.ru API
@@ -12,9 +16,14 @@ export class FantasyRepository extends SportsRuRepository {
    * @returns Raw tournament data from API
    */
   async getTournamentRpl(): Promise<TournamentQuery> {
+    const variables = {
+      source: FantasyIdSource.Hru,
+      id: config.sportsTournamentRpl,
+    };
+
     return this.executeQuery<TournamentQuery>(
       TOURNAMENT_QUERY,
-      TOURNAMENT_RPL_VARIABLES,
+      variables,
       'getTournamentRpl',
     );
   }
