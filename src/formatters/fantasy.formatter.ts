@@ -7,7 +7,7 @@ type Tournament = NonNullable<TournamentQuery['fantasyQueries']['tournament']>;
  * Formatter for presenting Sports.ru data to users
  * Handles all text formatting and message generation for the bot
  */
-export class TournamentFormatter {
+export class FantasyFormatter {
   /**
    * Format tournament info for display in bot messages
    */
@@ -82,4 +82,4 @@ export class TournamentFormatter {
 }
 
 // Export singleton instance
-export const sportsRuFormatter = new TournamentFormatter();
+export const fantasyFormatter = new FantasyFormatter();
