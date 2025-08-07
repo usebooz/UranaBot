@@ -1,22 +1,21 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { FantasyService } from '../../src/services/fantasy.service';
-import { fantasyRepository } from '../../src/repositories/fantasy.repository';
+import { describe, it, beforeEach, mock } from 'node:test';
+import assert from 'node:assert';
+import { FantasyService } from '../../src/services/fantasy.service.js';
 
-// Mock the repository
-jest.mock('../../src/repositories/fantasy.repository', () => ({
+// Mock the repository module
+const mockGetTournamentByWebname = mock.fn();
+mock.module('../../src/repositories/fantasy.repository.js', () => ({
   fantasyRepository: {
-    getTournamentByWebname: jest.fn(),
+    getTournamentByWebname: mockGetTournamentByWebname,
   },
 }));
 
-// Mock config
-jest.mock('../../src/config', () => ({
+// Mock config module
+mock.module('../../src/config.js', () => ({
   config: {
     sportsTournamentRpl: 'rpl-2024',
   },
 }));
-
-const mockedRepository = fantasyRepository as jest.Mocked<typeof fantasyRepository>;
 
 describe('FantasyService', () => {
   let service: FantasyService;
