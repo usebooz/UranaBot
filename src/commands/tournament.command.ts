@@ -11,13 +11,7 @@ import { fantasyFormatter } from '../formatters';
  */
 export async function tournamentCommand(ctx: MyContext): Promise<void> {
   const tournament = await fantasyRplService.getTournament();
-  if (!tournament) {
-    // Handle no data case (Presentation Layer)
-    await ctx.editMessageText(fantasyFormatter.formatNoTournamentMessage());
-    return;
-  }
+  const message = fantasyFormatter.formatTournamentToText(tournament);
 
-  // Format and send response (Presentation Layer)
-  const message = fantasyFormatter.formatTournament(tournament);
-  await ctx.editMessageText(message);
+  await ctx.reply(message);
 }

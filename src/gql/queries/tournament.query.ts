@@ -16,15 +16,6 @@ export const TOURNAMENT_QUERY = graphql(`
         currentSeason {
           id
           isActive
-          currentTour {
-            id
-            name
-            status
-            startedAt
-            finishedAt
-            transfersStartedAt
-            transfersFinishedAt
-          }
           statObject {
             name
             startDate
