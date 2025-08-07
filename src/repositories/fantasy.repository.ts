@@ -6,6 +6,9 @@ import {
 import { SportsRuRepository } from './base.repository';
 import { Scalars, TournamentQueryVariables } from '../gql/generated/graphql';
 
+// Type alias for convenience
+type Tournament = TournamentQuery['fantasyQueries']['tournament'];
+
 /**
  * Repository for Fantasy Sports data from Sports.ru API
  * Handles fantasy-specific API operations
@@ -17,13 +20,19 @@ export class FantasyRepository extends SportsRuRepository {
    */
   async getTournamentByWebname(
     webname: Scalars['ID']['input'],
-  ): Promise<TournamentQuery> {
+  ): Promise<Tournament> {
     const variables: TournamentQueryVariables = {
       source: FantasyIdSource.Hru,
       id: webname,
     };
 
-    return this.executeQuery<TournamentQuery>(TOURNAMENT_QUERY, variables);
+    const response = await this.executeQuery<TournamentQuery>(
+      TOURNAMENT_QUERY,
+      variables,
+    );
+
+    const tournament = response?.fantasyQueries?.tournament || null;
+    return tournament;
   }
 }
 

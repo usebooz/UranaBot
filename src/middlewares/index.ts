@@ -1,10 +1,8 @@
 import { Bot } from 'grammy';
 import { logger } from '../utils/logger';
-import {
-  loggingMiddleware,
-  chatFilterMiddleware,
-  sessionInitMiddleware,
-} from './bot.middleware';
+import { loggingMiddleware } from './logging.middleware';
+import { chatFilterMiddleware } from './filter.middleware';
+import { sessionInitMiddleware } from './session.middleware';
 import type { MyContext } from '../types';
 
 export function setupMiddlewares(bot: Bot<MyContext>): void {
@@ -15,10 +13,3 @@ export function setupMiddlewares(bot: Bot<MyContext>): void {
 
   logger.info('Bot middlewares setup completed');
 }
-
-// Re-export middleware functions for direct access if needed
-export {
-  loggingMiddleware,
-  chatFilterMiddleware,
-  sessionInitMiddleware,
-} from './bot.middleware';

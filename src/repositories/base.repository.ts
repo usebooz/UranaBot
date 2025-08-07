@@ -45,7 +45,7 @@ export abstract class SportsRuRepository {
     query: RequestDocument,
     variables?: Variables,
     operationName?: string,
-  ): Promise<T> {
+  ): Promise<T | null> {
     try {
       // Extract operation name from query if not provided
       const finalOperationName = operationName || this.getOperationName(query);
@@ -67,7 +67,7 @@ export abstract class SportsRuRepository {
         operation: operationName,
         error,
       });
-      throw new Error(`Sports.ru API request failed: ${error}`);
+      return null;
     }
   }
 }

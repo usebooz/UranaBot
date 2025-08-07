@@ -7,11 +7,11 @@ type Tournament = NonNullable<TournamentQuery['fantasyQueries']['tournament']>;
  * Formatter for presenting Sports.ru data to users
  * Handles all text formatting and message generation for the bot
  */
-export class SportsRuFormatter {
+export class TournamentFormatter {
   /**
    * Format tournament info for display in bot messages
    */
-  formatTournamentInfo(tournament: Tournament): string {
+  formatTournament(tournament: Tournament): string {
     const { currentSeason } = tournament;
 
     if (!currentSeason) {
@@ -67,19 +67,19 @@ export class SportsRuFormatter {
   }
 
   /**
+   * Format "no data" message
+   */
+  formatNoTournamentMessage(): string {
+    return '❌ Че за';
+  }
+
+  /**
    * Format error message for users
    */
   formatErrorMessage(error: string): string {
     return `❌ Произошла ошибка: ${error}`;
   }
-
-  /**
-   * Format "no data" message
-   */
-  formatNoTournamentMessage(): string {
-    return '❌ Нет информации о текущем турнире';
-  }
 }
 
 // Export singleton instance
-export const sportsRuFormatter = new SportsRuFormatter();
+export const sportsRuFormatter = new TournamentFormatter();

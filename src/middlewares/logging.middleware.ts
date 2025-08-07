@@ -32,32 +32,3 @@ export async function loggingMiddleware(
     throw error;
   }
 }
-
-/**
- * Middleware для проверки типа чата
- * Пропускает только приватные сообщения
- */
-export async function chatFilterMiddleware(
-  ctx: MyContext,
-  next: () => Promise<void>,
-): Promise<void> {
-  if (ctx.chat?.type === 'private') {
-    await next();
-  } else {
-    logger.info(`Ignoring message from non-private chat: ${ctx.chat?.type}`);
-  }
-}
-
-/**
- * Middleware для инициализации сессии пользователя
- * Создает пустую сессию если она не существует
- */
-export async function sessionInitMiddleware(
-  ctx: MyContext,
-  next: () => Promise<void>,
-): Promise<void> {
-  if (!ctx.session) {
-    ctx.session = {};
-  }
-  await next();
-}

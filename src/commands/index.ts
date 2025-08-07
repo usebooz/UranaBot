@@ -1,7 +1,7 @@
 import { Bot } from 'grammy';
 import { logger } from '../utils/logger';
 import type { MyContext } from '../types';
-import { tournamentCommand } from './fantasy.command';
+import { tournamentCommand } from './tournament.command';
 
 export function setupCommands(bot: Bot<MyContext>): void {
   // Setup bot commands

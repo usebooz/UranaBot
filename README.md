@@ -104,33 +104,50 @@
 ```text
 uranabot/
 ├── src/
-│   ├── api/               # API клиенты
-│   │   ├── sports-ru/     # sports.ru GraphQL API
-│   │   │   ├── client.ts
-│   │   │   ├── queries.ts
+│   ├── commands/          # Команды бота
+│   │   ├── tournament.command.ts
+│   │   └── index.ts
+│   ├── formatters/        # Форматирование данных для пользователя
+│   │   ├── fantasy.formatter.ts
+│   │   └── index.ts
+│   ├── gql/              # GraphQL типы и запросы
+│   │   ├── generated/    # Автогенерированные типы
+│   │   ├── queries/      # GraphQL запросы
+│   │   │   ├── tournament.query.ts
 │   │   │   └── index.ts
 │   │   └── index.ts
-│   ├── base/              # Базовые классы
-│   │   ├── base-graphql-client.ts
+│   ├── middlewares/      # Middleware функции
+│   │   ├── filter.middleware.ts
+│   │   ├── logging.middleware.ts
+│   │   ├── session.middleware.ts
 │   │   └── index.ts
-│   ├── commands/          # Команды бота
+│   ├── repositories/     # Слой доступа к данным
+│   │   ├── base.repository.ts
+│   │   ├── fantasy.repository.ts
 │   │   └── index.ts
-│   ├── middlewares/       # Middleware функции
+│   ├── services/         # Бизнес-логика
+│   │   ├── fantasy-rpl.service.ts
 │   │   └── index.ts
-│   ├── utils/             # Утилиты
-│   │   └── logger.ts
-│   ├── config.ts          # Конфигурация
-│   ├── types.ts           # TypeScript типы
-│   ├── index.ts           # Точка входа
-│   └── healthcheck.js     # Health check для Docker
+│   ├── types/            # TypeScript типы
+│   │   ├── context.type.ts
+│   │   └── index.ts
+│   ├── utils/            # Утилиты
+│   │   ├── logger.ts
+│   │   └── index.ts
+│   ├── config.ts         # Конфигурация
+│   ├── index.ts          # Точка входа
+│   └── healthcheck.js    # Health check для Docker
+├── schemas/              # JSON схемы
+│   └── sports-ru.json
 ├── .github/
 │   ├── workflows/
-│   │   └── deploy.yml     # GitHub Actions workflow
+│   │   └── deploy.yml    # GitHub Actions workflow
 │   └── copilot-instructions.md
-├── dist/                  # Собранные файлы (генерируется)
-├── docker-compose.yml     # Docker Compose конфигурация
-├── Dockerfile            # Docker образ
-├── .env.example          # Пример переменных окружения
+├── dist/                 # Собранные файлы (генерируется)
+├── docker-compose.yml    # Docker Compose конфигурация
+├── Dockerfile           # Docker образ
+├── codegen.ts           # GraphQL Code Generator
+├── .env.example         # Пример переменных окружения
 └── package.json
 ```
 
