@@ -1,5 +1,5 @@
 import type { MyContext } from '../types';
-import { sportsFantasyService } from '../services';
+import { fantasyRplService } from '../services';
 import { sportsRuFormatter } from '../formatters';
 import { logger } from '../utils/logger';
 
@@ -12,7 +12,7 @@ import { logger } from '../utils/logger';
  */
 export async function tournamentCommand(ctx: MyContext): Promise<void> {
   try {
-    const tournament = await sportsFantasyService.getCurrentTournament();
+    const tournament = await fantasyRplService.getTournament();
     if (!tournament) {
       // Handle no data case (Presentation Layer)
       await ctx.editMessageText(sportsRuFormatter.formatNoTournamentMessage());
@@ -20,7 +20,7 @@ export async function tournamentCommand(ctx: MyContext): Promise<void> {
     }
 
     // Additional business logic
-    const status = sportsFantasyService.getTournamentStatus(tournament);
+    const status = await fantasyRplService.getTournamentStatus();
     logger.info('Tournament status check', { status });
 
     // Format and send response (Presentation Layer)
