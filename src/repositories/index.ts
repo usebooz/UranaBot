@@ -1,2 +1,2 @@
-export * from './base.repository';
-export * from './fantasy.repository';
+export * from './base.repository.js';
+export * from './fantasy.repository.js';

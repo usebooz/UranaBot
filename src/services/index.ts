@@ -2,4 +2,4 @@
 export {
   FantasyService as FantasyRplService,
   fantasyRplService,
-} from './fantasy.service';
+} from './fantasy.service.js';

@@ -2,6 +2,7 @@
   "name": "uranabot",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -22,6 +23,7 @@
     "test:coverage": "node --test --experimental-test-coverage --import tsx tests/**/*.test.ts",
     "test:ci": "SKIP_INTEGRATION_TESTS=true node --test --experimental-test-coverage --import tsx tests/**/*.test.ts",
     "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:fix": "npm run codegen && node scripts/fix-generated-imports.js",
     "codegen:watch": "graphql-codegen --config codegen.ts --watch"
   },
   "keywords": [

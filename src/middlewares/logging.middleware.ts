@@ -1,5 +1,5 @@
-import { logger } from '../utils/logger';
-import type { MyContext } from '../types';
+import { logger } from '../utils/logger.js';
+import type { MyContext } from '../types/index.js';
 
 /**
  * Middleware для логирования всех обновлений

@@ -2,9 +2,9 @@ import {
   TOURNAMENT_QUERY,
   type TournamentQuery,
   FantasyIdSource,
-} from '../gql';
-import { SportsRuRepository } from './base.repository';
-import { Scalars, TournamentQueryVariables } from '../gql/generated/graphql';
+} from '../gql/index.js';
+import { SportsRuRepository } from './base.repository.js';
+import { Scalars, TournamentQueryVariables } from '../gql/generated/graphql.js';
 
 // Type alias for convenience
 type Tournament = TournamentQuery['fantasyQueries']['tournament'];

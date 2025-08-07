@@ -3,7 +3,7 @@
  * Using client preset for type-safe queries
  */
 
-import { graphql } from '../generated';
+import { graphql } from '../generated/index.js';
 
 /**
  * Query to get tournament (RPL) information with current season and tour

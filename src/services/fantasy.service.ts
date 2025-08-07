@@ -1,6 +1,6 @@
-import { fantasyRepository } from '../repositories/fantasy.repository';
-import { config } from '../config';
-import { TournamentQuery } from '../gql';
+import { fantasyRepository } from '../repositories/fantasy.repository.js';
+import { config } from '../config.js';
+import { TournamentQuery } from '../gql/index.js';
 
 type Tournament = TournamentQuery['fantasyQueries']['tournament'];
 

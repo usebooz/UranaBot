@@ -1,7 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 import type { RequestDocument, Variables } from 'graphql-request';
-import { logger } from '../utils/logger';
-import { config } from '../config';
+import { logger } from '../utils/logger.js';
+import { config } from '../config.js';
 
 /**
  * Base repository class for Sports.ru API

@@ -1,9 +1,9 @@
 import { Bot, session } from 'grammy';
-import { config } from './config';
-import { logger } from './utils/logger';
-import { setupCommands } from './commands';
-import { setupMiddlewares } from './middlewares';
-import type { MyContext, SessionData } from './types';
+import { config } from './config.js';
+import { logger } from './utils/logger.js';
+import { setupCommands } from './commands/index.js';
+import { setupMiddlewares } from './middlewares/index.js';
+import type { MyContext, SessionData } from './types/index.js';
 
 // Логируем старт приложения
 logger.info('🚀 Starting Uranabot...');

@@ -1,1 +1,1 @@
-export * from './fantasy.formatter';
+export * from './fantasy.formatter.js';

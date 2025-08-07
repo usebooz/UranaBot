@@ -1,4 +1,4 @@
-import type { MyContext } from '../types';
+import type { MyContext } from '../types/index.js';
 /**
  * Middleware для инициализации сессии пользователя
  * Создает пустую сессию если она не существует

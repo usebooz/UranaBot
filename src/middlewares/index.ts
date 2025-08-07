@@ -1,9 +1,9 @@
 import { Bot } from 'grammy';
-import { logger } from '../utils/logger';
-import { loggingMiddleware } from './logging.middleware';
-import { chatFilterMiddleware } from './filter.middleware';
-import { sessionInitMiddleware } from './session.middleware';
-import type { MyContext } from '../types';
+import { logger } from '../utils/logger.js';
+import { loggingMiddleware } from './logging.middleware.js';
+import { chatFilterMiddleware } from './filter.middleware.js';
+import { sessionInitMiddleware } from './session.middleware.js';
+import type { MyContext } from '../types/index.js';
 
 export function setupMiddlewares(bot: Bot<MyContext>): void {
   // Setup bot-specific middlewares

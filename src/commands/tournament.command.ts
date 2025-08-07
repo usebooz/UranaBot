@@ -1,6 +1,6 @@
-import type { MyContext } from '../types';
-import { fantasyRplService } from '../services';
-import { fantasyFormatter } from '../formatters';
+import type { MyContext } from '../types/index.js';
+import { fantasyRplService } from '../services/index.js';
+import { fantasyFormatter } from '../formatters/index.js';
 
 /**
  * Command to show current tournament information

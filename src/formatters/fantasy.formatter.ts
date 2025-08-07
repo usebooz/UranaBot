@@ -1,4 +1,4 @@
-import type { TournamentQuery } from '../gql';
+import type { TournamentQuery } from '../gql/index.js';
 
 // Type alias for convenience
 type Tournament = TournamentQuery['fantasyQueries']['tournament'];
