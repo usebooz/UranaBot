@@ -16,6 +16,7 @@
     "prebuild": "npm run clean",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
     "test:unit": "jest --testPathPatterns=unit",
     "test:integration": "jest --testPathPatterns=integration",
     "test:coverage": "jest --coverage",
@@ -39,6 +40,8 @@
     "graphql-request": "^7.2.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-typescript": "^7.27.1",
     "@eslint/js": "^9.32.0",
     "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/client-preset": "^4.8.3",
@@ -49,6 +52,7 @@
     "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "babel-jest": "^30.0.5",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",

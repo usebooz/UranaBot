@@ -8,8 +8,9 @@ module.exports = {
     '**/?(*.)+(spec|test).ts'
   ],
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.(ts|js)$': 'babel-jest',
   },
+  // Enable source maps for debugging
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
@@ -26,7 +27,7 @@ module.exports = {
   modulePathIgnorePatterns: ['<rootDir>/src/gql/generated/'],
   // Transform ES modules in node_modules
   transformIgnorePatterns: [
-    'node_modules/(?!(graphql-request)/)',
+    'node_modules/(?!(graphql-request|@graphql-typed-document-node)/)',
   ],
   // Clear mocks between tests
   clearMocks: true,

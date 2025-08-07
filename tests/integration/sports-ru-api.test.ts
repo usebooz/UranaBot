@@ -5,7 +5,7 @@ import { FantasyRepository } from '../../src/repositories/fantasy.repository';
  * Integration tests for Sports.ru API
  * These tests make real API calls and verify the actual behavior
  * Run with: npm test -- --testPathPattern=integration
- * 
+ *
  * Note: These tests may be skipped in CI if SKIP_INTEGRATION_TESTS=true
  */
 describe('Sports.ru API Integration', () => {
@@ -32,38 +32,34 @@ describe('Sports.ru API Integration', () => {
         return;
       }
 
-      const tournament = await repository.getTournamentByWebname('rpl-2024');
+      const tournament = await repository.getTournamentByWebname('russia');
+      expect(tournament).toBeDefined();
+      // Verify the structure of real data
+      expect(tournament).toHaveProperty('id');
+      expect(tournament).toHaveProperty('metaTitle');
+      expect(typeof tournament?.id).toBe('string');
+      expect(typeof tournament?.metaTitle).toBe('string');
 
-      if (tournament) {
-        // Verify the structure of real data
-        expect(tournament).toHaveProperty('id');
-        expect(tournament).toHaveProperty('metaTitle');
-        expect(typeof tournament.id).toBe('string');
-        expect(typeof tournament.metaTitle).toBe('string');
+      // Check if current season exists and has proper structure
+      if (tournament?.currentSeason) {
+        expect(tournament?.currentSeason).toHaveProperty('id');
+        expect(tournament?.currentSeason).toHaveProperty('isActive');
+        expect(typeof tournament?.currentSeason.isActive).toBe('boolean');
 
-        // Check if current season exists and has proper structure
-        if (tournament.currentSeason) {
-          expect(tournament.currentSeason).toHaveProperty('id');
-          expect(tournament.currentSeason).toHaveProperty('isActive');
-          expect(typeof tournament.currentSeason.isActive).toBe('boolean');
-
-          if (tournament.currentSeason.statObject) {
-            expect(tournament.currentSeason.statObject).toHaveProperty('name');
-            expect(typeof tournament.currentSeason.statObject.name).toBe('string');
-          }
+        if (tournament?.currentSeason.statObject) {
+          expect(tournament?.currentSeason.statObject).toHaveProperty('name');
+          expect(typeof tournament?.currentSeason.statObject.name).toBe(
+            'string',
+          );
         }
-
-        console.log('✅ Successfully fetched tournament:', {
-          id: tournament.id,
-          title: tournament.metaTitle,
-          hasCurrentSeason: !!tournament.currentSeason,
-          isActive: tournament.currentSeason?.isActive,
-        });
-      } else {
-        // Tournament might not exist or be available
-        console.log('ℹ️ Tournament not found - this might be expected');
-        expect(tournament).toBeNull();
       }
+
+      console.log('✅ Successfully fetched tournament:', {
+        id: tournament?.id,
+        title: tournament?.metaTitle,
+        hasCurrentSeason: !!tournament?.currentSeason,
+        isActive: tournament?.currentSeason?.isActive,
+      });
     }, 10000); // 10 second timeout for API calls
 
     it('should handle non-existent tournament gracefully', async () => {
@@ -71,7 +67,9 @@ describe('Sports.ru API Integration', () => {
         return;
       }
 
-      const tournament = await repository.getTournamentByWebname('nonexistent-tournament-12345');
+      const tournament = await repository.getTournamentByWebname(
+        'nonexistent-tournament-12345',
+      );
 
       expect(tournament).toBeNull();
     }, 5000);
@@ -90,7 +88,7 @@ describe('Sports.ru API Integration', () => {
           expect.objectContaining({
             id: expect.any(String),
             metaTitle: expect.any(String),
-          })
+          }),
         );
 
         // Test that we can handle the currentSeason field properly
@@ -99,7 +97,7 @@ describe('Sports.ru API Integration', () => {
             expect.objectContaining({
               id: expect.any(String),
               isActive: expect.any(Boolean),
-            })
+            }),
           );
         }
       }
@@ -131,22 +129,42 @@ describe('Sports.ru API Integration', () => {
           hasId: !!tournament.id,
           hasMetaTitle: !!tournament.metaTitle,
           hasCurrentSeason: !!tournament.currentSeason,
-          seasonFields: tournament.currentSeason ? Object.keys(tournament.currentSeason) : [],
+          seasonFields: tournament.currentSeason
+            ? Object.keys(tournament.currentSeason)
+            : [],
         });
       }
     }, 10000);
   });
 
   describe('Error Handling', () => {
+    it('should properly handle GraphQL not found errors as null', async () => {
+      if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
+        return;
+      }
+
+      // Test that our logic correctly identifies GraphQL "not found" errors
+      // and returns null instead of throwing
+      const tournament = await repository.getTournamentByWebname('definitely-nonexistent-tournament-123456');
+
+      // Should return null for legitimate "not found" GraphQL responses
+      expect(tournament).toBeNull();
+      
+      // API should return proper GraphQL error with NOT_FOUND code
+      // which our error handling converts to null
+    }, 10000);
+
     it('should handle network timeouts gracefully', async () => {
       if (process.env.SKIP_INTEGRATION_TESTS === 'true') {
         return;
       }
 
       // This test verifies our error handling works with real network conditions
-      const tournament = await repository.getTournamentByWebname('test-timeout');
+      const tournament =
+        await repository.getTournamentByWebname('test-timeout');
 
-      // Should return null on errors, not throw
+      // Should return null only for legitimate "not found" GraphQL responses
+      // Network timeouts and server errors should throw
       expect(tournament).toBeNull();
     }, 15000); // Longer timeout to test timeout handling
 
@@ -156,7 +174,11 @@ describe('Sports.ru API Integration', () => {
       }
 
       // Test with various edge case inputs
-      const edgeCases = ['', ' ', 'очень-длинное-название-турнира-которого-точно-нет'];
+      const edgeCases = [
+        '',
+        ' ',
+        'очень-длинное-название-турнира-которого-точно-нет',
+      ];
 
       for (const testCase of edgeCases) {
         const tournament = await repository.getTournamentByWebname(testCase);
