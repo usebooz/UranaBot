@@ -20,10 +20,26 @@ export abstract class SportsRuRepository {
   }
 
   /**
+   * Extract operation name from GraphQL document
+   * @param query GraphQL query document
+   * @returns Operation name or undefined
+   */
+  protected getOperationName(query: RequestDocument): string | undefined {
+    // Check if query is a DocumentNode (not a string)
+    if (typeof query === 'object' && query && 'definitions' in query) {
+      const definition = query.definitions?.[0];
+      if (definition?.kind === 'OperationDefinition') {
+        return definition.name?.value;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * Execute GraphQL request with logging
    * @param query GraphQL query document
    * @param variables Query variables
-   * @param operationName Name of the operation for logging
+   * @param operationName Name of the operation for logging (optional, will be extracted from query if not provided)
    */
   protected async executeQuery<T>(
     query: RequestDocument,
@@ -31,8 +47,11 @@ export abstract class SportsRuRepository {
     operationName?: string,
   ): Promise<T> {
     try {
+      // Extract operation name from query if not provided
+      const finalOperationName = operationName || this.getOperationName(query);
+
       logger.debug('Making GraphQL request to Sports.ru API', {
-        operation: operationName,
+        operation: finalOperationName,
         variables,
       });
 

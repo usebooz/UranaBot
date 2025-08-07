@@ -1,6 +1,7 @@
 import { logger } from '../utils/logger';
 import { fantasyRepository } from '../repositories/fantasy.repository';
 import type { TournamentQuery } from '../gql';
+import { config } from '../config';
 
 // Type alias for convenience
 type Tournament = NonNullable<TournamentQuery['fantasyQueries']['tournament']>;
@@ -18,7 +19,9 @@ export class SportsFantasyService {
     try {
       logger.info('Processing tournament request');
 
-      const response = await fantasyRepository.getTournamentRpl();
+      const response = await fantasyRepository.getTournamentByWebname(
+        config.sportsTournamentRpl,
+      );
       const tournament = response.fantasyQueries.tournament;
 
       if (!tournament) {
