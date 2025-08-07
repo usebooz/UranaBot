@@ -1,1 +1,1 @@
-export * from './sports-ru.formatter';
+export * from './fantasy.formatter';
