@@ -1,5 +1,5 @@
 // Re-export all services
 export {
-  FantasyService as FantasyRplService,
-  fantasyRplService,
+  FantasyService as FantasyService,
+  fantasyService as fantasyService,
 } from './fantasy.service.js';

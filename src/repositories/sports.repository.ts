@@ -7,7 +7,7 @@ import { config } from '../config.js';
  * Base repository class for Sports.ru API
  * Provides common GraphQL client setup and logging functionality
  */
-export abstract class SportsRuRepository {
+export abstract class SportsRepository {
   protected readonly client: GraphQLClient;
 
   constructor() {
@@ -44,14 +44,12 @@ export abstract class SportsRuRepository {
   protected async executeQuery<T>(
     query: RequestDocument,
     variables?: Variables,
-    operationName?: string,
   ): Promise<T | null> {
+    // Extract operation name from query if not provided
+    const operationName = this.getOperationName(query);
     try {
-      // Extract operation name from query if not provided
-      const finalOperationName = operationName || this.getOperationName(query);
-
       logger.debug('Making GraphQL request to Sports.ru API', {
-        operation: finalOperationName,
+        operation: operationName,
         variables,
       });
 

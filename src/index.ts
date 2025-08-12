@@ -5,17 +5,21 @@ import { setupCommands } from './commands/index.js';
 import { setupMiddlewares } from './middlewares/index.js';
 import type { MyContext, SessionData } from './types/index.js';
 
-// Логируем старт приложения
+// Log application startup
 logger.info('🚀 Starting Uranabot...');
 logger.info(
   `📋 Config: NODE_ENV=${config.environment}, LOG_LEVEL=${config.logLevel}`,
 );
 
-// Создаем экземпляр бота
+// Create bot instance
 logger.info('🤖 Creating bot instance...');
-const bot = new Bot<MyContext>(config.botToken);
+const bot = new Bot<MyContext>(config.botToken, {
+  client: {
+    environment: config.environment === 'development' ? 'test' : 'prod',
+  },
+});
 
-// Включаем API логирование в debug режиме
+// Enable API logging in debug mode
 if (config.logLevel === 'debug') {
   bot.api.config.use(async (prev, method, payload, signal) => {
     logger.debug(`API call: ${method}`, payload);
@@ -25,14 +29,14 @@ if (config.logLevel === 'debug') {
   });
 }
 
-// Настраиваем сессии
+// Configure sessions
 function initial(): SessionData {
   return {};
 }
 
 bot.use(session({ initial }));
 
-// Подключаем middleware
+// Attach middleware
 setupMiddlewares(bot);
 
 // Подключаем команды
@@ -54,7 +58,8 @@ async function main(): Promise<void> {
 
     // Устанавливаем команды бота
     await bot.api.setMyCommands([
-      { command: 'start', description: 'Запустить бота' },
+      { command: 'info', description: 'Информация' },
+      { command: 'league', description: 'Лига' },
     ]);
 
     logger.info('Bot commands set successfully');

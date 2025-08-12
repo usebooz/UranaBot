@@ -1,15 +1,15 @@
 import dotenv from 'dotenv';
 
-// Загружаем переменные окружения
+// Load environment variables
 dotenv.config();
 
 export interface Config {
   botToken: string;
-  port: number;
   environment: 'development' | 'production';
   logLevel: 'debug' | 'info' | 'warn' | 'error';
   sportsApiUrl: string;
   sportsTournamentRpl: string;
+  uranaWebAppUrl: string;
 }
 
 function validateConfig(): Config {
@@ -28,7 +28,11 @@ function validateConfig(): Config {
     throw new Error('SPORTS_TOURNAMENT_RPL environment variable is required');
   }
 
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const uranaWebAppUrl = process.env.URANAWEB_APP_URL;
+  if (!uranaWebAppUrl) {
+    throw new Error('URANAWEB_APP_URL environment variable is required');
+  }
+
   const environment =
     (process.env.NODE_ENV as 'development' | 'production') || 'development';
   const logLevel =
@@ -36,11 +40,11 @@ function validateConfig(): Config {
 
   return {
     botToken,
-    port,
     environment,
     logLevel,
     sportsApiUrl,
-    sportsTournamentRpl: sportsTournamentRpl,
+    sportsTournamentRpl,
+    uranaWebAppUrl,
   };
 }
 

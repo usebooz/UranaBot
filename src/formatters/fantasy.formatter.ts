@@ -1,7 +1,4 @@
-import type { TournamentQuery } from '../gql/index.js';
-
-// Type alias for convenience
-type Tournament = TournamentQuery['fantasyQueries']['tournament'];
+import type { League, LeagueSquads, Tournament } from '../gql/index.js';
 
 /**
  * Formatter for presenting Sports.ru data to users
@@ -9,33 +6,58 @@ type Tournament = TournamentQuery['fantasyQueries']['tournament'];
  */
 export class FantasyFormatter {
   /**
-   * Format tournament info for display in bot messages
+   * Formats RPL (Russian Premier League) data for the info command
+   * @param rpl - The tournament data to format
+   * @returns A formatted string containing RPL information
    */
-  formatTournamentToText(tournament: Tournament): string {
-    if (!tournament) {
-      return '🪦 РПЛ ВСЁ!';
-    }
+  formatRplToInfoCommand(rpl: NonNullable<Tournament>): string {
+    return (
+      `🇷🇺 ${rpl.metaTitle}` + '\n' + `📅 ${rpl.currentSeason?.statObject.name}`
+    );
+  }
 
-    let text = `🏆 ${tournament.metaTitle}` + '\n\n';
+  /**
+   * Formats league data for the league command
+   * @param league - The league data to format
+   * @param squads - The squads data associated with the league
+   * @returns A formatted string containing league information and squads
+   */
+  formatLeagueToLeagueCommand(
+    league: NonNullable<League>,
+    squads: LeagueSquads,
+  ): string {
+    const finishedTourscount = league.season.tours.filter(
+      tour => tour.status === 'FINISHED',
+    ).length;
+    const totalToursCount = league.season.tours.length;
+    const header =
+      `📊 ${league?.name}` +
+      '\n' +
+      `👥 Команд: ${league?.totalSquadsCount}` +
+      '\n' +
+      `⏳ ${finishedTourscount}/${totalToursCount} туров завершено`;
 
-    const { currentSeason } = tournament;
-    if (!currentSeason) {
-      return text;
-    }
+    const list = this.formatSquadsToList(squads);
 
-    text = text + `📅 Сезон ${currentSeason.statObject.name} `;
-    if (currentSeason.isActive) {
-      text = text + 'идет';
-    } else if (
-      currentSeason.statObject?.endDate &&
-      new Date(currentSeason.statObject.endDate) < new Date()
-    ) {
-      text = text + 'закончен';
-    } else {
-      text = text + 'не начат';
-    }
+    return header + '\n\n' + list;
+  }
 
-    return text;
+  /**
+   * Format squads array to monochrome text with alignment and trimming long names
+   */
+  formatSquadsToList(squads: LeagueSquads): string {
+    return squads
+      .map(squad => {
+        const place = squad.scoreInfo.place.toString().padStart(3, ' ');
+        const name =
+          squad.squad.name.length > 23
+            ? squad.squad.name.slice(0, 20) + '...'
+            : squad.squad.name.padEnd(23, ' ');
+        const score = squad.scoreInfo.score.toString().padStart(4, ' ');
+
+        return `\`${place} ${name} ${score}\``;
+      })
+      .join('\n');
   }
 }
 

@@ -1,15 +1,20 @@
 import { Context, SessionFlavor } from 'grammy';
+import { League, Tournament } from '../gql';
 
 /**
  * Session data interface
  * Add your session properties here as needed
  */
 export interface SessionData {
-  // Пока сессия не используется, но оставляем для будущих функций
-  placeholder?: string;
+  leagueId?: string;
+}
+
+export interface ContextData {
+  rpl: NonNullable<Tournament>;
+  league: NonNullable<League>;
 }
 
 /**
  * Bot context type with session support
  */
-export type MyContext = Context & SessionFlavor<SessionData>;
+export type MyContext = Context & ContextData & SessionFlavor<SessionData>;

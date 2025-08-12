@@ -1,6 +1,6 @@
 # Uranabot 🤖
 
-Современный Telegram бот, построенный на TypeScript с использованием библиотеки grammY.
+A modern Telegram bot built with TypeScript using the grammY library.
 
 ## Deployment Status
 
@@ -8,220 +8,219 @@
 
 ## Features
 
-- 🚀 **TypeScript** - полная типизация и безопасность
-- 🎯 **grammY** - современная библиотека для Telegram ботов
-- 🌐 **GraphQL** - интеграция с sports.ru API
-- 🏗️ **Модульная архитектура** - расширяемая структура для новых API
-- 🧹 **ESLint + Prettier** - качество и консистентность кода
-- 🐳 **Docker** - контейнеризация и простой деплой
-- 🔄 **GitHub Actions** - автоматический CI/CD
-- 📝 **Логирование** - подробное логирование всех операций
-- 🛡️ **Безопасность** - управление секретами через GitHub Secrets
+- 🚀 **TypeScript** - full type safety and security
+- 🎯 **grammY** - modern library for Telegram bots
+- 🌐 **GraphQL** - integration with sports.ru API
+- 🏗️ **Modular Architecture** - extensible structure for new APIs
+- 🧹 **ESLint + Prettier** - code quality and consistency
+- 🐳 **Docker** - containerization and easy deployment
+- 🔄 **GitHub Actions** - automated CI/CD
+- 📝 **Logging** - detailed logging of all operations
+- 🛡️ **Security** - secret management via GitHub Secrets
 
-## 🛠️ Технологический стек
+## 🛠️ Tech Stack
 
 - **Runtime**: Node.js 18+
 - **Language**: TypeScript
 - **Bot Framework**: grammY
-- **GraphQL**: graphql-request для API интеграции
-- **Testing**: Node.js Test Runner с TypeScript поддержкой
-- **Linting**: ESLint с TypeScript правилами
+- **GraphQL**: graphql-request for API integration
+- **Testing**: Node.js Test Runner with TypeScript support
+- **Linting**: ESLint with TypeScript rules
 - **Formatting**: Prettier
 - **Containerization**: Docker & Docker Compose
 - **CI/CD**: GitHub Actions
-- **Environment**: dotenv для управления переменными
+- **Environment**: dotenv for environment variable management
 
-## 🚀 Быстрый старт
+## 🚀 Quick Start
 
-### Предварительные требования
+### Prerequisites
 
-- Node.js 18 или выше
-- npm или yarn
-- Docker (для продакшена)
-- Telegram Bot Token (получить у [@BotFather](https://t.me/BotFather))
+- Node.js 18 or higher
+- npm or yarn
+- Docker (for production)
+- Telegram Bot Token (get it from [@BotFather](https://t.me/BotFather))
 
-### Локальная разработка
+### Local Development
 
-1. **Клонирование репозитория**
+1. **Clone the repository**
 
    ```bash
    git clone <your-repo-url>
    cd uranabot
    ```
 
-2. **Установка зависимостей**
+2. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-3. **Настройка переменных окружения**
+3. **Set up environment variables**
 
    ```bash
    cp .env.example .env
-   # Отредактируйте .env файл и добавьте ваш BOT_TOKEN
+   # Edit the .env file and add your BOT_TOKEN
    ```
 
-4. **Запуск в режиме разработки**
+4. **Run in development mode**
 
    ```bash
    npm run dev
    ```
 
-### Продакшен деплой
+### Production Deployment
 
-1. **Сборка проекта**
+1. **Build the project**
 
    ```bash
    npm run build
    ```
 
-2. **Запуск с Docker Compose**
+2. **Run with Docker Compose**
 
    ```bash
    docker compose up -d
    ```
 
-## 📋 Доступные команды
+## 📋 Available Commands
 
-### NPM скрипты
+### NPM Scripts
 
-- `npm run dev` - запуск в режиме разработки с автоперезагрузкой
-- `npm run build` - сборка TypeScript в JavaScript
-- `npm start` - запуск собранного приложения
-- `npm run lint` - проверка кода ESLint
-- `npm run lint:fix` - автоисправление ошибок ESLint
-- `npm run format` - форматирование кода Prettier
-- `npm run format:check` - проверка форматирования
-- `npm run type-check` - проверка типов TypeScript
+- `npm run dev` - run in development mode with auto-reload
+- `npm run build` - build TypeScript to JavaScript
+- `npm start` - start the compiled application
+- `npm run lint` - check code with ESLint
+- `npm run lint:fix` - auto-fix ESLint errors
+- `npm run format` - format code with Prettier
+- `npm run format:check` - check formatting
+- `npm run type-check` - check TypeScript types
 
-### Тестирование
+### Testing
 
-- `npm test` - запуск всех тестов (unit + integration)
-- `npm run test:unit` - запуск только unit тестов
-- `npm run test:integration` - запуск только интеграционных тестов  
-- `npm run test:watch` - запуск тестов в watch режиме
-- `npm run test:debug` - запуск тестов с отладчиком
-- `npm run test:coverage` - запуск тестов с coverage отчетом
-- `npm run test:ci` - запуск тестов для CI (без интеграционных)
+- `npm test` - run all tests (unit + integration)
+- `npm run test:unit` - run only unit tests
+- `npm run test:integration` - run only integration tests  
+- `npm run test:watch` - run tests in watch mode
+- `npm run test:debug` - run tests with debugger
+- `npm run test:coverage` - run tests with coverage report
+- `npm run test:ci` - run tests for CI (without integration tests)
 
-### Команды бота
+### Bot Commands
 
-- `/start` - запуск бота и приветствие
-- `/help` - справка по командам
-- `/stats` - статистика пользователя
+- `/start` - start the bot and greet the user
+- `/help` - help with commands
+- `/stats` - user statistics
 
-## 🏗️ Структура проекта
+## 🏗️ Project Structure
 
 ```text
 uranabot/
 ├── src/
-│   ├── commands/          # Команды бота
+│   ├── commands/          # Bot commands
 │   │   ├── tournament.command.ts
 │   │   └── index.ts
-│   ├── formatters/        # Форматирование данных для пользователя
+│   ├── formatters/        # Data formatting for users
 │   │   ├── fantasy.formatter.ts
 │   │   └── index.ts
-│   ├── gql/              # GraphQL типы и запросы
-│   │   ├── generated/    # Автогенерированные типы
-│   │   ├── queries/      # GraphQL запросы
+│   ├── gql/              # GraphQL types and queries
+│   │   ├── generated/    # Auto-generated types
+│   │   ├── queries/      # GraphQL queries
 │   │   │   ├── tournament.query.ts
 │   │   │   └── index.ts
 │   │   └── index.ts
-│   ├── middlewares/      # Middleware функции
+│   ├── middlewares/      # Middleware functions
 │   │   ├── filter.middleware.ts
 │   │   ├── logging.middleware.ts
 │   │   ├── session.middleware.ts
 │   │   └── index.ts
-│   ├── repositories/     # Слой доступа к данным
+│   ├── repositories/     # Data access layer
 │   │   ├── base.repository.ts
 │   │   ├── fantasy.repository.ts
 │   │   └── index.ts
-│   ├── services/         # Бизнес-логика
+│   ├── services/         # Business logic
 │   │   ├── fantasy-rpl.service.ts
 │   │   └── index.ts
-│   ├── types/            # TypeScript типы
+│   ├── types/            # TypeScript types
 │   │   ├── context.type.ts
 │   │   └── index.ts
-│   ├── utils/            # Утилиты
+│   ├── utils/            # Utilities
 │   │   ├── logger.ts
 │   │   └── index.ts
-│   ├── config.ts         # Конфигурация
-│   └── index.ts          # Точка входа
-├── healthcheck.js        # Health check для Docker
-├── schemas/              # JSON схемы
-│   └── sports-ru.json
+│   ├── config.ts         # Configuration
+│   └── index.ts          # Entry point
+├── healthcheck.js        # Health check for Docker
+├── schemas/              # JSON schemas
+│   └── sports.json
 ├── .github/
 │   ├── workflows/
 │   │   └── deploy.yml    # GitHub Actions workflow
 │   └── copilot-instructions.md
-├── dist/                 # Собранные файлы (генерируется)
-├── docker-compose.yml    # Docker Compose конфигурация
-├── Dockerfile           # Docker образ
+├── dist/                 # Compiled files (generated)
+├── docker-compose.yml    # Docker Compose configuration
+├── Dockerfile           # Docker image
 ├── codegen.ts           # GraphQL Code Generator
-├── .env.example         # Пример переменных окружения
+├── .env.example         # Example environment variables
 └── package.json
 ```
 
-## 🧪 Тестирование
+## 🧪 Testing
 
-Проект использует **Node.js Test Runner** для максимальной совместимости с ES модулями и TypeScript.
+The project uses **Node.js Test Runner** for maximum compatibility with ES modules and TypeScript.
 
-### Структура тестов
+### Test Structure
 
 ```text
 tests/
-├── unit/                 # Unit тесты
+├── unit/                 # Unit tests
 │   ├── fantasy.formatter.test.ts
 │   ├── fantasy.service.test.ts
 │   ├── fantasy.repository.test.ts
 │   └── tournament.command.test.ts
-└── integration/          # Интеграционные тесты
-    └── sports-ru-api.test.ts
+└── integration/          # Integration tests
+    └── sports-api.test.ts
 ```
 
-### Типы тестов
+### Types of Tests
 
-- **Unit тесты**: Проверяют отдельные модули и функции в изоляции
-- **Integration тесты**: Проверяют работу с реальными API и внешними сервисами
+- **Unit tests**: Test individual modules and functions in isolation
+- **Integration tests**: Test interaction with real APIs and external services
 
-### Запуск тестов
+### Running Tests
 
 ```bash
-# Все тесты
+# All tests
 npm test
 
-# Только unit тесты
+# Only unit tests
 npm run test:unit
 
-# Только интеграционные тесты
+# Only integration tests
 npm run test:integration
 
-# Watch режим для разработки
+# Watch mode for development
 npm run test:watch
 
-# С покрытием кода
+# With code coverage
 npm run test:coverage
 ```
 
-### CI/CD тестирование
+### CI/CD Testing
 
-В CI используется команда `npm run test:ci`, которая:
+In CI, the `npm run test:ci` command is used, which:
 
-- Пропускает интеграционные тесты (через `SKIP_INTEGRATION_TESTS=true`)
-- Генерирует отчет покрытия кода
-- Быстро выполняется без внешних зависимостей
+- Skips integration tests (via `SKIP_INTEGRATION_TESTS=true`)
+- Generates a code coverage report
+- Runs quickly without external dependencies
 
-## 🔧 Конфигурация
+## 🔧 Configuration
 
-### Переменные окружения
+### Environment Variables
 
-Создайте `.env` файл на основе `.env.example`:
+Create a `.env` file based on `.env.example`:
 
 ```env
 NODE_ENV=development
 LOG_LEVEL=info
-PORT=3000
 BOT_TOKEN=your_telegram_bot_token_here
 SPORTS_API_URL=https://www.sports.ru/gql/graphql/
 SPORTS_TOURNAMENT_RPL=rpl_tournament_webname_here
@@ -229,95 +228,94 @@ SPORTS_TOURNAMENT_RPL=rpl_tournament_webname_here
 
 ### GitHub Secrets
 
-Для автоматического деплоя настройте следующие секреты в вашем GitHub репозитории:
+For automatic deployment, set up the following secrets in your GitHub repository:
 
-- `BOT_TOKEN` - токен вашего Telegram бота
-- `HOST` - IP адрес вашего сервера
-- `USERNAME` - пользователь для SSH подключения
-- `SSH_PRIVATE_KEY` - приватный SSH ключ
-- `PORT` - порт SSH (опционально, по умолчанию 22)
+- `BOT_TOKEN` - your Telegram bot token
+- `HOST` - your server's IP address
+- `USERNAME` - user for SSH connection
+- `SSH_PRIVATE_KEY` - private SSH key
 
-## 🚀 Деплой
+## 🚀 Deployment
 
-### Автоматический деплой
+### Automatic Deployment
 
-1. Пуш в ветку `main` автоматически запустит CI/CD pipeline
-2. GitHub Actions соберет Docker образ
-3. Образ будет отправлен в GitHub Container Registry
-4. Деплой на ваш сервер произойдет автоматически
+1. Pushing to the `main` branch will automatically trigger the CI/CD pipeline
+2. GitHub Actions will build the Docker image
+3. The image will be pushed to the GitHub Container Registry
+4. Deployment to your server will occur automatically
 
-### Ручной деплой
+### Manual Deployment
 
 ```bash
-# Сборка образа
+# Build the image
 docker build -t uranabot .
 
-# Запуск контейнера
+# Run the container
 docker run -d --name uranabot -e BOT_TOKEN=your_token uranabot
 ```
 
-## 🐛 Отладка
+## 🐛 Debugging
 
-### Логи
+### Logs
 
-Бот ведет подробные логи всех операций. Уровень логирования настраивается через переменную `LOG_LEVEL`:
+The bot keeps detailed logs of all operations. The logging level is configured via the `LOG_LEVEL` variable:
 
-- `debug` - подробная отладочная информация
-- `info` - основная информация (по умолчанию)
-- `warn` - предупреждения
-- `error` - только ошибки
+- `debug` - detailed debug information
+- `info` - general information (default)
+- `warn` - warnings
+- `error` - errors only
 
-### Просмотр логов Docker
+### Viewing Docker Logs
 
 ```bash
-# Логи контейнера
+# Container logs
 docker compose logs -f uranabot
 
-# Логи конкретного контейнера
+# Specific container logs
 docker logs uranabot
 ```
 
-### Отладка тестов
+### Debugging Tests
 
 ```bash
-# Запуск тестов с отладчиком
+# Run tests with debugger
 npm run test:debug
 
-# Watch режим для разработки
+# Watch mode for development
 npm run test:watch
 
-# Проверка покрытия кода
+# Check code coverage
 npm run test:coverage
 ```
 
-## 🤝 Разработка
+## 🤝 Development
 
-### Добавление новых команд
+### Adding New Commands
 
-1. Откройте `src/commands/index.ts`
-2. Добавьте новую команду:
+1. Open `src/commands/index.ts`
+2. Add a new command:
 
 ```typescript
 bot.command('newcommand', async (ctx) => {
-  await ctx.reply('Новая команда работает!');
+  await ctx.reply('New command is working!');
 });
 ```
 
-### Добавление middleware
+### Adding Middleware
 
-1. Откройте `src/middlewares/index.ts`
-2. Добавьте новый middleware:
+1. Open `src/middlewares/index.ts`
+2. Add new middleware:
 
 ```typescript
 bot.use(async (ctx, next) => {
-  // Ваша логика
+  // Your logic here
   await next();
 });
 ```
 
-### Написание тестов
+### Writing Tests
 
-Для добавления новых тестов используйте Node.js Test Runner:
+To add new tests, use Node.js Test Runner:
 
 ```typescript
 import { test, describe } from 'node:test';
@@ -331,13 +329,13 @@ describe('MyModule', () => {
 });
 ```
 
-**Unit тесты** размещайте в `tests/unit/`, **интеграционные** в `tests/integration/`.
+**Unit tests** go in `tests/unit/`, **integration tests** in `tests/integration/`.
 
-## 📝 Лицензия
+## 📝 License
 
-MIT License - см. файл [LICENSE](LICENSE) для деталей.
+MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Полезные ссылки
+## 🔗 Useful Links
 
 - [grammY Documentation](https://grammy.dev/)
 - [Telegram Bot API](https://core.telegram.org/bots/api)
@@ -346,4 +344,4 @@ MIT License - см. файл [LICENSE](LICENSE) для деталей.
 
 ---
 
-Сделано с ❤️ для эффективной разработки Telegram ботов
+Made with ❤️ for efficient Telegram bot development
