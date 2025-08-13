@@ -57,6 +57,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', '*.js', 'healthcheck.js'],
+    ignores: ['dist/', 'node_modules/', '*.js'],
   },
 ];

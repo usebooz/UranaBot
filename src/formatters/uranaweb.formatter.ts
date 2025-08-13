@@ -1,5 +1,5 @@
 import { InlineKeyboard } from 'grammy';
-import { config } from '../config.js';
+import { config } from '../utils/config.js';
 import { InlineKeyboardMarkup } from 'grammy/types';
 import { League } from '../gql/index.js';
 

@@ -1,6 +1,9 @@
 import { fantasyRepository } from '../repositories/fantasy.repository.js';
-import { config } from '../config.js';
-import { FantasyRatingEntityType } from '../gql/generated/graphql.js';
+import { config } from '../utils/config.js';
+import {
+  FantasyLeagueType,
+  FantasyRatingEntityType,
+} from '../gql/generated/graphql.js';
 import { League, LeagueSquads, Tournament } from '../gql/index.js';
 
 /**
@@ -8,10 +11,10 @@ import { League, LeagueSquads, Tournament } from '../gql/index.js';
  * Provides methods to fetch and validate fantasy data
  */
 export class FantasyService {
-  protected readonly rpl: string;
+  protected readonly rplWebname: string;
 
   constructor() {
-    this.rpl = config.sportsTournamentRpl;
+    this.rplWebname = config.sportsTournamentRpl;
   }
 
   /**
@@ -19,7 +22,7 @@ export class FantasyService {
    * @returns Tournament data or null if not available
    */
   async readRplTournament(): Promise<Tournament> {
-    const tournament = await fantasyRepository.getTournament(this.rpl);
+    const tournament = await fantasyRepository.getTournament(this.rplWebname);
     return tournament;
   }
 
@@ -50,8 +53,17 @@ export class FantasyService {
   isLeagueFromActiveRplSeason(league: League): boolean {
     return !!(
       league?.season?.isActive &&
-      league?.season?.tournament?.webName === this.rpl
+      league?.season?.tournament?.webName === this.rplWebname
     );
+  }
+
+  /**
+   * Checks if it's a user league
+   * @param league - The league object to check
+   * @returns True if the league created by user
+   */
+  isUserLeague(league: League): boolean {
+    return league?.type === FantasyLeagueType.User;
   }
 
   /**

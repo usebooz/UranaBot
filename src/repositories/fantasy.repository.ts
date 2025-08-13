@@ -20,19 +20,15 @@ import {
   LEAGUE_SQUADS_QUERY,
 } from '../gql/queries/league.query.js';
 
-// // Type alias for convenience
-// type Tournament = GetTournamentQuery['fantasyQueries']['tournament'];
-// type League = GetLeagueQuery['fantasyQueries']['league'];
-// type LeagueSquads = GetLeagueSquadsQuery['fantasyQueries']['rating']['squads'];
-
 /**
  * Repository for Fantasy Sports data from Sports.ru API
  * Handles fantasy-specific API operations
  */
 export class FantasyRepository extends SportsRepository {
   /**
-   * Fetch tournament from Sports.ru API
-   * @returns Raw tournament data from API
+   * Fetches tournament data from Sports.ru API by webname
+   * @param webname - The tournament webname identifier
+   * @returns Tournament data from API or null if not found
    */
   async getTournament(webname: Scalars['ID']['input']): Promise<Tournament> {
     const variables: GetTournamentQueryVariables = { id: webname };
@@ -47,8 +43,9 @@ export class FantasyRepository extends SportsRepository {
   }
 
   /**
-   * Fetch league from Sports.ru API
-   * @returns Raw league data from API
+   * Fetches league data from Sports.ru API by ID
+   * @param id - The league ID identifier
+   * @returns League data from API or null if not found
    */
   async getLeague(id: Scalars['ID']['input']): Promise<League> {
     const variables: GetLeagueQueryVariables = { id };
@@ -63,8 +60,11 @@ export class FantasyRepository extends SportsRepository {
   }
 
   /**
-   * Fetch league squads with rating from Sports.ru API
-   * @returns Squads with rating from API
+   * Fetches league squads with rating from Sports.ru API
+   * @param leagueId - The league ID
+   * @param entityType - The rating entity type (Season, Tour, etc.)
+   * @param entityId - The entity ID for rating calculation
+   * @returns Array of squads with rating data
    */
   async getLeagueSquads(
     leagueId: Scalars['ID']['input'],

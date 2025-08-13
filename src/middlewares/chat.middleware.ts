@@ -2,8 +2,8 @@ import { logger } from '../utils/logger.js';
 import type { MyContext } from '../types/index.js';
 
 /**
- * Middleware для проверки типа чата
- * Пропускает только приватные сообщения
+ * Middleware for filtering chat types
+ * Only allows private messages to proceed
  */
 export async function chatFilterMiddleware(
   ctx: MyContext,

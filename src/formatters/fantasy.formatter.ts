@@ -43,7 +43,10 @@ export class FantasyFormatter {
   }
 
   /**
-   * Format squads array to monochrome text with alignment and trimming long names
+   * Formats squads array to monospaced text with proper alignment
+   * Trims long squad names and aligns place, name, and score columns
+   * @param squads - Array of squad data to format
+   * @returns Formatted string with aligned squad information
    */
   formatSquadsToList(squads: LeagueSquads): string {
     return squads

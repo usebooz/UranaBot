@@ -48,4 +48,6 @@ function validateConfig(): Config {
   };
 }
 
+export { validateConfig };
+
 export const config = validateConfig();

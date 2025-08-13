@@ -4,7 +4,7 @@ A modern Telegram bot built with TypeScript using the grammY library.
 
 ## Deployment Status
 
-✅ **Latest Update:** Improved healthcheck and docker-compose configuration
+✅ **Latest Update:** All tests restored and passing
 
 ## Features
 
@@ -17,6 +17,7 @@ A modern Telegram bot built with TypeScript using the grammY library.
 - 🔄 **GitHub Actions** - automated CI/CD
 - 📝 **Logging** - detailed logging of all operations
 - 🛡️ **Security** - secret management via GitHub Secrets
+- ✅ **Testing** - comprehensive test suite
 
 ## 🛠️ Tech Stack
 
@@ -117,43 +118,32 @@ A modern Telegram bot built with TypeScript using the grammY library.
 uranabot/
 ├── src/
 │   ├── commands/          # Bot commands
-│   │   ├── tournament.command.ts
-│   │   └── index.ts
 │   ├── formatters/        # Data formatting for users
-│   │   ├── fantasy.formatter.ts
-│   │   └── index.ts
 │   ├── gql/              # GraphQL types and queries
 │   │   ├── generated/    # Auto-generated types
-│   │   ├── queries/      # GraphQL queries
-│   │   │   ├── tournament.query.ts
-│   │   │   └── index.ts
-│   │   └── index.ts
+│   │   └── queries/      # GraphQL queries
 │   ├── middlewares/      # Middleware functions
-│   │   ├── filter.middleware.ts
-│   │   ├── logging.middleware.ts
-│   │   ├── session.middleware.ts
-│   │   └── index.ts
 │   ├── repositories/     # Data access layer
-│   │   ├── base.repository.ts
-│   │   ├── fantasy.repository.ts
-│   │   └── index.ts
 │   ├── services/         # Business logic
-│   │   ├── fantasy-rpl.service.ts
-│   │   └── index.ts
 │   ├── types/            # TypeScript types
-│   │   ├── context.type.ts
-│   │   └── index.ts
-│   ├── utils/            # Utilities
-│   │   ├── logger.ts
-│   │   └── index.ts
-│   ├── config.ts         # Configuration
+│   ├── utils/            # Utilities and configuration
+│   │   ├── config.ts     # Configuration management
+│   │   └── logger.ts     # Logging utilities
 │   └── index.ts          # Entry point
-├── healthcheck.js        # Health check for Docker
+├── scripts/              # Utility scripts
+│   └── healthcheck.js    # Health check for Docker
 ├── schemas/              # JSON schemas
-│   └── sports.json
+├── tests/               # Test files
+│   ├── unit/            # Unit tests (organized by src structure)
+│   │   ├── commands/    # Command tests
+│   │   ├── formatters/  # Formatter tests
+│   │   ├── middlewares/ # Middleware tests
+│   │   ├── repositories/# Repository tests
+│   │   ├── services/    # Service tests
+│   │   └── utils/       # Utility tests
+│   └── integration/     # Integration tests
 ├── .github/
-│   ├── workflows/
-│   │   └── deploy.yml    # GitHub Actions workflow
+│   ├── workflows/       # GitHub Actions workflows
 │   └── copilot-instructions.md
 ├── dist/                 # Compiled files (generated)
 ├── docker-compose.yml    # Docker Compose configuration
@@ -167,23 +157,37 @@ uranabot/
 
 The project uses **Node.js Test Runner** for maximum compatibility with ES modules and TypeScript.
 
+### Current Status: ✅ All tests passing
+
 ### Test Structure
 
 ```text
 tests/
 ├── unit/                 # Unit tests
-│   ├── fantasy.formatter.test.ts
-│   ├── fantasy.service.test.ts
-│   ├── fantasy.repository.test.ts
-│   └── tournament.command.test.ts
+│   ├── commands/        # Bot command handlers
+│   ├── formatters/      # Data formatting functions  
+│   ├── middlewares/     # Middleware components
+│   ├── repositories/    # Data access layer
+│   ├── services/        # Business logic
+│   └── utils/           # Utility functions and config
 └── integration/          # Integration tests
-    └── sports-api.test.ts
+    └── API tests        # Real API interaction tests
 ```
 
 ### Types of Tests
 
 - **Unit tests**: Test individual modules and functions in isolation
 - **Integration tests**: Test interaction with real APIs and external services
+
+### Code Coverage
+
+The project maintains excellent test coverage:
+
+- **Lines**: High coverage across all modules
+- **Branches**: Comprehensive branch testing
+- **Functions**: Complete function coverage
+
+Coverage is measured only for source code (`src/`), excluding test files from the report.
 
 ### Running Tests
 
@@ -203,6 +207,16 @@ npm run test:watch
 # With code coverage
 npm run test:coverage
 ```
+
+### Recent Test Fixes
+
+All previously failing tests have been restored:
+
+- **sports-api.test.ts**: Fixed empty file, added comprehensive API tests
+- **fantasy.formatter.test.ts**: Fixed empty file, added formatter validation tests
+- **logger.test.ts**: Uncommented and fixed TypeScript compatibility
+- **logging.middleware.test.ts**: Uncommented and fixed grammY framework compatibility  
+- **session.middleware.test.ts**: Uncommented and fixed session interface alignment
 
 ### CI/CD Testing
 

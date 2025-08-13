@@ -2,8 +2,8 @@ import { logger } from '../utils/logger.js';
 import type { MyContext } from '../types/index.js';
 
 /**
- * Middleware для логирования всех обновлений
- * Замеряет время обработки и логирует ошибки
+ * Middleware for logging all bot updates
+ * Measures processing time and logs errors with detailed information
  */
 export async function loggingMiddleware(
   ctx: MyContext,

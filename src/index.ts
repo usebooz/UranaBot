@@ -1,5 +1,5 @@
 import { Bot, session } from 'grammy';
-import { config } from './config.js';
+import { config } from './utils/config.js';
 import { logger } from './utils/logger.js';
 import { setupCommands } from './commands/index.js';
 import { setupMiddlewares } from './middlewares/index.js';

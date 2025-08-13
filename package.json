@@ -20,8 +20,8 @@
     "test:debug": "node --inspect-brk --test --import tsx tests/**/*.test.ts",
     "test:unit": "node --test --import tsx tests/unit/**/*.test.ts",
     "test:integration": "node --test --import tsx tests/integration/**/*.test.ts",
-    "test:coverage": "node --test --experimental-test-coverage --import tsx tests/**/*.test.ts",
-    "test:ci": "SKIP_INTEGRATION_TESTS=true node --test --experimental-test-coverage --import tsx tests/**/*.test.ts",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-exclude='tests/**' --import tsx tests/**/*.test.ts",
+    "test:ci": "SKIP_INTEGRATION_TESTS=true node --test --experimental-test-coverage --test-coverage-exclude='tests/**' --import tsx tests/**/*.test.ts",
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:fix": "npm run codegen && node scripts/fix-generated-imports.js",
     "codegen:watch": "graphql-codegen --config codegen.ts --watch"

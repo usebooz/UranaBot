@@ -3,8 +3,8 @@ import type { MyContext } from '../types/index.js';
 import { fantasyService } from '../services/fantasy.service.js';
 
 /**
- * Middleware для проверки текущего сезона РПЛ
- * Пропускает только если есть активный сезон
+ * Middleware for checking current RPL season status
+ * Only proceeds if there is an active RPL season
  */
 export async function rplReadMiddleware(
   ctx: MyContext,

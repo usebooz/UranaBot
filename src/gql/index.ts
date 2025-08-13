@@ -1,6 +1,6 @@
 /**
- * Централизованный экспорт для GraphQL модуля
- * Объединяет запросы, типы и утилиты
+ * Centralized exports for GraphQL module
+ * Combines queries, types and utilities
  */
 
 import {
@@ -9,10 +9,10 @@ import {
   GetTournamentQuery,
 } from './generated/graphql.js';
 
-// Экспорт всех запросов
+// Export all queries
 export * from './queries/index.js';
 
-// Экспорт сгенерированных типов и утилит
+// Export generated types and utilities
 export * from './generated/index.js';
 
 export type Tournament = GetTournamentQuery['fantasyQueries']['tournament'];
@@ -21,7 +21,7 @@ export type LeagueSquads = NonNullable<
   GetLeagueSquadsQuery['fantasyQueries']['rating']['squads']
 >['list'];
 
-// Экспорт конкретных типов для удобства
+// Export specific types for convenience
 export type {
   GetTournamentQuery,
   GetLeagueQuery,

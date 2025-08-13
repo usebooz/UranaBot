@@ -9,6 +9,7 @@ export const LEAGUE_QUERY = graphql(`
       league(source: ID, id: $id) {
         id
         name
+        type
         totalSquadsCount
         season {
           id

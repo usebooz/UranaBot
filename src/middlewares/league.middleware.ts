@@ -3,10 +3,10 @@ import type { MyContext } from '../types/index.js';
 import { fantasyService } from '../services/fantasy.service.js';
 
 /**
- *
- * Only for league command
+ * Middleware for handling user league operations
+ * Validates and loads league data for league-specific commands
  */
-export async function leagueReadMiddleware(
+export async function userLeagueReadMiddleware(
   ctx: MyContext,
   next: () => Promise<void>,
 ): Promise<void> {
@@ -22,7 +22,11 @@ export async function leagueReadMiddleware(
     league = await fantasyService.readLeague(leagueId);
   }
 
-  if (league && fantasyService.isLeagueFromActiveRplSeason(league)) {
+  if (
+    league &&
+    fantasyService.isUserLeague(league) &&
+    fantasyService.isLeagueFromActiveRplSeason(league)
+  ) {
     ctx.league = league;
     ctx.session.leagueId = ctx.league.id;
     await next();
