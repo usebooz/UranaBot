@@ -10,14 +10,17 @@ export class UranaWebFormatter {
   protected readonly baseUrl: string;
 
   constructor() {
-    this.baseUrl = config.uranaWebAppUrl;
+    this.baseUrl = config.uranaWebAppUrl + '#';
   }
 
   /**
    * Creates a button for debugging the mini app
    */
   createDebugButton(): InlineKeyboardMarkup {
-    return new InlineKeyboard().webApp('Debug Mini App', this.baseUrl);
+    return new InlineKeyboard().webApp(
+      'Debug Mini App',
+      this.baseUrl + '/debug',
+    );
   }
 
   /**
@@ -27,7 +30,7 @@ export class UranaWebFormatter {
   createLeagueButton(league: NonNullable<League>): InlineKeyboardMarkup {
     return new InlineKeyboard().webApp(
       'Посмотреть Лигу',
-      this.baseUrl + '#league/' + league.id,
+      this.baseUrl + '/fantasy/league/' + league.id,
     );
   }
 }
