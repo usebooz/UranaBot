@@ -183,12 +183,16 @@ jobs:
 
             echo "=== container health ==="
             
-            uranabot_health=$(docker inspect -f '{{.State.Health.Status}}' uranabot || echo "unhealthy")
+            uranabot_health=$(docker inspect -f '{{.State.Health.Status}}' uranabot 2>/dev/null || echo "unhealthy")
             if [ "$uranabot_health" != "healthy" ]; then
-              echo "❌ uranabot health status: $uranabot_health"; exit 1
-            
-              uranaapi_health=$(docker inspect -f '{{.State.Health.Status}}' uranaapi || echo "unhealthy")
+              echo "❌ uranabot health status: $uranabot_health"
+              exit 1
+            fi
+
+            uranaapi_health=$(docker inspect -f '{{.State.Health.Status}}' uranaapi 2>/dev/null || echo "unhealthy")
             if [ "$uranaapi_health" != "healthy" ]; then
-              echo "❌ uranaapi health status: $uranaapi_health"; exit 1
+              echo "❌ uranaapi health status: $uranaapi_health"
+              exit 1
+            fi
 
             echo "✅ OK"
