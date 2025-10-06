@@ -182,15 +182,13 @@ jobs:
             docker compose logs --tail=60 || true
 
             echo "=== container health ==="
-            if ! docker compose ps | grep -E 'uranabot.*Up'; then
-              echo "❌ uranabot is not Up"; exit 1
-            fi
-            if ! docker compose ps | grep -E 'caddy|uranaapi' | grep -q 'Up'; then
-              echo "❌ uranaapi is not Up"; exit 1
-            fi
-
-            echo "Running healthcheck scripts..."
-            docker compose exec -T uranabot node scripts/healthcheck.js || (echo "Health check failed" && exit 1)
-            bash scripts/healthcheck_uranaapi.sh /opt/uranaspace
+            
+            uranabot_health=$(docker inspect -f '{{.State.Health.Status}}' uranabot || echo "unhealthy")
+            if [ "$uranabot_health" != "healthy" ]; then
+              echo "❌ uranabot health status: $uranabot_health"; exit 1
+            
+              uranaapi_health=$(docker inspect -f '{{.State.Health.Status}}' uranaapi || echo "unhealthy")
+            if [ "$uranaapi_health" != "healthy" ]; then
+              echo "❌ uranaapi health status: $uranaapi_health"; exit 1
 
             echo "✅ OK"

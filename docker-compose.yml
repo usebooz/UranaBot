@@ -17,7 +17,7 @@ services:
     networks:
       - uranabot-network
     healthcheck:
-      test: ["CMD", "node", "scripts/healthcheck.js"]
+      test: ["CMD-SHELL", "node -e \"const https=require('https');const u='https://api.telegram.org/bot'+process.env.BOT_TOKEN+'/getMe'; https.get(u,r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1));\""]
       interval: 30s
       timeout: 3s
       start_period: 5s
@@ -43,7 +43,7 @@ services:
     networks:
       - uranabot-network
     healthcheck:
-      test: ["CMD", "caddy", "version"]
+      test: ["CMD-SHELL", "curl -s -o /dev/null -w '%{http_code}' -X OPTIONS \"$${URANA_API_URL}$${URANA_API_PATH}\" | grep -q '^204$'"]
       interval: 30s
       timeout: 3s
       start_period: 5s
