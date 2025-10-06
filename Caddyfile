@@ -13,8 +13,9 @@
       header {
         Access-Control-Allow-Origin {$URANAWEB_APP_URL}
         Access-Control-Allow-Methods "POST, OPTIONS"
-        Access-Control-Allow-Headers "*"
+        Access-Control-Allow-Headers {http.request.header.Access-Control-Request-Headers}
         Access-Control-Max-Age 86400
+        Vary "Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
       }
       respond "" 204
     }
@@ -23,7 +24,8 @@
     header {
       Access-Control-Allow-Origin {$URANAWEB_APP_URL}
       Access-Control-Allow-Methods "POST, OPTIONS"
-      Access-Control-Allow-Headers "*"
+      Access-Control-Allow-Headers "content-type"
+      Vary "Origin"
       # If needed auth/cookies:
       # Access-Control-Allow-Credentials true
     }
