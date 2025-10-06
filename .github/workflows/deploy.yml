@@ -86,8 +86,8 @@ jobs:
       - name: Create .env from vars & secrets
         run: |
           cat > .env <<'EOF'
-          NODE_ENV=${{ vars.NODE_ENV }}
-          LOG_LEVEL=${{ vars.LOG_LEVEL }}
+          NODE_ENV=production
+          LOG_LEVEL=info
           BOT_TOKEN=${{ secrets.BOT_TOKEN }}
 
           SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
@@ -96,6 +96,9 @@ jobs:
 
           URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
           URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
+
+          URANA_API_URL=${{ vars.URANA_API_URL }}
+          URANA_API_PATH=${{ vars.URANA_API_PATH }}
           EOF
 
       - name: Prep SSH
@@ -114,9 +117,9 @@ jobs:
             -e "ssh -i ~/.ssh/id_rsa" \
             --exclude '.git' \
             --exclude 'node_modules' \
-            ./ ${USERNAME}@${HOST}:/opt/uranabot/
+            ./ ${USERNAME}@${HOST}:/opt/uranaspace/
 
-          rsync -az -e "ssh -i ~/.ssh/id_rsa" .env ${USERNAME}@${HOST}:/opt/uranabot/.env
+          rsync -az -e "ssh -i ~/.ssh/id_rsa" .env ${USERNAME}@${HOST}:/opt/uranaspace/.env
 
       - name: Compose up (build on server, zero-downtime)
         env:
@@ -125,9 +128,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} <<'EOSSH'
             set -euo pipefail
-            sudo mkdir -p /opt/uranabot
-            sudo chown $(whoami):$(whoami) /opt/uranabot
-            cd /opt/uranabot
+            sudo mkdir -p /opt/uranaspace
+            sudo chown $(whoami):$(whoami) /opt/uranaspace
+            cd /opt/uranaspace
 
             # обновим репозиторий, если он git-клонирован (иначе rsync уже внёс все изменения)
             if [ -d .git ]; then
@@ -161,7 +164,7 @@ jobs:
           port: 22
           script: |
             set -e
-            cd /opt/uranabot
+            cd /opt/uranaspace
 
             echo "=== ps ==="
             docker compose ps -a
@@ -173,11 +176,15 @@ jobs:
             docker compose logs --tail=60 || true
 
             echo "=== container health ==="
-            if docker compose ps | grep -q "Up"; then
-              echo "Running healthcheck script..."
-              docker compose exec -T uranabot node scripts/healthcheck.js || (echo "Health check failed" && exit 1)
-            else
-              echo "Container not running"; exit 1
+            if ! docker compose ps | grep -E 'uranabot.*Up'; then
+              echo "❌ uranabot is not Up"; exit 1
             fi
+            if ! docker compose ps | grep -E 'caddy|uranaapi' | grep -q 'Up'; then
+              echo "❌ uranaapi is not Up"; exit 1
+            fi
+
+            echo "Running healthcheck scripts..."
+            docker compose exec -T uranabot node scripts/healthcheck.js || (echo "Health check failed" && exit 1)
+            bash scripts/healthcheck_uranaapi.sh /opt/uranaspace
 
             echo "✅ OK"
