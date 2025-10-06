@@ -108,74 +108,19 @@ jobs:
           fi
           
           # Создать docker-compose.yml в зависимости от способа запуска
-          if [ "$USE_REMOTE_IMAGE" = true ]; then
-            echo "=== Creating docker-compose.yml with remote image ==="
-            cat > docker-compose.yml << 'EOF'
-          services:
-            uranabot:
-              image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-              environment:
-                - NODE_ENV=production
-                - BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-                - LOG_LEVEL=info
-                - SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
-                - SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}
-                - SPORTS_TOURNAMENT_RPL=${{ vars.SPORTS_TOURNAMENT_RPL }}
-                - URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
-                - URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
-              restart: unless-stopped
-              networks:
-                - uranabot-network
-              healthcheck:
-                test: ["CMD", "node", "scripts/healthcheck.js"]
-                interval: 30s
-                timeout: 3s
-                start_period: 5s
-                retries: 3
-
-          networks:
-            uranabot-network:
-              driver: bridge
-
-          volumes:
-            uranabot-data:
-          EOF
+          echo "=== Cloning repository and using existing docker-compose.yml ==="
+          # Клонируем репозиторий с готовым docker-compose.yml
+          git clone https://github.com/${{ github.repository }}.git . || git pull
+          
+          # Обновляем image для uranabot если используем remote image
+          if [[ "$USE_REMOTE_IMAGE" == "true" ]]; then
+            echo "Using remote image: ghcr.io/${{ github.repository }}:latest"
+            sed -i 's|build:|#build:|g' docker-compose.yml
+            sed -i 's|context: .|#context: .|g' docker-compose.yml  
+            sed -i 's|dockerfile: Dockerfile|#dockerfile: Dockerfile|g' docker-compose.yml
+            sed -i '/uranabot:/a\      image: ghcr.io/${{ github.repository }}:latest' docker-compose.yml
           else
-            echo "=== Creating docker-compose.yml with local build ==="
-            # Сначала клонируем репозиторий для локальной сборки
-            git clone https://github.com/${{ github.repository }}.git . || git pull
-            cat > docker-compose.yml << 'EOF'
-          services:
-            uranabot:
-              build:
-                context: .
-                dockerfile: Dockerfile
-              environment:
-                - NODE_ENV=production
-                - BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-                - LOG_LEVEL=info
-                - SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
-                - SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}
-                - SPORTS_TOURNAMENT_RPL=${{ vars.SPORTS_TOURNAMENT_RPL }}
-                - URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
-                - URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
-              restart: unless-stopped
-              networks:
-                - uranabot-network
-              healthcheck:
-                test: ["CMD", "node", "scripts/healthcheck.js"]
-                interval: 30s
-                timeout: 3s
-                start_period: 5s
-                retries: 3
-
-          networks:
-            uranabot-network:
-              driver: bridge
-
-          volumes:
-            uranabot-data:
-          EOF
+            echo "Using local build from Dockerfile"
           fi
 
           # Создать .env файл
