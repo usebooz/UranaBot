@@ -22,9 +22,37 @@ services:
       start_period: 5s
       retries: 3
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: urana-proxy
+    environment:
+      - URANA_API_URL=${URANA_API_URL}
+      - URANA_API_PATH=${URANA_API_PATH}
+      - SPORTS_API_URL=${SPORTS_API_URL}
+      - SPORTS_API_PATH=${SPORTS_API_PATH}
+      - URANAWEB_APP_URL=${URANAWEB_APP_URL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    networks:
+      - uranabot-network
+    healthcheck:
+      test: ["CMD", "caddy", "version"]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
 networks:
   uranabot-network:
     driver: bridge
 
 volumes:
   uranabot-data:
+  caddy_data:
+  caddy_config:

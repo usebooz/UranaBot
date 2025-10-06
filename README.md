@@ -18,6 +18,33 @@ A modern Telegram bot built with TypeScript using the grammY library.
 - 📝 **Logging** - detailed logging of all operations
 - 🛡️ **Security** - secret management via GitHub Secrets
 - ✅ **Testing** - comprehensive test suite
+- 🌍 **Reverse Proxy** - Caddy-powered CORS proxy for API access
+
+## 🔌 Proxy Configuration
+
+The project includes a **Caddy reverse proxy** to handle CORS and route requests from your web app to the Sports.ru API:
+
+### How it works
+
+- **Frontend** (UranaWeb) makes requests to `https://urana.space/sportsru/`
+- **Proxy** (Caddy) intercepts and rewrites the path to `/gql/graphql/`
+- **Backend** (Sports.ru) receives the request at `https://sports.ru/gql/graphql/`
+- **CORS headers** are automatically added for `https://usebooz.github.io`
+
+### Proxy Environment Variables
+
+```bash
+# Proxy endpoint (your domain)
+URANA_API_URL=urana_api_url_here
+URANA_API_PATH=urana_api_path_here
+
+# Target API
+SPORTS_API_URL=sports_api_url_here
+SPORTS_API_PATH=sports_api_path_here
+
+# Allowed origin for CORS
+URANAWEB_APP_URL=uranaweb_app_url_here
+```
 
 ## 🛠️ Tech Stack
 
@@ -71,17 +98,42 @@ A modern Telegram bot built with TypeScript using the grammY library.
 
 ### Production Deployment
 
-1. **Build the project**
+1. **Set up environment variables**
+
+   Create a `.env` file or set environment variables on your server:
 
    ```bash
-   npm run build
+   # Copy and edit the example
+   cp env.example .env
+   
+   # Required variables:
+   BOT_TOKEN=your_telegram_bot_token_here
+   SPORTS_API_URL=sports_api_url_here
+   SPORTS_API_PATH=sports_api_path_here
+   SPORTS_TOURNAMENT_RPL=rpl
+   URANA_API_URL=urana_api_url_here
+   URANA_API_PATH=urana_api_path_here
+   URANAWEB_APP_URL=uranaweb_app_url_here
+   URANAWEB_APP_PATH=uranaweb_app_path_here
    ```
 
-2. **Run with Docker Compose**
+2. **Deploy with Docker Compose**
 
    ```bash
+   # Deploy both bot and proxy
    docker compose up -d
+   
+   # Check status
+   docker compose ps
+   
+   # View logs
+   docker compose logs -f
    ```
+
+   This will start:
+   - **uranabot**: Telegram bot container
+   - **caddy**: Reverse proxy for CORS and API routing
+   - **Automatic HTTPS**: Caddy handles SSL certificates
 
 ## 📋 Available Commands
 
@@ -148,8 +200,9 @@ uranabot/
 ├── dist/                 # Compiled files (generated)
 ├── docker-compose.yml    # Docker Compose configuration
 ├── Dockerfile           # Docker image
+├── Caddyfile            # Caddy reverse proxy configuration
 ├── codegen.ts           # GraphQL Code Generator
-├── .env.example         # Example environment variables
+├── env.example          # Example environment variables
 └── package.json
 ```
 
