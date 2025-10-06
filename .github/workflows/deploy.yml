@@ -108,6 +108,14 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
+      - name: Prepare deploy dir on server
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+        run: |
+          ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} \
+            'sudo mkdir -p /opt/uranaspace && sudo chown $(whoami):$(whoami) /opt/uranaspace'
+
       - name: Sync project to VPS (rsync)
         env:
           HOST: ${{ secrets.HOST }}
@@ -128,8 +136,6 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} <<'EOSSH'
             set -euo pipefail
-            sudo mkdir -p /opt/uranaspace
-            sudo chown $(whoami):$(whoami) /opt/uranaspace
             cd /opt/uranaspace
 
             # обновим репозиторий, если он git-клонирован (иначе rsync уже внёс все изменения)
