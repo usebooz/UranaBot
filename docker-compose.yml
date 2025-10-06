@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: uranabot
     environment:
       - NODE_ENV=production
       - BOT_TOKEN=${BOT_TOKEN}
@@ -24,7 +25,7 @@ services:
 
   caddy:
     image: caddy:2-alpine
-    container_name: urana-proxy
+    container_name: uranaapi
     environment:
       - URANA_API_URL=${URANA_API_URL}
       - URANA_API_PATH=${URANA_API_PATH}
@@ -53,6 +54,5 @@ networks:
     driver: bridge
 
 volumes:
-  uranabot-data:
   caddy_data:
   caddy_config:

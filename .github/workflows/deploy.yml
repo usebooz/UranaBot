@@ -96,43 +96,31 @@ jobs:
           # Остановить существующий контейнер
           docker compose down || true
           
-          # Попробовать загрузить образ
-          echo "=== Trying to pull image ==="
+          # Логин в registry для загрузки образа
+          echo "=== Logging in to registry ==="
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          if docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest; then
-            echo "✅ Image pulled successfully"
-            USE_REMOTE_IMAGE=true
-          else
-            echo "❌ Failed to pull image, will build locally"
-            USE_REMOTE_IMAGE=false
-          fi
           
           # Создать docker-compose.yml в зависимости от способа запуска
-          echo "=== Cloning repository and using existing docker-compose.yml ==="
+          echo "=== Cloning repository and preparing docker-compose.yml ==="
           # Клонируем репозиторий с готовым docker-compose.yml
           git clone https://github.com/${{ github.repository }}.git . || git pull
           
-          # Обновляем image для uranabot если используем remote image
-          if [[ "$USE_REMOTE_IMAGE" == "true" ]]; then
-            echo "Using remote image: ghcr.io/${{ github.repository }}:latest"
-            sed -i 's|build:|#build:|g' docker-compose.yml
-            sed -i 's|context: .|#context: .|g' docker-compose.yml  
-            sed -i 's|dockerfile: Dockerfile|#dockerfile: Dockerfile|g' docker-compose.yml
-            sed -i '/uranabot:/a\      image: ghcr.io/${{ github.repository }}:latest' docker-compose.yml
-          else
-            echo "Using local build from Dockerfile"
-          fi
-
-          # Создать .env файл
-          cat > .env << 'EOF'
+          # Заменяем build на готовый image из registry
+          echo "Modifying docker-compose.yml to use remote image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          sed -i '/build:/,/dockerfile: Dockerfile/c\      image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest' docker-compose.yml
+          
+          # Устанавливаем переменные окружения для docker-compose
+          cat > .env << EOF
+          NODE_ENV=production
+          LOG_LEVEL=info
           BOT_TOKEN=${{ secrets.BOT_TOKEN }}
           SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
           SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}
           SPORTS_TOURNAMENT_RPL=${{ vars.SPORTS_TOURNAMENT_RPL }}
           URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
           URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
-          NODE_ENV=production
-          LOG_LEVEL=info
+          URANA_API_URL=${{ vars.URANA_API_URL }}
+          URANA_API_PATH=${{ vars.URANA_API_PATH }}
           EOF
           
           # Запустить новый контейнер
