@@ -11,12 +11,15 @@ export abstract class SportsRepository {
   protected readonly client: GraphQLClient;
 
   constructor() {
-    this.client = new GraphQLClient(config.sportsApiUrl, {
-      headers: {
-        'User-Agent': 'Uranabot/1.0',
-        'Content-Type': 'application/json',
+    this.client = new GraphQLClient(
+      config.sportsApiUrl + config.sportsApiPath,
+      {
+        headers: {
+          'User-Agent': 'Uranabot/1.0',
+          'Content-Type': 'application/json',
+        },
       },
-    });
+    );
   }
 
   /**

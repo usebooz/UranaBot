@@ -66,12 +66,14 @@ describe('Config', () => {
   it('should throw error when SPORTS_API_URL is missing', () => {
     process.env.BOT_TOKEN = 'test-bot-token';
     delete process.env.SPORTS_API_URL;
+    process.env.SPORTS_API_PATH = '/graphql/';
     process.env.SPORTS_TOURNAMENT_RPL = 'test-tournament-rpl';
     process.env.URANAWEB_APP_URL = 'https://test-uranaweb.com';
+    process.env.URANAWEB_APP_PATH = '/TestApp/#/';
 
     assert.throws(
       () => validateConfig(),
-      /SPORTS_API_URL environment variable is required/
+      /SPORTS_API_URL and SPORTS_API_PATH environment variables are required/
     );
   });
 
@@ -90,12 +92,14 @@ describe('Config', () => {
   it('should throw error when URANAWEB_APP_URL is missing', () => {
     process.env.BOT_TOKEN = 'test-bot-token';
     process.env.SPORTS_API_URL = 'https://test-sports-api.com';
+    process.env.SPORTS_API_PATH = '/sports-api-path';
     process.env.SPORTS_TOURNAMENT_RPL = 'test-tournament-rpl';
+    process.env.URANAWEB_APP_PATH = '/uranaweb-app-path';
     delete process.env.URANAWEB_APP_URL;
 
     assert.throws(
       () => validateConfig(),
-      /URANAWEB_APP_URL environment variable is required/
+      /URANAWEB_APP_URL and URANAWEB_APP_PATH environment variables are required/
     );
   });
 

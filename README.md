@@ -236,8 +236,13 @@ Create a `.env` file based on `.env.example`:
 NODE_ENV=development
 LOG_LEVEL=info
 BOT_TOKEN=your_telegram_bot_token_here
-SPORTS_API_URL=https://www.sports.ru/gql/graphql/
+SPORTS_API_URL=sports_api_url_here
+SPORTS_API_PATH=sports_api_path_here
 SPORTS_TOURNAMENT_RPL=rpl_tournament_webname_here
+URANAWEB_APP_URL=uranaweb_app_url_here
+URANAWEB_APP_PATH=uranaweb_app_path_here
+URANA_API_URL=urana_api_url_here
+URANA_API_PATH=urana_api_path_here
 ```
 
 ### GitHub Secrets

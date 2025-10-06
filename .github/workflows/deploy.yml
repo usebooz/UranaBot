@@ -119,8 +119,10 @@ jobs:
                 - BOT_TOKEN=${{ secrets.BOT_TOKEN }}
                 - LOG_LEVEL=info
                 - SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
+                - SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}
                 - SPORTS_TOURNAMENT_RPL=${{ vars.SPORTS_TOURNAMENT_RPL }}
                 - URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
+                - URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
               restart: unless-stopped
               networks:
                 - uranabot-network
@@ -153,8 +155,10 @@ jobs:
                 - BOT_TOKEN=${{ secrets.BOT_TOKEN }}
                 - LOG_LEVEL=info
                 - SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
+                - SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}
                 - SPORTS_TOURNAMENT_RPL=${{ vars.SPORTS_TOURNAMENT_RPL }}
                 - URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
+                - URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
               restart: unless-stopped
               networks:
                 - uranabot-network
@@ -178,7 +182,10 @@ jobs:
           cat > .env << 'EOF'
           BOT_TOKEN=${{ secrets.BOT_TOKEN }}
           SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
+          SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}
           SPORTS_TOURNAMENT_RPL=${{ vars.SPORTS_TOURNAMENT_RPL }}
+          URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
+          URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
           NODE_ENV=production
           LOG_LEVEL=info
           EOF

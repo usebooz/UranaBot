@@ -8,8 +8,10 @@ export interface Config {
   environment: 'development' | 'production';
   logLevel: 'debug' | 'info' | 'warn' | 'error';
   sportsApiUrl: string;
+  sportsApiPath: string;
   sportsTournamentRpl: string;
   uranaWebAppUrl: string;
+  uranaWebAppPath: string;
 }
 
 function validateConfig(): Config {
@@ -19,8 +21,11 @@ function validateConfig(): Config {
   }
 
   const sportsApiUrl = process.env.SPORTS_API_URL;
-  if (!sportsApiUrl) {
-    throw new Error('SPORTS_API_URL environment variable is required');
+  const sportsApiPath = process.env.SPORTS_API_PATH;
+  if (!sportsApiUrl || !sportsApiPath) {
+    throw new Error(
+      'SPORTS_API_URL and SPORTS_API_PATH environment variables are required',
+    );
   }
 
   const sportsTournamentRpl = process.env.SPORTS_TOURNAMENT_RPL;
@@ -29,8 +34,11 @@ function validateConfig(): Config {
   }
 
   const uranaWebAppUrl = process.env.URANAWEB_APP_URL;
-  if (!uranaWebAppUrl) {
-    throw new Error('URANAWEB_APP_URL environment variable is required');
+  const uranaWebAppPath = process.env.URANAWEB_APP_PATH;
+  if (!uranaWebAppUrl || !uranaWebAppPath) {
+    throw new Error(
+      'URANAWEB_APP_URL and URANAWEB_APP_PATH environment variables are required',
+    );
   }
 
   const environment =
@@ -43,8 +51,10 @@ function validateConfig(): Config {
     environment,
     logLevel,
     sportsApiUrl,
+    sportsApiPath,
     sportsTournamentRpl,
     uranaWebAppUrl,
+    uranaWebAppPath,
   };
 }
 

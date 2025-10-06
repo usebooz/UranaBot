@@ -8,7 +8,10 @@ services:
       - BOT_TOKEN=${BOT_TOKEN}
       - LOG_LEVEL=info
       - SPORTS_API_URL=${SPORTS_API_URL}
+      - SPORTS_API_PATH=${SPORTS_API_PATH}
+      - SPORTS_TOURNAMENT_RPL=${SPORTS_TOURNAMENT_RPL}
       - URANAWEB_APP_URL=${URANAWEB_APP_URL}
+      - URANAWEB_APP_PATH=${URANAWEB_APP_PATH}
     restart: unless-stopped
     networks:
       - uranabot-network

@@ -1,0 +1,44 @@
+{$DOMAIN} {
+  encode zstd gzip
+
+  @sportsru path {URANA}
+
+  route @sportsru {
+    # preflight
+    @preflight {
+      method OPTIONS
+      header Origin {$ALLOWED_ORIGIN}
+    }
+    handle @preflight {
+      header {
+        Access-Control-Allow-Origin {$ALLOWED_ORIGIN}
+        Access-Control-Allow-Methods "POST, OPTIONS"
+        Access-Control-Allow-Headers "*"
+        Access-Control-Max-Age 86400
+      }
+      respond "" 204
+    }
+
+    # CORS для основного запроса
+    header {
+      Access-Control-Allow-Origin {$ALLOWED_ORIGIN}
+      Access-Control-Allow-Methods "POST, OPTIONS"
+      Access-Control-Allow-Headers "*"
+      # Если нужны auth/cookies → раскомментируй:
+      # Access-Control-Allow-Credentials true
+    }
+
+    # Переписываем путь /sportsru -> /gql/graphql/
+    uri replace /sportsru /gql/graphql/
+
+    reverse_proxy https://www.sports.ru {
+      header_up Host www.sports.ru
+      header_up X-Real-IP {remote}
+      header_up X-Forwarded-For {remote}
+      header_up X-Forwarded-Proto https
+    }
+  }
+
+  # Остальные пути можно закрыть 404 (или отдать свой статиκ/сайт)
+  respond 404
+}
