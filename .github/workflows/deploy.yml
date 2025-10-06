@@ -2,204 +2,182 @@ name: Deploy Uranabot
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: usebooz/uranabot
 
 jobs:
+  # --- 1) TEST ---
   test:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install deps
+        run: npm ci
 
-    - name: Run linter
-      run: npm run lint
+      - name: Lint
+        run: npm run lint
 
-    - name: Run type check
-      run: npm run type-check
+      - name: Type check
+        run: npm run type-check
 
-    - name: Build project
-      run: npm run build
+      - name: Build
+        run: npm run build
 
+  # --- 2) BUILD & PUSH (GHCR) ---
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
     permissions:
       contents: read
       packages: write
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable={{is_default_branch}}
+      - name: Extract metadata (tags/labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+      - name: Build & push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
+  # --- 3) DEPLOY (build on server with compose) ---
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
     steps:
-    - name: Deploy to server
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          # Создать директорию проекта если не существует
-          sudo mkdir -p /opt/uranabot
-          sudo chown $(whoami):$(whoami) /opt/uranabot
-          cd /opt/uranabot
-          
-          # Остановить существующий контейнер
-          docker compose down || true
-          
-          # Логин в registry для загрузки образа
-          echo "=== Logging in to registry ==="
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          
-          # Создать docker-compose.yml в зависимости от способа запуска
-          echo "=== Cloning repository and preparing docker-compose.yml ==="
-          # Клонируем репозиторий с готовым docker-compose.yml
-          git clone https://github.com/${{ github.repository }}.git . || git pull
-          
-          # Заменяем build на готовый image из registry
-          echo "Modifying docker-compose.yml to use remote image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          sed -i '/build:/,/dockerfile: Dockerfile/c\      image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest' docker-compose.yml
-          
-          # Устанавливаем переменные окружения для docker-compose
-          cat > .env << EOF
-          NODE_ENV=production
-          LOG_LEVEL=info
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # формируем .env из vars/secrets (только перечисленное тобой)
+      - name: Create .env from vars & secrets
+        run: |
+          cat > .env <<'EOF'
+          NODE_ENV=${{ vars.NODE_ENV }}
+          LOG_LEVEL=${{ vars.LOG_LEVEL }}
           BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+
           SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
           SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}
           SPORTS_TOURNAMENT_RPL=${{ vars.SPORTS_TOURNAMENT_RPL }}
+
           URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
           URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
-          URANA_API_URL=${{ vars.URANA_API_URL }}
-          URANA_API_PATH=${{ vars.URANA_API_PATH }}
           EOF
-          
-          # Запустить новый контейнер
-          echo "=== Starting container ==="
-          docker compose up -d
-          
-          # Проверить результат запуска
-          echo "=== Docker Compose Up Result ==="
-          echo "Exit code: $?"
-          
-          # Показать статус
-          echo "=== Container Status ==="
-          docker compose ps -a
-          
-          echo "=== Container Logs ==="
-          docker compose logs --tail=50
-          
-          echo "=== Available Images ==="
-          docker images | grep uranabot || echo "No uranabot images found"
-          
-          echo "=== Docker Compose Config ==="
-          cat docker-compose.yml
-          
-          echo "=== Environment File ==="
-          cat .env
-          
-          # Очистка старых образов
-          docker image prune -f
 
+      - name: Prep SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync project to VPS (rsync)
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/id_rsa" \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            ./ ${USERNAME}@${HOST}:/opt/uranabot/
+
+          rsync -az -e "ssh -i ~/.ssh/id_rsa" .env ${USERNAME}@${HOST}:/opt/uranabot/.env
+
+      - name: Compose up (build on server, zero-downtime)
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+        run: |
+          ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} <<'EOSSH'
+            set -euo pipefail
+            sudo mkdir -p /opt/uranabot
+            sudo chown $(whoami):$(whoami) /opt/uranabot
+            cd /opt/uranabot
+
+            # обновим репозиторий, если он git-клонирован (иначе rsync уже внёс все изменения)
+            if [ -d .git ]; then
+              git fetch --prune || true
+              git reset --hard || true
+            fi
+
+            # тянем/собираем и поднимаем без down
+            docker compose up -d --build
+
+            # краткий статус и свежие логи (без секретов)
+            docker compose ps
+            docker compose logs --tail=50 || true
+
+            # чистка висячих слоёв
+            docker image prune -f || true
+          EOSSH
+
+  # --- 4) HEALTH CHECK ---
   health-check:
     needs: deploy
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
     steps:
-    - name: Wait for deployment and health check
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          cd /opt/uranabot
-          
-          # Проверяем что контейнер запустился
-          echo "=== Immediate Container Status ==="
-          docker compose ps -a
-          
-          # Проверяем логи запуска
-          echo "=== Startup Logs ==="
-          docker compose logs --tail=50
-          
-          # Ждем запуска контейнера
-          echo "Waiting for container to fully start..."
-          sleep 30
-          
-          # Проверяем статус контейнеров снова
-          echo "=== Container Status After Wait ==="
-          docker compose ps -a
-          
-          # Проверяем логи после ожидания
-          echo "=== Recent Logs ==="
-          docker compose logs --tail=30
-          
-          # Проверяем health check только если контейнер запущен
-          echo "=== Health Check ==="
-          if docker compose ps | grep -q "Up"; then
-            echo "✅ Container is running, executing health check..."
-            docker compose exec -T uranabot node scripts/healthcheck.js || echo "Health check failed"
-          else
-            echo "❌ Container is not running, skipping health check"
-          fi
-          
-          # Проверяем что бот отвечает
-          echo "=== Bot Status ==="
-          if docker compose logs | grep -q "Bot commands set successfully"; then
-            echo "✅ Bot is running successfully!"
-          else
-            echo "❌ Bot may not be running properly"
-            exit 1
-          fi
+      - name: Health probe over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            set -e
+            cd /opt/uranabot
+
+            echo "=== ps ==="
+            docker compose ps -a
+
+            echo "=== wait app ==="
+            sleep 20
+
+            echo "=== recent logs ==="
+            docker compose logs --tail=60 || true
+
+            echo "=== container health ==="
+            if docker compose ps | grep -q "Up"; then
+              echo "Running healthcheck script..."
+              docker compose exec -T uranabot node scripts/healthcheck.js || (echo "Health check failed" && exit 1)
+            else
+              echo "Container not running"; exit 1
+            fi
+
+            echo "✅ OK"
