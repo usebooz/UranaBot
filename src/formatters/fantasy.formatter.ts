@@ -53,9 +53,9 @@ export class FantasyFormatter {
       .map(squad => {
         const place = squad.scoreInfo.place.toString().padStart(3, ' ');
         const name =
-          squad.squad.name.length > 23
-            ? squad.squad.name.slice(0, 20) + '...'
-            : squad.squad.name.padEnd(23, ' ');
+          squad.squad.name.length > 19
+            ? squad.squad.name.slice(0, 16) + '...'
+            : squad.squad.name.padEnd(19, ' ');
         const score = squad.scoreInfo.score.toString().padStart(4, ' ');
 
         return `\`${place} ${name} ${score}\``;
