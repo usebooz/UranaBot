@@ -1,5 +1,5 @@
 import type { MyContext } from '../types/index.js';
-import { uranaWebFormatter } from '../formatters/uranaweb.formatter.js';
+import { UranaWebFormatterFactory } from '../formatters/uranaweb.formatter.js';
 
 /**
  * Command to display technical information about the bot
@@ -7,6 +7,7 @@ import { uranaWebFormatter } from '../formatters/uranaweb.formatter.js';
  * @param ctx - The bot context containing technical details
  */
 export async function debugCommand(ctx: MyContext): Promise<void> {
+  const uranaWebFormatter = UranaWebFormatterFactory.create(ctx);
   await ctx.reply(JSON.stringify(ctx.me, null, 2), {
     reply_markup: uranaWebFormatter.createDebugButton(),
   });

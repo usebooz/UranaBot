@@ -10,6 +10,7 @@ export interface Config {
   sportsApiUrl: string;
   sportsApiPath: string;
   sportsTournamentRpl: string;
+  telegramUrl: string;
   uranaWebAppUrl: string;
   uranaWebAppPath: string;
 }
@@ -33,6 +34,11 @@ function validateConfig(): Config {
     throw new Error('SPORTS_TOURNAMENT_RPL environment variable is required');
   }
 
+  const telegramUrl = process.env.TELEGRAM_URL;
+  if (!telegramUrl) {
+    throw new Error('TELEGRAM_URL environment variable is required');
+  }
+
   const uranaWebAppUrl = process.env.URANAWEB_APP_URL;
   const uranaWebAppPath = process.env.URANAWEB_APP_PATH;
   if (!uranaWebAppUrl || !uranaWebAppPath) {
@@ -53,6 +59,7 @@ function validateConfig(): Config {
     sportsApiUrl,
     sportsApiPath,
     sportsTournamentRpl,
+    telegramUrl,
     uranaWebAppUrl,
     uranaWebAppPath,
   };

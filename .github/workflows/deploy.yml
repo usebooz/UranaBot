@@ -94,6 +94,8 @@ jobs:
           SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}
           SPORTS_TOURNAMENT_RPL=${{ vars.SPORTS_TOURNAMENT_RPL }}
 
+          TELEGRAM_URL=${{ vars.TELEGRAM_URL }}
+
           URANAWEB_APP_URL=${{ vars.URANAWEB_APP_URL }}
           URANAWEB_APP_PATH=${{ vars.URANAWEB_APP_PATH }}
 

@@ -1,5 +1,8 @@
 import type { MyContext } from '../types/index.js';
-import { fantasyFormatter, uranaWebFormatter } from '../formatters/index.js';
+import {
+  fantasyFormatter,
+  UranaWebFormatterFactory,
+} from '../formatters/index.js';
 import { fantasyService } from '../services/fantasy.service.js';
 
 /**
@@ -16,6 +19,7 @@ export async function leagueCommand(ctx: MyContext): Promise<void> {
     ctx.league,
     squads,
   );
+  const uranaWebFormatter = UranaWebFormatterFactory.create(ctx);
   await ctx.reply(message, {
     parse_mode: 'MarkdownV2',
     reply_markup: uranaWebFormatter.createLeagueButton(ctx.league),
