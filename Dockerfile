@@ -22,9 +22,5 @@ RUN npm run build && \
 
 USER uranabot
 
-# Устанавливаем health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node scripts/healthcheck.js
-
 # Запускаем приложение
 CMD ["node", "dist/index.js"]

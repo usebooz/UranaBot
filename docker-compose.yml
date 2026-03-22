@@ -26,6 +26,7 @@ services:
 
   caddy:
     image: caddy:2-alpine
+    init: true
     container_name: uranaapi
     environment:
       - URANA_API_URL=${URANA_API_URL}
