@@ -22,6 +22,7 @@
     "test:integration": "node --test --import tsx $(find tests/integration -name '*.test.ts' -print)",
     "test:coverage": "node --test --experimental-test-coverage --test-coverage-exclude='tests/**' --import ./tests/setup/env.js --import tsx $(find tests/unit -name '*.test.ts' -print)",
     "test:ci": "SKIP_INTEGRATION_TESTS=true node --test --import ./tests/setup/env.js --import tsx $(find tests -name '*.test.ts' -print)",
+    "schema:update:sports": "node scripts/update-sports-schema.js",
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:fix": "npm run codegen && node scripts/fix-generated-imports.js",
     "codegen:watch": "graphql-codegen --config codegen.ts --watch"
