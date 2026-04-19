@@ -1,0 +1,12 @@
+# GraphQL Instructions
+
+- Use `schemas/sports.json` as the source of truth for Sports.ru GraphQL types and fields.
+- Do not fetch or introspect the live Sports.ru schema unless explicitly requested.
+- GraphQL operation documents live in `src/gql/queries/`.
+- Generated GraphQL files live in `src/gql/generated/`.
+- GraphQL Code Generator is configured in `codegen.ts`.
+- When adding or changing operations, inspect `schemas/sports.json` and existing queries first.
+- Request only fields that are used by the bot.
+- After GraphQL query or schema-derived type changes, run `npm run codegen:fix`.
+- `npm run codegen:fix` also runs `scripts/fix-generated-imports.js` to fix ESM `.js` imports.
+- Do not manually edit generated GraphQL files unless explicitly required.
