@@ -277,8 +277,9 @@ All previously failing tests have been restored:
 In CI, the `npm run test:ci` command is used, which:
 
 - Skips integration tests (via `SKIP_INTEGRATION_TESTS=true`)
-- Generates a code coverage report
 - Runs quickly without external dependencies
+
+Use `npm run test:coverage` when a local coverage report is needed.
 
 ## 🔧 Configuration
 
