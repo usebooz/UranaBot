@@ -1,6 +1,8 @@
 # GitHub Actions Instructions
 
 - `.github/workflows/deploy.yml` deploys changes from `main`.
+- `.github/workflows/integration-tests.yml` is manual-only and may call real Sports.ru services.
+- Integration test workflow failures should not block normal PR CI or deployment.
 - The bot Docker image is built in GitHub Actions and pushed to GHCR.
 - Deployment should pull `URANABOT_IMAGE` with Docker Compose; do not build the bot image on the VPS.
 - The deploy job should sync only deployment files such as `docker-compose.yml`, `Caddyfile`, and generated `.env`.

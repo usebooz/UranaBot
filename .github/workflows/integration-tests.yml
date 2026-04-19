@@ -1,0 +1,55 @@
+name: Integration Tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-tests-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      LOG_LEVEL: info
+      BOT_TOKEN: integration-test-bot-token
+      SPORTS_API_URL: ${{ vars.SPORTS_API_URL }}
+      SPORTS_API_PATH: ${{ vars.SPORTS_API_PATH }}
+      SPORTS_TOURNAMENT_RPL: ${{ vars.SPORTS_TOURNAMENT_RPL }}
+      TELEGRAM_URL: https://t.me/integration_test_bot
+      URANAWEB_APP_URL: https://integration.example
+      URANAWEB_APP_PATH: /app
+
+    steps:
+      - name: Validate required Sports.ru variables
+        run: |
+          missing=0
+
+          for name in SPORTS_API_URL SPORTS_API_PATH SPORTS_TOURNAMENT_RPL
+          do
+            if [ -z "${!name}" ]; then
+              echo "::error title=Missing integration test configuration::$name is not configured"
+              missing=1
+            fi
+          done
+
+          exit "$missing"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run integration tests
+        run: npm run test:integration
