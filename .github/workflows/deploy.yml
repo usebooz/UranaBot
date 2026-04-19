@@ -214,24 +214,46 @@ jobs:
             echo "=== ps ==="
             docker compose ps -a
 
-            echo "=== wait app ==="
-            sleep 20
+            wait_for_health() {
+              container="$1"
+              timeout_seconds="$2"
+              deadline=$(($(date +%s) + timeout_seconds))
+
+              echo "=== wait ${container} health ==="
+              while true; do
+                status=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$container" 2>/dev/null || echo "missing")
+                echo "${container} health status: ${status}"
+
+                if [ "$status" = "healthy" ]; then
+                  return 0
+                fi
+
+                if [ "$(date +%s)" -ge "$deadline" ]; then
+                  echo "ERROR: ${container} did not become healthy within ${timeout_seconds}s"
+                  return 1
+                fi
+
+                sleep 5
+              done
+            }
+
+            if ! wait_for_health uranabot 180; then
+              echo "=== ps after failed health wait ==="
+              docker compose ps -a || true
+              echo "=== recent logs ==="
+              docker compose logs --tail=120 || true
+              exit 1
+            fi
+
+            if ! wait_for_health uranaapi 120; then
+              echo "=== ps after failed health wait ==="
+              docker compose ps -a || true
+              echo "=== recent logs ==="
+              docker compose logs --tail=120 || true
+              exit 1
+            fi
 
             echo "=== recent logs ==="
             docker compose logs --tail=60 || true
 
-            echo "=== container health ==="
-            
-            uranabot_health=$(docker inspect -f '{{.State.Health.Status}}' uranabot 2>/dev/null || echo "unhealthy")
-            if [ "$uranabot_health" != "healthy" ]; then
-              echo "❌ uranabot health status: $uranabot_health"
-              exit 1
-            fi
-
-            uranaapi_health=$(docker inspect -f '{{.State.Health.Status}}' uranaapi 2>/dev/null || echo "unhealthy")
-            if [ "$uranaapi_health" != "healthy" ]; then
-              echo "❌ uranaapi health status: $uranaapi_health"
-              exit 1
-            fi
-
-            echo "✅ OK"
+            echo "OK"
