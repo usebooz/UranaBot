@@ -43,9 +43,46 @@ jobs:
       - name: Build
         run: npm run build
 
-  # --- 2) BUILD & PUSH (GHCR) ---
-  build-and-push:
+  # --- 2) VALIDATE DEPLOY CONFIG ---
+  validate-deploy-config:
     needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Validate required secrets and variables
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SPORTS_API_URL: ${{ vars.SPORTS_API_URL }}
+          SPORTS_API_PATH: ${{ vars.SPORTS_API_PATH }}
+          SPORTS_TOURNAMENT_RPL: ${{ vars.SPORTS_TOURNAMENT_RPL }}
+          TELEGRAM_URL: ${{ vars.TELEGRAM_URL }}
+          URANAWEB_APP_URL: ${{ vars.URANAWEB_APP_URL }}
+          URANAWEB_APP_PATH: ${{ vars.URANAWEB_APP_PATH }}
+          URANA_API_URL: ${{ vars.URANA_API_URL }}
+          URANA_API_PATH: ${{ vars.URANA_API_PATH }}
+        run: |
+          missing=0
+
+          for name in \
+            BOT_TOKEN HOST USERNAME SSH_PRIVATE_KEY \
+            SPORTS_API_URL SPORTS_API_PATH SPORTS_TOURNAMENT_RPL \
+            TELEGRAM_URL URANAWEB_APP_URL URANAWEB_APP_PATH \
+            URANA_API_URL URANA_API_PATH
+          do
+            if [ -z "${!name}" ]; then
+              echo "::error title=Missing deployment configuration::$name is not configured"
+              missing=1
+            fi
+          done
+
+          exit "$missing"
+
+  # --- 3) BUILD & PUSH (GHCR) ---
+  build-and-push:
+    needs: [test, validate-deploy-config]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     permissions:
@@ -74,7 +111,7 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-  # --- 3) DEPLOY (pull image on server with compose) ---
+  # --- 4) DEPLOY (pull image on server with compose) ---
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -157,7 +194,7 @@ jobs:
             docker image prune -f || true
           EOSSH
 
-  # --- 4) HEALTH CHECK ---
+  # --- 5) HEALTH CHECK ---
   health-check:
     needs: deploy
     runs-on: ubuntu-latest
