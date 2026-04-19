@@ -19,12 +19,17 @@ import {
   LEAGUE_QUERY,
   LEAGUE_SQUADS_QUERY,
 } from '../gql/queries/league.query.js';
+import type { SportsGraphQLClient } from './sports.repository.js';
 
 /**
  * Repository for Fantasy Sports data from Sports.ru API
  * Handles fantasy-specific API operations
  */
 export class FantasyRepository extends SportsRepository {
+  constructor(client?: SportsGraphQLClient) {
+    super(client);
+  }
+
   /**
    * Fetches tournament data from Sports.ru API by webname
    * @param webname - The tournament webname identifier

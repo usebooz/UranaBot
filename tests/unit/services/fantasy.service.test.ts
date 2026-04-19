@@ -1,134 +1,156 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
 import { FantasyService } from '../../../src/services/fantasy.service.js';
+import { FantasyLeagueType, FantasyRatingEntityType } from '../../../src/gql/generated/graphql.js';
+import type { FantasyRepositoryClient } from '../../../src/services/fantasy.service.js';
 
 describe('FantasyService', () => {
-  let service: FantasyService;
+  let calls: Array<{ method: string; args: unknown[] }>;
+
+  function createService(
+    overrides: Partial<FantasyRepositoryClient> = {},
+  ): FantasyService {
+    const repository: FantasyRepositoryClient = {
+      getTournament: async (...args) => {
+        calls.push({ method: 'getTournament', args });
+        return { id: 'russia', currentSeason: { isActive: true } } as never;
+      },
+      getLeague: async (...args) => {
+        calls.push({ method: 'getLeague', args });
+        return { id: args[0], type: FantasyLeagueType.User } as never;
+      },
+      getLeagueSquads: async (...args) => {
+        calls.push({ method: 'getLeagueSquads', args });
+        return [{ squad: { id: '1', name: 'Squad' }, scoreInfo: { place: 1, score: 10 } }] as never;
+      },
+      ...overrides,
+    };
+
+    return new FantasyService(repository, 'russia');
+  }
 
   beforeEach(() => {
-    service = new FantasyService();
+    calls = [];
   });
 
-  it('should be able to import the service', async () => {
-    const { FantasyService } = await import('../../../src/services/fantasy.service.js');
-    
-    assert.ok(FantasyService);
-    assert.strictEqual(typeof FantasyService, 'function');
+  it('reads the configured RPL tournament from the repository', async () => {
+    const tournament = { id: 'russia', metaTitle: 'RPL' };
+    const service = createService({
+      getTournament: async (...args) => {
+        calls.push({ method: 'getTournament', args });
+        return tournament as never;
+      },
+    });
+
+    const result = await service.readRplTournament();
+
+    assert.strictEqual(result, tournament);
+    assert.deepStrictEqual(calls, [
+      { method: 'getTournament', args: ['russia'] },
+    ]);
   });
 
-  it('should be able to create service instance', () => {
-    assert.ok(service);
-    assert.strictEqual(typeof service.readRplTournament, 'function');
+  it('reads league data from the repository by id', async () => {
+    const league = { id: '29915', name: 'Test League' };
+    const service = createService({
+      getLeague: async (...args) => {
+        calls.push({ method: 'getLeague', args });
+        return league as never;
+      },
+    });
+
+    const result = await service.readLeague('29915');
+
+    assert.strictEqual(result, league);
+    assert.deepStrictEqual(calls, [{ method: 'getLeague', args: ['29915'] }]);
   });
 
-  it('should have all required methods', () => {
-    assert.strictEqual(typeof service.readRplTournament, 'function');
-    assert.strictEqual(typeof service.hasTournamentActiveSeason, 'function');
-    assert.strictEqual(typeof service.readLeague, 'function');
-    assert.strictEqual(typeof service.isLeagueFromActiveRplSeason, 'function');
-    assert.strictEqual(typeof service.isUserLeague, 'function');
-    assert.strictEqual(typeof service.readLeagueSquadsWithSeasonRating, 'function');
+  it('reads league squads with season rating variables', async () => {
+    const squads = [
+      { squad: { id: '1', name: 'Squad' }, scoreInfo: { place: 1, score: 10 } },
+    ];
+    const service = createService({
+      getLeagueSquads: async (...args) => {
+        calls.push({ method: 'getLeagueSquads', args });
+        return squads as never;
+      },
+    });
+
+    const result = await service.readLeagueSquadsWithSeasonRating('29915', '59');
+
+    assert.strictEqual(result, squads);
+    assert.deepStrictEqual(calls, [
+      {
+        method: 'getLeagueSquads',
+        args: ['29915', FantasyRatingEntityType.Season, '59'],
+      },
+    ]);
   });
 
-  it('should have readRplTournament method', () => {
-    assert.strictEqual(typeof service.readRplTournament, 'function');
-    
-    // Check that it's an async function
-    const result = service.readRplTournament();
-    assert.ok(result instanceof Promise);
-    
-    // Don't wait for the result since it makes a real API call
-    // We'll test the actual API interaction in integration tests
+  it('detects whether a tournament has an active season', () => {
+    const service = createService();
+
+    assert.strictEqual(
+      service.hasTournamentActiveSeason({
+        currentSeason: { isActive: true },
+      } as never),
+      true,
+    );
+    assert.strictEqual(
+      service.hasTournamentActiveSeason({
+        currentSeason: { isActive: false },
+      } as never),
+      false,
+    );
+    assert.strictEqual(
+      service.hasTournamentActiveSeason({ currentSeason: null } as never),
+      false,
+    );
   });
 
-  it('should return formatted tournament data structure', async () => {
-    // Test that the method exists and returns a promise
-    const promise = service.readRplTournament();
-    assert.ok(promise instanceof Promise);
-    
-    // We could mock the repository here, but for now we just verify the interface
-    // The actual functionality is tested in integration tests
+  it('detects user leagues from the active configured RPL season', () => {
+    const service = createService();
+
+    assert.strictEqual(
+      service.isLeagueFromActiveRplSeason({
+        season: {
+          isActive: true,
+          tournament: { webName: 'russia' },
+        },
+      } as never),
+      true,
+    );
+    assert.strictEqual(
+      service.isLeagueFromActiveRplSeason({
+        season: {
+          isActive: false,
+          tournament: { webName: 'russia' },
+        },
+      } as never),
+      false,
+    );
+    assert.strictEqual(
+      service.isLeagueFromActiveRplSeason({
+        season: {
+          isActive: true,
+          tournament: { webName: 'england' },
+        },
+      } as never),
+      false,
+    );
   });
 
-  it('should check tournament active season correctly', () => {
-    const activeTournament = {
-      currentSeason: {
-        isActive: true
-      }
-    } as any;
-    
-    const inactiveTournament = {
-      currentSeason: {
-        isActive: false
-      }
-    } as any;
-    
-    const noSeasonTournament = {
-      currentSeason: null
-    } as any;
-    
-    assert.strictEqual(service.hasTournamentActiveSeason(activeTournament), true);
-    assert.strictEqual(service.hasTournamentActiveSeason(inactiveTournament), false);
-    assert.strictEqual(service.hasTournamentActiveSeason(noSeasonTournament), false);
-  });
+  it('detects user league type', () => {
+    const service = createService();
 
-  it('should check if league is from active RPL season', () => {
-    const rplWebname = 'russia'; // assuming this is the default
-    
-    const validLeague = {
-      season: {
-        isActive: true,
-        tournament: {
-          webName: rplWebname
-        }
-      }
-    } as any;
-    
-    const inactiveLeague = {
-      season: {
-        isActive: false,
-        tournament: {
-          webName: rplWebname
-        }
-      }
-    } as any;
-    
-    const wrongTournamentLeague = {
-      season: {
-        isActive: true,
-        tournament: {
-          webName: 'other-tournament'
-        }
-      }
-    } as any;
-    
-    assert.strictEqual(service.isLeagueFromActiveRplSeason(validLeague), true);
-    assert.strictEqual(service.isLeagueFromActiveRplSeason(inactiveLeague), false);
-    assert.strictEqual(service.isLeagueFromActiveRplSeason(wrongTournamentLeague), false);
-  });
-
-  it('should check if league is user league', () => {
-    const userLeague = {
-      type: 'USER' // FantasyLeagueType.User
-    } as any;
-    
-    const systemLeague = {
-      type: 'SYSTEM'
-    } as any;
-    
-    const noTypeLeague = {
-      type: null
-    } as any;
-    
-    assert.strictEqual(service.isUserLeague(userLeague), true);
-    assert.strictEqual(service.isUserLeague(systemLeague), false);
-    assert.strictEqual(service.isUserLeague(noTypeLeague), false);
-  });
-
-  it('should have readLeagueSquadsWithSeasonRating method', () => {
-    assert.strictEqual(typeof service.readLeagueSquadsWithSeasonRating, 'function');
-    
-    const result = service.readLeagueSquadsWithSeasonRating('league-id', 'season-id');
-    assert.ok(result instanceof Promise);
+    assert.strictEqual(
+      service.isUserLeague({ type: FantasyLeagueType.User } as never),
+      true,
+    );
+    assert.strictEqual(
+      service.isUserLeague({ type: FantasyLeagueType.General } as never),
+      false,
+    );
+    assert.strictEqual(service.isUserLeague({ type: null } as never), false);
   });
 });

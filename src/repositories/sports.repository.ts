@@ -3,23 +3,26 @@ import type { RequestDocument, Variables } from 'graphql-request';
 import { logger } from '../utils/logger.js';
 import { config } from '../utils/config.js';
 
+export interface SportsGraphQLClient {
+  request<T>(query: RequestDocument, variables?: Variables): Promise<T>;
+}
+
 /**
  * Base repository class for Sports.ru API
  * Provides common GraphQL client setup and logging functionality
  */
 export abstract class SportsRepository {
-  protected readonly client: GraphQLClient;
+  protected readonly client: SportsGraphQLClient;
 
-  constructor() {
-    this.client = new GraphQLClient(
-      config.sportsApiUrl + config.sportsApiPath,
-      {
+  constructor(client?: SportsGraphQLClient) {
+    this.client =
+      client ??
+      new GraphQLClient(config.sportsApiUrl + config.sportsApiPath, {
         headers: {
           'User-Agent': 'Uranabot/1.0',
           'Content-Type': 'application/json',
         },
-      },
-    );
+      });
   }
 
   /**
