@@ -9,4 +9,5 @@
 - Request only fields that are used by the bot.
 - After GraphQL query or schema-derived type changes, run `npm run codegen:fix`.
 - `npm run codegen:fix` also runs `scripts/fix-generated-imports.js` to fix ESM `.js` imports.
+- After changing `schemas/sports.json`, `src/gql/queries/`, `codegen.ts`, or generated GraphQL usage, run or recommend `npm run test:integration` or the manual `Integration Tests` workflow.
 - Do not manually edit generated GraphQL files unless explicitly required.
