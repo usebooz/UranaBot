@@ -8,3 +8,4 @@
 - Do not print secrets, tokens, or private environment values in logs.
 - CI should run lint, type-check, unit tests, and build before deploy.
 - For workflow changes, verify locally that referenced npm scripts pass when possible.
+- After workflow or deployment changes are merged to `main`, verify the GitHub Actions run on `main`, including deploy and health-check jobs.
