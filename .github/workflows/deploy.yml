@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: usebooz/uranabot
@@ -58,37 +62,35 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags/labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build & push image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-  # --- 3) DEPLOY (build on server with compose) ---
+  # --- 3) DEPLOY (pull image on server with compose) ---
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # формируем .env из vars/secrets (только перечисленное тобой)
       - name: Create .env from vars & secrets
         run: |
           cat > .env <<'EOF'
+          URANABOT_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
           NODE_ENV=production
           LOG_LEVEL=info
           BOT_TOKEN=${{ secrets.BOT_TOKEN }}
@@ -121,42 +123,37 @@ jobs:
           ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} \
             'sudo mkdir -p /opt/uranaspace && sudo chown $(whoami):$(whoami) /opt/uranaspace'
 
-      - name: Sync project to VPS (rsync)
+      - name: Sync deployment files to VPS
         env:
           HOST: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
         run: |
-          rsync -az --delete \
+          rsync -az \
             -e "ssh -i ~/.ssh/id_rsa" \
-            --exclude '.git' \
-            --exclude 'node_modules' \
-            ./ ${USERNAME}@${HOST}:/opt/uranaspace/
+            docker-compose.yml Caddyfile ${USERNAME}@${HOST}:/opt/uranaspace/
 
           rsync -az -e "ssh -i ~/.ssh/id_rsa" .env ${USERNAME}@${HOST}:/opt/uranaspace/.env
 
-      - name: Compose up (build on server, zero-downtime)
+      - name: Compose up (pull image, zero-downtime)
         env:
           HOST: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USERNAME: ${{ github.actor }}
         run: |
+          printf '%s' "$GHCR_TOKEN" | ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} \
+            "docker login ${{ env.REGISTRY }} -u ${GHCR_USERNAME} --password-stdin"
+
           ssh -i ~/.ssh/id_rsa ${USERNAME}@${HOST} <<'EOSSH'
             set -euo pipefail
             cd /opt/uranaspace
 
-            # обновим репозиторий, если он git-клонирован (иначе rsync уже внёс все изменения)
-            if [ -d .git ]; then
-              git fetch --prune || true
-              git reset --hard || true
-            fi
+            docker compose pull
+            docker compose up -d --remove-orphans
 
-            # тянем/собираем и поднимаем без down
-            docker compose up -d --build
-
-            # краткий статус и свежие логи (без секретов)
             docker compose ps
             docker compose logs --tail=50 || true
 
-            # чистка висячих слоёв
             docker image prune -f || true
           EOSSH
 

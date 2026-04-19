@@ -1,13 +1,11 @@
 services:
   uranabot:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${URANABOT_IMAGE:-ghcr.io/usebooz/uranabot:latest}
     container_name: uranabot
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
       - BOT_TOKEN=${BOT_TOKEN}
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${LOG_LEVEL:-info}
       - SPORTS_API_URL=${SPORTS_API_URL}
       - SPORTS_API_PATH=${SPORTS_API_PATH}
       - SPORTS_TOURNAMENT_RPL=${SPORTS_TOURNAMENT_RPL}

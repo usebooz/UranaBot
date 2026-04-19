@@ -48,7 +48,7 @@ URANAWEB_APP_URL=uranaweb_app_url_here
 
 ## 🛠️ Tech Stack
 
-- **Runtime**: Node.js 18+
+- **Runtime**: Node.js 20+
 - **Language**: TypeScript
 - **Bot Framework**: grammY
 - **GraphQL**: graphql-request for API integration
@@ -63,7 +63,7 @@ URANAWEB_APP_URL=uranaweb_app_url_here
 
 ### Prerequisites
 
-- Node.js 18 or higher
+- Node.js 20 or higher
 - npm or yarn
 - Docker (for production)
 - Telegram Bot Token (get it from [@BotFather](https://t.me/BotFather))
@@ -104,9 +104,10 @@ URANAWEB_APP_URL=uranaweb_app_url_here
 
    ```bash
    # Copy and edit the example
-   cp env.example .env
+   cp .env.example .env
    
    # Required variables:
+   URANABOT_IMAGE=ghcr.io/usebooz/uranabot:latest
    BOT_TOKEN=your_telegram_bot_token_here
    SPORTS_API_URL=sports_api_url_here
    SPORTS_API_PATH=sports_api_path_here
@@ -121,6 +122,9 @@ URANAWEB_APP_URL=uranaweb_app_url_here
 2. **Deploy with Docker Compose**
 
    ```bash
+   # Pull the configured bot image
+   docker compose pull
+
    # Deploy both bot and proxy
    docker compose up -d
    
@@ -161,9 +165,9 @@ URANAWEB_APP_URL=uranaweb_app_url_here
 
 ### Bot Commands
 
-- `/start` - start the bot and greet the user
-- `/help` - help with commands
-- `/stats` - user statistics
+- `/info` - show bot and user information
+- `/debug` - show debug information
+- `/league` - show fantasy league information
 
 ## 🏗️ Project Structure
 
@@ -184,7 +188,7 @@ uranabot/
 │   │   └── logger.ts     # Logging utilities
 │   └── index.ts          # Entry point
 ├── scripts/              # Utility scripts
-│   └── healthcheck.js    # Health check for Docker
+│   └── fix-generated-imports.js
 ├── schemas/              # JSON schemas
 ├── tests/               # Test files
 │   ├── unit/            # Unit tests (organized by src structure)
@@ -196,14 +200,14 @@ uranabot/
 │   │   └── utils/       # Utility tests
 │   └── integration/     # Integration tests
 ├── .github/
-│   ├── workflows/       # GitHub Actions workflows
-│   └── copilot-instructions.md
+│   ├── AGENTS.md
+│   └── workflows/       # GitHub Actions workflows
 ├── dist/                 # Compiled files (generated)
 ├── docker-compose.yml    # Docker Compose configuration
 ├── Dockerfile           # Docker image
 ├── Caddyfile            # Caddy reverse proxy configuration
 ├── codegen.ts           # GraphQL Code Generator
-├── env.example          # Example environment variables
+├── .env.example         # Example environment variables
 └── package.json
 ```
 
@@ -290,6 +294,7 @@ Create a `.env` file based on `.env.example`:
 ```env
 NODE_ENV=development
 LOG_LEVEL=info
+URANABOT_IMAGE=ghcr.io/usebooz/uranabot:latest
 BOT_TOKEN=your_telegram_bot_token_here
 SPORTS_API_URL=sports_api_url_here
 SPORTS_API_PATH=sports_api_path_here
@@ -310,23 +315,41 @@ For automatic deployment, set up the following secrets in your GitHub repository
 - `USERNAME` - user for SSH connection
 - `SSH_PRIVATE_KEY` - private SSH key
 
+### GitHub Variables
+
+For automatic deployment, set up the following variables in your GitHub repository:
+
+- `SPORTS_API_URL` - Sports.ru API origin
+- `SPORTS_API_PATH` - Sports.ru GraphQL path
+- `SPORTS_TOURNAMENT_RPL` - RPL tournament identifier
+- `TELEGRAM_URL` - Telegram bot URL
+- `URANAWEB_APP_URL` - allowed UranaWeb origin
+- `URANAWEB_APP_PATH` - UranaWeb app path
+- `URANA_API_URL` - public Caddy proxy URL
+- `URANA_API_PATH` - public Caddy proxy path
+
 ## 🚀 Deployment
 
 ### Automatic Deployment
 
-1. Pushing to the `main` branch will automatically trigger the CI/CD pipeline
-2. GitHub Actions will build the Docker image
-3. The image will be pushed to the GitHub Container Registry
-4. Deployment to your server will occur automatically
+1. Pushing to the `main` branch triggers the CI/CD pipeline
+2. GitHub Actions runs linting, type checks, unit tests, and build
+3. The Docker image is built and pushed to GitHub Container Registry
+4. The image is tagged as `latest` and with the exact commit SHA
+5. The server receives `docker-compose.yml`, `Caddyfile`, and `.env`
+6. Docker Compose pulls the commit-SHA image and restarts services
 
 ### Manual Deployment
 
 ```bash
-# Build the image
-docker build -t uranabot .
+# Pull the configured image
+docker compose pull
 
-# Run the container
-docker run -d --name uranabot -e BOT_TOKEN=your_token uranabot
+# Start or update services
+docker compose up -d --remove-orphans
+
+# Check service health
+docker compose ps
 ```
 
 ## 🐛 Debugging
