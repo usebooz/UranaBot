@@ -60,7 +60,6 @@ async function updateSportsSchema() {
           descriptions: true,
           directiveIsRepeatable: true,
           inputValueDeprecation: true,
-          schemaDescription: true,
           specifiedByUrl: true,
         }),
       }),

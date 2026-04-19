@@ -15,10 +15,50 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   ColorHex: { input: any; output: any; }
+  DateTime: { input: any; output: any; }
   /** Скаляр времени в формате rfc3339 */
   Time: { input: any; output: any; }
   TimeSecond: { input: any; output: any; }
   URL: { input: any; output: any; }
+};
+
+export type AddTagImageInput = {
+  /** ID тега */
+  id: Scalars['ID']['input'];
+  /** Ссылка на фото */
+  imageURL: Scalars['String']['input'];
+};
+
+export enum AddTelegramSocialErrorCode {
+  SocialAlreadyExists = 'SOCIAL_ALREADY_EXISTS'
+}
+
+export type AddTelegramSocialInput = {
+  hash: Scalars['String']['input'];
+  userInfo: SocialLoginTelegramUserInfoInput;
+};
+
+export enum AddVkSocialErrorCode {
+  SocialAlreadyExists = 'SOCIAL_ALREADY_EXISTS'
+}
+
+export type AddVkSocialInput = {
+  code: Scalars['String']['input'];
+  codeVerifier: Scalars['String']['input'];
+  deviceID: Scalars['String']['input'];
+  redirectURI: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+};
+
+export enum AddYandexSocialErrorCode {
+  SocialAlreadyExists = 'SOCIAL_ALREADY_EXISTS'
+}
+
+export type AddYandexSocialInput = {
+  code: Scalars['String']['input'];
+  codeVerifier: Scalars['String']['input'];
+  deviceID: Scalars['String']['input'];
+  deviceName: Scalars['String']['input'];
 };
 
 export type AmateurFilterArgs = {
@@ -90,6 +130,18 @@ export type ArtefactSaveObjectInput = {
   artefactID: Scalars['ID']['input'];
 };
 
+export type AuthByCredentialsInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  recaptcha?: InputMaybe<Scalars['String']['input']>;
+  rememberMe?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type AuthByCrossDomainTokenInput = {
+  authToken: Scalars['String']['input'];
+  rememberMe?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export enum AuthChangeUserPasswordErrorCode {
   EmptyPassword = 'EMPTY_PASSWORD',
   EqualOldNewPassword = 'EQUAL_OLD_NEW_PASSWORD',
@@ -97,6 +149,30 @@ export enum AuthChangeUserPasswordErrorCode {
   PasswordWrongLength = 'PASSWORD_WRONG_LENGTH',
   TokenExpired = 'TOKEN_EXPIRED',
   TokenHasAlreadyBeenUsed = 'TOKEN_HAS_ALREADY_BEEN_USED'
+}
+
+export enum AuthErrorCode {
+  AuthCodeExpired = 'AUTH_CODE_EXPIRED',
+  IncorrectCredentials = 'INCORRECT_CREDENTIALS',
+  PhoneNotConfirmed = 'PHONE_NOT_CONFIRMED',
+  UserBanned = 'USER_BANNED',
+  UserBlocked = 'USER_BLOCKED',
+  UserNotActivated = 'USER_NOT_ACTIVATED'
+}
+
+export enum AuthObjectType {
+  BanObjectTypeBookmakerOpinion = 'BAN_OBJECT_TYPE_BOOKMAKER_OPINION',
+  BanObjectTypeComment = 'BAN_OBJECT_TYPE_COMMENT',
+  BanObjectTypeNoObject = 'BAN_OBJECT_TYPE_NO_OBJECT',
+  BanObjectTypePost = 'BAN_OBJECT_TYPE_POST'
+}
+
+export enum AuthRecaptchaErrorCode {
+  TokenExpired = 'TOKEN_EXPIRED'
+}
+
+export enum AuthRegisterErrorCode {
+  LimitReached = 'LIMIT_REACHED'
 }
 
 export enum AuthSendResetUserPasswordLinkErrorCode {
@@ -154,7 +230,8 @@ export enum BettingWidgetDocumentType {
 }
 
 export enum BettingWidgetSportType {
-  Football = 'FOOTBALL'
+  Football = 'FOOTBALL',
+  Hockey = 'HOCKEY'
 }
 
 export enum BettingWidgetTagType {
@@ -168,6 +245,12 @@ export enum BlacklistTimeType {
   Permanent = 'PERMANENT',
   /** временно */
   Temporary = 'TEMPORARY'
+}
+
+export enum BlogRole {
+  Author = 'AUTHOR',
+  Moderator = 'MODERATOR',
+  Owner = 'OWNER'
 }
 
 export enum BookmakerName {
@@ -202,7 +285,9 @@ export type BookmakerRatingActivateQuestionInput = {
 
 export type BookmakerRatingAddAppsToListInput = {
   /** ID приложений */
-  appIDs: Array<Scalars['ID']['input']>;
+  appIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Приложения */
+  apps?: InputMaybe<Array<BookmakerRatingListAppInput>>;
   /** ID списка */
   listID: Scalars['ID']['input'];
 };
@@ -216,7 +301,9 @@ export type BookmakerRatingAddBonusesToListInput = {
 
 export type BookmakerRatingAddBookmakersToListInput = {
   /** ID букмекеров */
-  bookmakerIDs: Array<Scalars['ID']['input']>;
+  bookmakerIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Букмекеры */
+  bookmakers?: InputMaybe<Array<BookmakerRatingListBookmakerInput>>;
   /** ID списка */
   listID: Scalars['ID']['input'];
 };
@@ -425,6 +512,18 @@ export type BookmakerRatingCreateBookmakerInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** Создание группы списков */
+export type BookmakerRatingCreateGroupInput = {
+  /** ID списков */
+  lists?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Название */
+  name: Scalars['String']['input'];
+  /** Порядок */
+  priority: Scalars['Int']['input'];
+  /** Тип списков */
+  type: BookmakerRatingListType;
+};
+
 export type BookmakerRatingCreateHeaderInput = {
   /** Цвет фона шапки в формате RGB */
   background: Scalars['String']['input'];
@@ -536,6 +635,11 @@ export type BookmakerRatingDeleteBonusInput = {
 };
 
 export type BookmakerRatingDeleteBookmakerInput = {
+  /** Идентификатор */
+  id: Scalars['ID']['input'];
+};
+
+export type BookmakerRatingDeleteGroupInput = {
   /** Идентификатор */
   id: Scalars['ID']['input'];
 };
@@ -705,6 +809,18 @@ export type BookmakerRatingEditBookmakerInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** Редактирование группы списков */
+export type BookmakerRatingEditGroupInput = {
+  /** ID группы */
+  id: Scalars['ID']['input'];
+  /** ID списков */
+  lists?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** Название */
+  name: Scalars['String']['input'];
+  /** Порядок */
+  priority: Scalars['Int']['input'];
+};
+
 export type BookmakerRatingEditHeaderInput = {
   /** Цвет фона шапки в формате RGB */
   background: Scalars['String']['input'];
@@ -734,6 +850,13 @@ export type BookmakerRatingEditListBonusInput = {
 export type BookmakerRatingEditListBonusesInput = {
   /** Бонусы в рейтинге */
   listBonuses: Array<BookmakerRatingEditListBonusInput>;
+  /** ID списка */
+  listID: Scalars['ID']['input'];
+};
+
+export type BookmakerRatingEditListBookmakerInput = {
+  /** Букмекер */
+  bookmaker: BookmakerRatingListBookmakerInput;
   /** ID списка */
   listID: Scalars['ID']['input'];
 };
@@ -835,6 +958,40 @@ export type BookmakerRatingInfoInput = {
   name: Scalars['String']['input'];
   /** Значение */
   value: Scalars['String']['input'];
+};
+
+export enum BookmakerRatingListAppFeaturingType {
+  App = 'APP',
+  Bonus = 'BONUS'
+}
+
+/** Приложение списка */
+export type BookmakerRatingListAppInput = {
+  /** ID приложения */
+  ID: Scalars['ID']['input'];
+  /** Тип фичеринга */
+  featuring?: InputMaybe<BookmakerRatingListAppFeaturingType>;
+  /** Порядок */
+  priority: Scalars['Int']['input'];
+  /** Сопроводительный текст */
+  wording?: InputMaybe<Scalars['String']['input']>;
+};
+
+export enum BookmakerRatingListBookmakerFeaturingType {
+  Bonus = 'BONUS',
+  Bookmaker = 'BOOKMAKER'
+}
+
+/** Букмекер списка */
+export type BookmakerRatingListBookmakerInput = {
+  /** ID букмекера */
+  ID: Scalars['ID']['input'];
+  /** Тип фичеринга */
+  featuring?: InputMaybe<BookmakerRatingListBookmakerFeaturingType>;
+  /** Порядок */
+  priority: Scalars['Int']['input'];
+  /** Сопроводительный текст */
+  wording?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Типы списков */
@@ -957,6 +1114,12 @@ export enum BookmakerReviewAction {
   Edit = 'EDIT'
 }
 
+export enum BookmakerReviewSpamType {
+  NotSpam = 'NOT_SPAM',
+  PossibleSpam = 'POSSIBLE_SPAM',
+  Spam = 'SPAM'
+}
+
 export type BookmarkInput = {
   objectID: Scalars['ID']['input'];
   objectType: BookmarkObjectType;
@@ -1011,9 +1174,18 @@ export enum CanAddDraftErrorCode {
   PermissionDenied = 'PERMISSION_DENIED'
 }
 
+export type CarouselOfCardsArgs = {
+  geo?: InputMaybe<Scalars['String']['input']>;
+  label: Scalars['String']['input'];
+};
+
 export type ChangeStatusInput = {
   badgeID: Scalars['ID']['input'];
   status: BadgeStatus;
+};
+
+export type CheckEmailExistsInput = {
+  email: Scalars['String']['input'];
 };
 
 export enum CoalesceNameAttrType {
@@ -1040,10 +1212,12 @@ export type CommentChangeObjectInput = {
 };
 
 export enum CommentCreateErrorCode {
+  BookmakerOpinionHasSpam = 'BOOKMAKER_OPINION_HAS_SPAM',
   CommentsDisabled = 'COMMENTS_DISABLED',
   CommentDisableReply = 'COMMENT_DISABLE_REPLY',
   CommentDuplicate = 'COMMENT_DUPLICATE',
   CommentTooOften = 'COMMENT_TOO_OFTEN',
+  InvalidSb = 'INVALID_SB',
   NeedEmailConfirmation = 'NEED_EMAIL_CONFIRMATION',
   TextEmpty = 'TEXT_EMPTY',
   TextTooLong = 'TEXT_TOO_LONG',
@@ -1066,8 +1240,10 @@ export type CommentCreateInput = {
   parentId?: InputMaybe<Scalars['ID']['input']>;
   /** текстовый идентификатор платформы */
   platform?: InputMaybe<PlatformType>;
+  /** содержимое (в формате sb) */
+  structuredBody?: InputMaybe<Scalars['String']['input']>;
   /** текст комментария */
-  text: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CommentDeleteByUserInput = {
@@ -1090,8 +1266,10 @@ export type CommentEditInput = {
   hateMetric?: InputMaybe<Scalars['Float']['input']>;
   /** id комментария в формате сервиса (id¦type¦objectid) */
   id: Scalars['ID']['input'];
+  /** обновленное содержимое (в формате sb) */
+  structuredBody?: InputMaybe<Scalars['String']['input']>;
   /** обновленный текст комментария */
-  text: Scalars['String']['input'];
+  text?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CommentRestoreDonatedInput = {
@@ -1103,6 +1281,13 @@ export type CommentRestoreDonatedInput = {
   hateMetric?: InputMaybe<Scalars['Float']['input']>;
   /** текст коментрия, если пользователь его отредактировал. Необязательный параметр */
   text?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ContentBettingWidgetInput = {
+  bookmaker: BookmakerName;
+  contentID: Scalars['ID']['input'];
+  contentType: BettingWidgetDocumentType;
+  sportType: BettingWidgetSportType;
 };
 
 export type ContentFootballBettingWidgetInput = {
@@ -1136,6 +1321,8 @@ export type CreateItemInput = {
   level: Scalars['Int']['input'];
   newTab: Scalars['Boolean']['input'];
   parentID?: InputMaybe<Scalars['ID']['input']>;
+  /** @deprecated System field */
+  priority?: InputMaybe<Scalars['Int']['input']>;
   sectionID?: InputMaybe<Scalars['ID']['input']>;
   showInHamburger?: InputMaybe<Scalars['Boolean']['input']>;
   showInMain?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1151,7 +1338,6 @@ export type CreateNewsAdminInput = {
   authorID?: InputMaybe<Scalars['ID']['input']>;
   commentsDisabled?: InputMaybe<Scalars['Boolean']['input']>;
   contentOption?: InputMaybe<Scalars['String']['input']>;
-  delayedEvents?: InputMaybe<DelayedEvents>;
   hideAuthor?: InputMaybe<Scalars['Boolean']['input']>;
   hideFromApps?: InputMaybe<Scalars['Boolean']['input']>;
   hideFromIndex?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1160,7 +1346,7 @@ export type CreateNewsAdminInput = {
   isUserNews?: InputMaybe<Scalars['Boolean']['input']>;
   main?: InputMaybe<Scalars['Boolean']['input']>;
   mainInSection?: InputMaybe<Scalars['Boolean']['input']>;
-  pollID?: InputMaybe<Scalars['Int']['input']>;
+  pollID?: InputMaybe<Scalars['ID']['input']>;
   publishedAt?: InputMaybe<Scalars['String']['input']>;
   recommendUntil?: InputMaybe<Scalars['String']['input']>;
   sectionsInfo?: InputMaybe<SectionsInfo>;
@@ -1173,7 +1359,7 @@ export type CreateNewsAdminInput = {
   status: NewsStatus;
   structuredBody?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<DocumentTagInput>>;
-  title: Scalars['String']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
   yandexNewsTitle?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1189,6 +1375,7 @@ export type CreateQuestion = {
 };
 
 export enum CreateReviewErrorCode {
+  TextHasSpam = 'TEXT_HAS_SPAM',
   TextTooLong = 'TEXT_TOO_LONG',
   Unauthorized = 'UNAUTHORIZED'
 }
@@ -1204,6 +1391,25 @@ export type CreateSection = {
   status: FaqSectionStatus;
   /**  Название секции  */
   title: Scalars['String']['input'];
+};
+
+export type CreateTagInput = {
+  /** Минимальный рейтинг для ленты — Все */
+  feedMinRateAll: Scalars['Int']['input'];
+  /** Минимальный рейтинг для ленты — Главное */
+  feedMinRateMain: Scalars['Int']['input'];
+  /** Лимит на минусы */
+  minusLimit: Scalars['Int']['input'];
+  /** Название тега */
+  name: Scalars['String']['input'];
+  /** Оригинальное название */
+  originalName: Scalars['String']['input'];
+  /** Вид спорта */
+  sportID: Scalars['ID']['input'];
+  /** Тип тега */
+  subtype: TagSubtype;
+  /** Синонимы */
+  synonyms: Scalars['String']['input'];
 };
 
 export type CropCoordinatesInput = {
@@ -1245,6 +1451,8 @@ export type CustomPushInput = {
   bundleList?: InputMaybe<Array<Scalars['String']['input']>>;
   entityID: Scalars['ID']['input'];
   entityType: PushEntityType;
+  /** @deprecated Это поле больше не нужно передавать */
+  entityURL?: InputMaybe<Scalars['String']['input']>;
   platformList?: InputMaybe<Array<PushPlatform>>;
   scheduledAt?: InputMaybe<Scalars['String']['input']>;
   sportList?: InputMaybe<Array<Scalars['ID']['input']>>;
@@ -1282,6 +1490,8 @@ export type CustomPushUpdateInput = {
   bundleList?: InputMaybe<Array<Scalars['String']['input']>>;
   entityID: Scalars['ID']['input'];
   entityType: PushEntityType;
+  /** @deprecated Это поле больше не нужно передавать */
+  entityURL?: InputMaybe<Scalars['String']['input']>;
   platformList?: InputMaybe<Array<PushPlatform>>;
   pushID: Scalars['String']['input'];
   scheduledAt?: InputMaybe<Scalars['String']['input']>;
@@ -1428,6 +1638,12 @@ export enum DealType {
   Donation = 'DONATION'
 }
 
+export enum DelayedEventsDocumentType {
+  Article = 'ARTICLE',
+  News = 'NEWS',
+  Post = 'POST'
+}
+
 export enum DeleteCommentReason {
   /**  Коментарий удален самим пользователем  */
   ByUser = 'BY_USER',
@@ -1532,8 +1748,12 @@ export type EditItemInput = {
   icon: Scalars['String']['input'];
   iconContent?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
+  /** @deprecated Unused */
+  level?: InputMaybe<Scalars['Int']['input']>;
   newTab: Scalars['Boolean']['input'];
   parentID?: InputMaybe<Scalars['ID']['input']>;
+  /** @deprecated System field */
+  priority?: InputMaybe<Scalars['Int']['input']>;
   sectionID?: InputMaybe<Scalars['ID']['input']>;
   showInHamburger?: InputMaybe<Scalars['Boolean']['input']>;
   showInMain?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1555,6 +1775,7 @@ export type EditQuestion = {
 };
 
 export enum EditReviewErrorCode {
+  TextHasSpam = 'TEXT_HAS_SPAM',
   TextTooLong = 'TEXT_TOO_LONG',
   Unauthorized = 'UNAUTHORIZED'
 }
@@ -1577,6 +1798,14 @@ export type EditSection = {
 export enum EventObjectClass {
   Post = 'POST'
 }
+
+export type FactoidFilterInput = {
+  iso2: Scalars['String']['input'];
+  maxPreferredOdds?: InputMaybe<Scalars['Float']['input']>;
+  minPreferredOdds?: InputMaybe<Scalars['Float']['input']>;
+  placementName: Scalars['String']['input'];
+  types: Array<Scalars['String']['input']>;
+};
 
 export enum FakePlayerStatus {
   None = 'NONE',
@@ -1888,11 +2117,21 @@ export enum FaqSectionStatus {
   Hidden = 'HIDDEN'
 }
 
+export enum FeedHubGeo {
+  By = 'BY',
+  Kz = 'KZ',
+  Ru = 'RU'
+}
+
 export type Filters = {
   playerIDs?: InputMaybe<Array<Scalars['String']['input']>>;
   startTime?: InputMaybe<DateFilter>;
+  /** @deprecated use teamRegions */
+  teamCountries?: InputMaybe<Array<Scalars['String']['input']>>;
   teamIDs?: InputMaybe<Array<Scalars['String']['input']>>;
   teamRegions?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** @deprecated use tournamentRegions */
+  tournamentCountries?: InputMaybe<Array<Scalars['String']['input']>>;
   tournamentIDs?: InputMaybe<Array<Scalars['String']['input']>>;
   tournamentIDsSource?: InputMaybe<CyberIdType>;
   tournamentRegions?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -1903,6 +2142,123 @@ export enum GeoPermissionCodes {
   Kz = 'KZ',
   Ru = 'RU'
 }
+
+export type HockeyBroadcastMatchesFilter = {
+  countryCode: Scalars['String']['input'];
+  cursorId?: InputMaybe<Scalars['ID']['input']>;
+  limit: Scalars['Int']['input'];
+  sort: VideoContentListSort;
+  source: VideoSource;
+};
+
+export type HockeyPlayerStatRankingInput = {
+  /** Статистика сортировки */
+  attributeSort?: InputMaybe<HockeySeasonPlayerStatAttr>;
+  /** Стат раздел */
+  attributeTab: HockeySeasonPlayerStatTab;
+  /** Лимит */
+  limit: Scalars['Int']['input'];
+  /** Направление сортировки */
+  orderBy?: InputMaybe<SortOrder>;
+  /** Страница */
+  page?: InputMaybe<Scalars['Int']['input']>;
+  /** Фильтр по позиции */
+  positionFilter?: InputMaybe<Position>;
+  /** Тип подсезона */
+  stagePhase?: InputMaybe<HockeyStagePhase>;
+};
+
+export type HockeyPreviewInput = {
+  resize: Scalars['String']['input'];
+};
+
+export enum HockeySeasonPlayerStatAttr {
+  /** Ассисты */
+  Assists = 'ASSISTS',
+  /** Cухие матчи */
+  CleanSheets = 'CLEAN_SHEETS',
+  /** Голы */
+  Goals = 'GOALS',
+  /** Матчей сыграно */
+  MatchesPlayed = 'MATCHES_PLAYED',
+  /** Сыгранные минуты */
+  MinutesPlayed = 'MINUTES_PLAYED',
+  /** Штрафное время */
+  PenaltyMinutes = 'PENALTY_MINUTES',
+  /** Штрафные минуты за матч */
+  PenaltyMinutesPerGame = 'PENALTY_MINUTES_PER_GAME',
+  /** +- */
+  PlusMinus = 'PLUS_MINUS',
+  /** Очки */
+  Points = 'POINTS',
+  /** Отраженные броски */
+  Saves = 'SAVES',
+  /** Отраженные броски % */
+  SavePercentage = 'SAVE_PERCENTAGE',
+  /** Броски в створ */
+  ShotsAgainst = 'SHOTS_AGAINST',
+  /** Минуты */
+  TimeOnIce = 'TIME_ON_ICE',
+  /** Минут на матч */
+  TimeOnIcePerGame = 'TIME_ON_ICE_PER_GAME'
+}
+
+export enum HockeySeasonPlayerStatTab {
+  /** Лучшие */
+  BestScorers = 'BEST_SCORERS',
+  /** Вратари */
+  Goaltenders = 'GOALTENDERS',
+  /** Нарушения */
+  Penalties = 'PENALTIES',
+  /** Полезность */
+  PlusMinus = 'PLUS_MINUS',
+  /** Отраженные броски */
+  Saves = 'SAVES',
+  /** Бомбардиры */
+  Scorers = 'SCORERS',
+  /** Время на льду */
+  TimeOnIce = 'TIME_ON_ICE'
+}
+
+export enum HockeySeasonTeamStatAttr {
+  /** Голы */
+  Goals = 'GOALS',
+  /** Среднее штрафное время */
+  PenaltyMinutesPerGame = 'PENALTY_MINUTES_PER_GAME',
+  /** Штрафное время */
+  PenaltyTime = 'PENALTY_TIME',
+  /** Нейтрализация большинства */
+  PenKill = 'PEN_KILL',
+  /** Среднее штрафное время */
+  PenMinAvg = 'PEN_MIN_AVG',
+  /** Реализация большинства */
+  Powerplay = 'POWERPLAY',
+  /** Сохранённые броски */
+  SavedShots = 'SAVED_SHOTS',
+  /** Броски */
+  Shots = 'SHOTS',
+  ShotsOnGoal = 'SHOTS_ON_GOAL',
+  /** Броски на гол */
+  ShotsPerGoal = 'SHOTS_PER_GOAL',
+  /** Время в атаке */
+  TimeOnAttack = 'TIME_ON_ATTACK'
+}
+
+export enum HockeyStagePhase {
+  All = 'ALL',
+  PlayOff = 'PLAY_OFF',
+  RegularSeason = 'REGULAR_SEASON',
+  Unspecified = 'UNSPECIFIED'
+}
+
+export type HockeyTeamStatRankingInput = {
+  /** Стат. атрибут */
+  attribute: HockeySeasonTeamStatAttr;
+  /** Лимит */
+  limit: Scalars['Int']['input'];
+  /** Тип подсезона */
+  stagePhase?: InputMaybe<HockeyStagePhase>;
+};
 
 export type HruAddInput = {
   /** Новое hru */
@@ -1916,6 +2272,15 @@ export enum HubSport {
   Football = 'FOOTBALL',
   Hockey = 'HOCKEY',
   Tennis = 'TENNIS'
+}
+
+export type IgnoreChanges = {
+  add?: InputMaybe<Array<Scalars['ID']['input']>>;
+  remove?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
+export enum IgnoreErrorCode {
+  AlreadyIgnored = 'ALREADY_IGNORED'
 }
 
 export enum ImageType {
@@ -1974,6 +2339,11 @@ export type InputChatMessage = {
   text: Scalars['String']['input'];
 };
 
+export type ListEventsInput = {
+  amount: Scalars['Int']['input'];
+  page: Scalars['Int']['input'];
+};
+
 export type MatchOfTheDayBettingWidgetInput = {
   bookmaker: BookmakerName;
   date: Scalars['String']['input'];
@@ -1984,11 +2354,13 @@ export type MatchSnippetsMatchesInput = {
   date?: InputMaybe<Scalars['String']['input']>;
   roundID?: InputMaybe<Scalars['String']['input']>;
   sportID: Scalars['ID']['input'];
+  tour?: InputMaybe<Scalars['Int']['input']>;
   tournamentID: Scalars['ID']['input'];
 };
 
 export type MatchTournamentBettingWidgetInput = {
   bookmaker: BookmakerName;
+  factoidFilter?: InputMaybe<FactoidFilterInput>;
   interval?: InputMaybe<Scalars['Int']['input']>;
   tagIDs: Array<Scalars['ID']['input']>;
 };
@@ -2281,9 +2653,35 @@ export enum PersonalFeedCauseType {
   Tag = 'TAG'
 }
 
+export enum PersonalFeedDocumentType {
+  News = 'NEWS',
+  Post = 'POST'
+}
+
+export type PersonalFeedSubscription = {
+  /** ID блоги или автора */
+  id: Scalars['ID']['input'];
+  /** Тип */
+  type: PersonalFeedSubscriptionType;
+};
+
 export enum PersonalFeedSubscriptionType {
   Blog = 'BLOG',
   User = 'USER'
+}
+
+export enum PhotoErrorCode {
+  InvalidExpiresAt = 'INVALID_EXPIRES_AT'
+}
+
+export type PictureBlog = {
+  ext?: PictureExtension;
+  resize?: PictureBlogSize;
+};
+
+export enum PictureBlogSize {
+  Original = 'ORIGINAL',
+  Size_48_48 = 'SIZE_48_48'
 }
 
 export enum PictureCountryLogoSize {
@@ -2376,12 +2774,18 @@ export enum PictureLogoSize {
 }
 
 export type PictureNews = {
+  aspectHeight?: InputMaybe<Scalars['Int']['input']>;
+  aspectWidth?: InputMaybe<Scalars['Int']['input']>;
   ext?: PictureExtension;
+  keepSmall?: InputMaybe<Scalars['Boolean']['input']>;
   resize?: PictureNewsSize;
+  smartCropEnabled?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum PictureNewsSize {
   Original = 'ORIGINAL',
+  Size_343_228 = 'SIZE_343_228',
+  Size_744_495 = 'SIZE_744_495',
   Width_64 = 'WIDTH_64',
   Width_128 = 'WIDTH_128',
   Width_256 = 'WIDTH_256',
@@ -2391,13 +2795,29 @@ export enum PictureNewsSize {
 }
 
 export type PicturePost = {
+  aspectHeight?: InputMaybe<Scalars['Int']['input']>;
+  aspectWidth?: InputMaybe<Scalars['Int']['input']>;
   ext?: PictureExtension;
+  keepSmall?: InputMaybe<Scalars['Boolean']['input']>;
   resize?: PicturePostSize;
   scale?: InputMaybe<Scalars['Int']['input']>;
+  smartCropEnabled?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum PicturePostSize {
   Original = 'ORIGINAL',
+  Size_200_314 = 'SIZE_200_314',
+  Size_256_128 = 'SIZE_256_128',
+  Size_320_168 = 'SIZE_320_168',
+  Size_343_172 = 'SIZE_343_172',
+  Size_343_235 = 'SIZE_343_235',
+  Size_343_296 = 'SIZE_343_296',
+  Size_375_268 = 'SIZE_375_268',
+  Size_396_198 = 'SIZE_396_198',
+  Size_396_412 = 'SIZE_396_412',
+  Size_672_579 = 'SIZE_672_579',
+  Size_744_372 = 'SIZE_744_372',
+  Size_808_404 = 'SIZE_808_404',
   Width_320 = 'WIDTH_320',
   Width_640 = 'WIDTH_640',
   Width_730 = 'WIDTH_730'
@@ -2418,7 +2838,9 @@ export enum PictureStructuredBodySize {
 export enum PictureUserAvatarSize {
   Original = 'ORIGINAL',
   Size_16_16 = 'SIZE_16_16',
+  Size_30_30 = 'SIZE_30_30',
   Size_32_32 = 'SIZE_32_32',
+  Size_38_38 = 'SIZE_38_38',
   Size_48_48 = 'SIZE_48_48',
   Size_64_64 = 'SIZE_64_64',
   Size_128_128 = 'SIZE_128_128'
@@ -2430,7 +2852,8 @@ export enum Position {
   Goalkeeper = 'GOALKEEPER',
   Manager = 'MANAGER',
   Midfielder = 'MIDFIELDER',
-  None = 'NONE'
+  None = 'NONE',
+  NotGoalkeeper = 'NOT_GOALKEEPER'
 }
 
 export enum PostCreateErrorCode {
@@ -2562,6 +2985,8 @@ export enum PostUpdateAuthorErrorCode {
 export type PredictionHubCreatePredictionInput = {
   /** Идентификатор матча */
   matchID: Scalars['ID']['input'];
+  /** @deprecated use oddsFloat */
+  odds?: InputMaybe<Scalars['String']['input']>;
   /** Кэф */
   oddsFloat?: InputMaybe<Scalars['Float']['input']>;
   /** Идентификатор поста */
@@ -2655,6 +3080,11 @@ export enum PusherEventType {
   FootballMatchStart = 'FOOTBALL_MATCH_START',
   FootballPenalty = 'FOOTBALL_PENALTY',
   FootballPeriodStart = 'FOOTBALL_PERIOD_START',
+  FootballPlayerGoal = 'FOOTBALL_PLAYER_GOAL',
+  FootballPlayerGoalAssist = 'FOOTBALL_PLAYER_GOAL_ASSIST',
+  FootballPlayerRedCard = 'FOOTBALL_PLAYER_RED_CARD',
+  FootballPlayerSubstitution = 'FOOTBALL_PLAYER_SUBSTITUTION',
+  FootballPlayerYellowCard = 'FOOTBALL_PLAYER_YELLOW_CARD',
   FootballRedCard = 'FOOTBALL_RED_CARD',
   FootballSubstitution = 'FOOTBALL_SUBSTITUTION',
   FootballTeamPlayer = 'FOOTBALL_TEAM_PLAYER',
@@ -2685,6 +3115,14 @@ export type PusherSectionSubscribeInput = {
 
 export type PusherSectionUnsubscribeInput = {
   sectionIDs: Array<Scalars['ID']['input']>;
+};
+
+export type PusherSetTokenInput = {
+  bundleId: Scalars['String']['input'];
+  lang?: InputMaybe<PushLanguage>;
+  platform: PushPlatform;
+  status?: InputMaybe<PushesStatus>;
+  token?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PusherUpdateTokenInput = {
@@ -2724,6 +3162,12 @@ export enum RateNotAllowedErrorCode {
   WrongDateFormat = 'WRONG_DATE_FORMAT'
 }
 
+export enum RatingEventStatus {
+  Canceled = 'CANCELED',
+  Completed = 'COMPLETED',
+  Scheduled = 'SCHEDULED'
+}
+
 export type RecommendationDoc = {
   documentID: Scalars['ID']['input'];
   documentType: RecommendationDocumentType;
@@ -2740,6 +3184,18 @@ export enum RecommendationIgnoreType {
   Section = 'SECTION',
   Tag = 'TAG'
 }
+
+export type RegisterInput = {
+  email: Scalars['String']['input'];
+  emailPublic?: InputMaybe<Scalars['String']['input']>;
+  nickname: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  recaptcha?: InputMaybe<Scalars['String']['input']>;
+  repassword: Scalars['String']['input'];
+  slug?: InputMaybe<Scalars['String']['input']>;
+  telegramPublic?: InputMaybe<Scalars['String']['input']>;
+  vkPublic?: InputMaybe<Scalars['String']['input']>;
+};
 
 export enum SearchEngine {
   All = 'ALL',
@@ -2761,8 +3217,15 @@ export type SeasonToursInput = {
 };
 
 export type SectionsInfo = {
-  mainSectionID: Scalars['ID']['input'];
-  sectionIDs: Array<Scalars['ID']['input']>;
+  mainSectionID?: InputMaybe<Scalars['ID']['input']>;
+  sectionIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
+export type SelectTagImageInput = {
+  /** ID тега */
+  id: Scalars['ID']['input'];
+  /** Ссылка на фото */
+  imageURL: Scalars['String']['input'];
 };
 
 export type SendBreakingPushInput = {
@@ -2800,6 +3263,17 @@ export type SetAnimatedLogoInput = {
   animation: Animation;
 };
 
+export enum SetDelayedEventsErrorCode {
+  DelayedActivationInPast = 'DELAYED_ACTIVATION_IN_PAST',
+  DelayedDeactivationBefore = 'DELAYED_DEACTIVATION_BEFORE',
+  DelayedDeactivationInPast = 'DELAYED_DEACTIVATION_IN_PAST'
+}
+
+export type SetDelayedEventsInput = {
+  activationTime?: InputMaybe<Scalars['String']['input']>;
+  deactivationTime?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type SetLogoContentInput = {
   content: Scalars['String']['input'];
 };
@@ -2823,24 +3297,114 @@ export type SetUserInterestInput = {
   docs: Array<RecommendationDoc>;
 };
 
-export type ShortsSlideInput = {
+export enum ShortSportsDocumentType {
+  News = 'NEWS',
+  Post = 'POST'
+}
+
+export type ShortSportsPhotoCreate = {
+  /** Дата окончания */
+  expiresAt: Scalars['String']['input'];
+  /** URL ссылки на фото */
+  imageURL: Scalars['String']['input'];
+  /** Порядок */
+  priority?: InputMaybe<Scalars['Int']['input']>;
+  /** Статус */
+  status: ShortSportsPhotoStatus;
+  /** Теги */
+  tagIDs: Array<Scalars['ID']['input']>;
+  /** Заголовок */
+  title: Scalars['String']['input'];
+};
+
+export enum ShortSportsPhotoStatus {
+  Deleted = 'DELETED',
+  Draft = 'DRAFT',
+  Public = 'PUBLIC'
+}
+
+export type ShortSportsPhotoUpdate = {
+  /** Дата окончания */
+  expiresAt: Scalars['String']['input'];
+  /** Идентификатор фото */
+  id: Scalars['ID']['input'];
+  /** URL ссылки на фото */
+  imageURL: Scalars['String']['input'];
+  /** Порядок */
+  priority?: InputMaybe<Scalars['Int']['input']>;
+  /** Статус */
+  status: ShortSportsPhotoStatus;
+  /** Теги */
+  tagIDs: Array<Scalars['ID']['input']>;
+  /** Заголовок */
+  title: Scalars['String']['input'];
+};
+
+export type ShortSportsSlideInput = {
   id: Scalars['ID']['input'];
   imageWithCrop: ImageWithCropInput;
   text?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type ShortsStoryInput = {
+export type ShortSportsStoriesArgs = {
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
+};
+
+export type ShortSportsStoryInput = {
   audioIsMuted?: InputMaybe<Scalars['Boolean']['input']>;
   audioURL?: InputMaybe<Scalars['String']['input']>;
   documentID: Scalars['ID']['input'];
-  documentType: SummaryDocumentType;
+  documentType: ShortSportsDocumentType;
   id: Scalars['ID']['input'];
-  slides?: InputMaybe<Array<ShortsSlideInput>>;
+  slides?: InputMaybe<Array<ShortSportsSlideInput>>;
 };
 
-export type ShortsStoryUpdate = {
-  story: ShortsStoryInput;
+export type ShortSportsStoryUpdate = {
+  story: ShortSportsStoryInput;
+};
+
+export type ShortSportsVideoCreate = {
+  /** Выключен ли звук в видео */
+  audioIsMuted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Код вставки видео */
+  embedCode: Scalars['String']['input'];
+  /** Дата окончания */
+  expiresAt: Scalars['String']['input'];
+  /** Порядок */
+  priority?: InputMaybe<Scalars['Int']['input']>;
+  /** Статус */
+  status: ShortSportsVideoStatus;
+  /** Теги */
+  tagIDs: Array<Scalars['ID']['input']>;
+  /** Заголовок */
+  title: Scalars['String']['input'];
+};
+
+export enum ShortSportsVideoStatus {
+  Deleted = 'DELETED',
+  Draft = 'DRAFT',
+  Public = 'PUBLIC'
+}
+
+export type ShortSportsVideoUpdate = {
+  /** Выключен ли звук в видео */
+  audioIsMuted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Код вставки видео */
+  embedCode: Scalars['String']['input'];
+  /** Дата окончания */
+  expiresAt: Scalars['String']['input'];
+  /** Порядок */
+  priority?: InputMaybe<Scalars['Int']['input']>;
+  /** Статус */
+  status: ShortSportsVideoStatus;
+  /** Теги */
+  tagIDs: Array<Scalars['ID']['input']>;
+  /** Заголовок */
+  title: Scalars['String']['input'];
+  /** Идентификатор видео */
+  videoID: Scalars['ID']['input'];
 };
 
 export type SimilarInput = {
@@ -2868,20 +3432,20 @@ export type SocialLoginAuthByTelegramInput = {
   userInfo: SocialLoginTelegramUserInfoInput;
 };
 
-export enum SocialLoginErrorCode {
-  AuthCodeExpired = 'AUTH_CODE_EXPIRED',
-  PhoneNotConfirmed = 'PHONE_NOT_CONFIRMED',
-  UserBanned = 'USER_BANNED',
-  UserBlocked = 'USER_BLOCKED',
-  UserNotActivated = 'USER_NOT_ACTIVATED'
-}
+export type SocialLoginAuthByVkInput = {
+  code: Scalars['String']['input'];
+  codeVerifier: Scalars['String']['input'];
+  deviceID: Scalars['String']['input'];
+  redirectURI: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+};
 
-export enum SocialLoginObjectType {
-  BanObjectTypeBookmakerOpinion = 'BAN_OBJECT_TYPE_BOOKMAKER_OPINION',
-  BanObjectTypeComment = 'BAN_OBJECT_TYPE_COMMENT',
-  BanObjectTypeNoObject = 'BAN_OBJECT_TYPE_NO_OBJECT',
-  BanObjectTypePost = 'BAN_OBJECT_TYPE_POST'
-}
+export type SocialLoginAuthByYandexInput = {
+  code: Scalars['String']['input'];
+  codeVerifier: Scalars['String']['input'];
+  deviceID: Scalars['String']['input'];
+  deviceName: Scalars['String']['input'];
+};
 
 export type SocialLoginTelegramUserInfoInput = {
   authDate: Scalars['String']['input'];
@@ -2891,6 +3455,12 @@ export type SocialLoginTelegramUserInfoInput = {
   photoUrl?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
 };
+
+/** Сортировка лайнапа */
+export enum SortOrder {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
 
 export type SplitByTournamentsInput = {
   seriesCount?: InputMaybe<Scalars['Int']['input']>;
@@ -2961,6 +3531,12 @@ export enum StructuredBodyLastMatchesSportType {
   Hockey = 'hockey'
 }
 
+export enum StructuredBodyLastMatchesWidgetType {
+  Booth = 'booth',
+  HeadToHead = 'head_to_head',
+  LastMatches = 'last_matches'
+}
+
 export enum StructuredBodyListStyle {
   Decimal = 'decimal',
   Disc = 'disc'
@@ -3009,11 +3585,6 @@ export enum SummaryDocumentType {
   Post = 'POST'
 }
 
-export type SummaryShortsArgs = {
-  limit: Scalars['Int']['input'];
-  offset: Scalars['Int']['input'];
-};
-
 export type SummaryUpdateInput = {
   content: Scalars['String']['input'];
   documentID: Scalars['ID']['input'];
@@ -3030,16 +3601,33 @@ export type SupportEmail = {
   userName?: InputMaybe<Scalars['String']['input']>;
 };
 
+export enum TagAction {
+  Delete = 'DELETE',
+  Edit = 'EDIT',
+  EditImages = 'EDIT_IMAGES'
+}
+
 export enum TagBettingWikiType {
   Category = 'CATEGORY',
   Main = 'MAIN',
   Subcategory = 'SUBCATEGORY'
 }
 
+export enum TagCreateErrorCode {
+  EmptyName = 'EMPTY_NAME',
+  NameIsTaken = 'NAME_IS_TAKEN'
+}
+
 export type TagFootballBettingWidgetInput = {
   bookmaker: BookmakerName;
   tagID: Scalars['ID']['input'];
 };
+
+export enum TagPlatform {
+  Flagman = 'FLAGMAN',
+  Goal = 'GOAL',
+  Web = 'WEB'
+}
 
 export enum TagSubtype {
   Game = 'GAME',
@@ -3130,6 +3718,11 @@ export type TagTopSuggestionInput = {
   /** ID тега */
   tagID: Scalars['ID']['input'];
 };
+
+export enum TagUpdateErrorCode {
+  EmptyName = 'EMPTY_NAME',
+  NameIsTaken = 'NAME_IS_TAKEN'
+}
 
 export type TextOnlineCreateNoteInput = {
   /** Контент в формате SB */
@@ -3243,6 +3836,8 @@ export enum TextOnlineNoteOrder {
 
 /** Типы сообщений текстовой трансляции */
 export enum TextOnlineNoteType {
+  /** Реклама */
+  Advertisement = 'ADVERTISEMENT',
   /** «Внимание!» в футбольных трансляциях */
   Attention = 'ATTENTION',
   /** «Гол» в футбольных трансляциях */
@@ -3287,6 +3882,15 @@ export type TextOnlineUnbindOnlineInput = {
   /** ID поста */
   postID?: InputMaybe<Scalars['ID']['input']>;
 };
+
+export enum TokenState {
+  /** Запись существует и у нее есть FCM токен */
+  Active = 'ACTIVE',
+  /** Запись существует, но у нее нет назначенного FCM токена */
+  EmptyFcmToken = 'EMPTY_FCM_TOKEN',
+  /** Записи не существует */
+  NotExists = 'NOT_EXISTS'
+}
 
 export enum TopTennisRating {
   Atp = 'ATP',
@@ -3345,12 +3949,18 @@ export type UpdateEventInput = {
   targetTime: Scalars['String']['input'];
 };
 
+export type UpdateIgnoredInput = {
+  authors?: InputMaybe<IgnoreChanges>;
+  blogs?: InputMaybe<IgnoreChanges>;
+  sections?: InputMaybe<IgnoreChanges>;
+  tags?: InputMaybe<IgnoreChanges>;
+};
+
 export type UpdateNewsAdminInput = {
   advertisingDisable?: InputMaybe<Scalars['Boolean']['input']>;
   authorID?: InputMaybe<Scalars['ID']['input']>;
   commentsDisabled?: InputMaybe<Scalars['Boolean']['input']>;
   contentOption?: InputMaybe<Scalars['String']['input']>;
-  delayedEvents?: InputMaybe<DelayedEvents>;
   hideAuthor?: InputMaybe<Scalars['Boolean']['input']>;
   hideFromApps?: InputMaybe<Scalars['Boolean']['input']>;
   hideFromIndex?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3360,7 +3970,7 @@ export type UpdateNewsAdminInput = {
   isUserNews?: InputMaybe<Scalars['Boolean']['input']>;
   main?: InputMaybe<Scalars['Boolean']['input']>;
   mainInSection?: InputMaybe<Scalars['Boolean']['input']>;
-  pollID?: InputMaybe<Scalars['Int']['input']>;
+  pollID?: InputMaybe<Scalars['ID']['input']>;
   publishedAt?: InputMaybe<Scalars['String']['input']>;
   pushID?: InputMaybe<Scalars['String']['input']>;
   recommendUntil?: InputMaybe<Scalars['String']['input']>;
@@ -3387,6 +3997,27 @@ export enum UpdateStoryErrorCode {
   ImageRequired = 'IMAGE_REQUIRED'
 }
 
+export type UpdateTagInput = {
+  /** Минимальный рейтинг для ленты — Все */
+  feedMinRateAll: Scalars['Int']['input'];
+  /** Минимальный рейтинг для ленты — Главное */
+  feedMinRateMain: Scalars['Int']['input'];
+  /** ID тега */
+  id: Scalars['ID']['input'];
+  /** Лимит на минусы */
+  minusLimit: Scalars['Int']['input'];
+  /** Название тега */
+  name: Scalars['String']['input'];
+  /** Оригинальное название */
+  originalName: Scalars['String']['input'];
+  /** Вид спорта */
+  sportID: Scalars['ID']['input'];
+  /** Тип тега */
+  subtype: TagSubtype;
+  /** Синонимы */
+  synonyms: Scalars['String']['input'];
+};
+
 export type UploadImageInput = {
   imageType: ImageType;
   namespace: StatImageNamespaceType;
@@ -3404,6 +4035,36 @@ export type UploadUserPictureInput = {
   objectType: UserImageObjectType;
 };
 
+export enum UserDeleteErrorCode {
+  CredentialsMismatch = 'CREDENTIALS_MISMATCH',
+  ReasonLimitExceeded = 'REASON_LIMIT_EXCEEDED'
+}
+
+export enum UserEditErrorCode {
+  BadEmail = 'BAD_EMAIL',
+  BadPassword = 'BAD_PASSWORD',
+  DuplicateAddress = 'DUPLICATE_ADDRESS',
+  DuplicateNick = 'DUPLICATE_NICK',
+  DuplicateSlug = 'DUPLICATE_SLUG',
+  EmailAlreadyConfirmed = 'EMAIL_ALREADY_CONFIRMED',
+  EmptyEmail = 'EMPTY_EMAIL',
+  EmptyFirstName = 'EMPTY_FIRST_NAME',
+  EmptyLastName = 'EMPTY_LAST_NAME',
+  EmptyNick = 'EMPTY_NICK',
+  EmptyPassword = 'EMPTY_PASSWORD',
+  EqualOldNewPassword = 'EQUAL_OLD_NEW_PASSWORD',
+  LoginEmailDiff = 'LOGIN_EMAIL_DIFF',
+  MethodNotImplemented = 'METHOD_NOT_IMPLEMENTED',
+  NickContainsStopwords = 'NICK_CONTAINS_STOPWORDS',
+  NickDigital = 'NICK_DIGITAL',
+  NickInvalidCharachters = 'NICK_INVALID_CHARACHTERS',
+  NickTooLong = 'NICK_TOO_LONG',
+  SlugContainsStopwords = 'SLUG_CONTAINS_STOPWORDS',
+  SlugInvalidCharachters = 'SLUG_INVALID_CHARACHTERS',
+  SlugTooLong = 'SLUG_TOO_LONG',
+  WrongPhone = 'WRONG_PHONE'
+}
+
 export enum UserImageObjectType {
   UserAvatar = 'USER_AVATAR'
 }
@@ -3417,7 +4078,13 @@ export type UserLeagueAddSquadInput = {
   squadID: Scalars['ID']['input'];
 };
 
+export enum UserMediaType {
+  Avatar = 'AVATAR',
+  Cover = 'COVER'
+}
+
 export enum UserPhoneConfirmErrorCode {
+  IncorrectPhoneConfirmAuth = 'INCORRECT_PHONE_CONFIRM_AUTH',
   NoSuchUser = 'NO_SUCH_USER',
   PhoneCodeExpired = 'PHONE_CODE_EXPIRED',
   PhoneConfirmationLimit = 'PHONE_CONFIRMATION_LIMIT',
@@ -3438,6 +4105,7 @@ export enum UserRule {
   CanEditBlogs = 'CAN_EDIT_BLOGS',
   CanPinComments = 'CAN_PIN_COMMENTS',
   ChangeRule = 'CHANGE_RULE',
+  DeleteTags = 'DELETE_TAGS',
   EditBettingWiki = 'EDIT_BETTING_WIKI',
   EditBookmakers = 'EDIT_BOOKMAKERS',
   EditComments = 'EDIT_COMMENTS',
@@ -3457,10 +4125,12 @@ export enum UserRule {
   EditPredictionHub = 'EDIT_PREDICTION_HUB',
   EditRelatedDocs = 'EDIT_RELATED_DOCS',
   EditSections = 'EDIT_SECTIONS',
+  EditShortSports = 'EDIT_SHORT_SPORTS',
   EditStatPictures = 'EDIT_STAT_PICTURES',
   EditStopwords = 'EDIT_STOPWORDS',
   EditSummary = 'EDIT_SUMMARY',
   EditTags = 'EDIT_TAGS',
+  EditTagImages = 'EDIT_TAG_IMAGES',
   EditTagTop = 'EDIT_TAG_TOP',
   EditTextOnline = 'EDIT_TEXT_ONLINE',
   EditUsers = 'EDIT_USERS',
@@ -3481,6 +4151,11 @@ export type UsersWithRulesInput = {
   filter: UsersWithRulesFilter;
   pageNum: Scalars['Int']['input'];
 };
+
+export enum VideoErrorCode {
+  BadEmbedCode = 'BAD_EMBED_CODE',
+  BadExpiresAt = 'BAD_EXPIRES_AT'
+}
 
 export enum VoteResult {
   Draw = 'draw',
@@ -3579,7 +4254,8 @@ export enum WinterOlympicsMedalType {
 export type AddComplaintInput = {
   /**  Тип жалобы (SPAM, SWEARS и т.д.)   */
   complaintType: ComplaintType;
-  locale: Scalars['String']['input'];
+  /** @deprecated Это древнее зло, отказываемся от него */
+  locale?: InputMaybe<Scalars['String']['input']>;
   /**  Class объекта жалобы (enum)  */
   objectClassType?: InputMaybe<ObjectClass>;
   /**  ID объекта жалобы   */
@@ -3619,6 +4295,8 @@ export enum AdminAction {
   AdminAccessPost = 'ADMIN_ACCESS_POST',
   /** Доступ к управлению прогнозами в Хабе прогнозов */
   AdminAccessPredictionHub = 'ADMIN_ACCESS_PREDICTION_HUB',
+  /** Доступ к управлению событиями рейтинга */
+  AdminAccessRatingEvents = 'ADMIN_ACCESS_RATING_EVENTS',
   /** Доступ к админке тегов */
   AdminAccessTag = 'ADMIN_ACCESS_TAG',
   /** Доступ к админке рейтингов */
@@ -3661,7 +4339,6 @@ export enum BanObjectClass {
   ClassUser = 'CLASS_USER',
   Comments = 'COMMENTS',
   Conference = 'CONFERENCE',
-  Forum = 'FORUM',
   News = 'NEWS',
   Photo = 'PHOTO',
   PhotoGallery = 'PHOTO_GALLERY',
@@ -3697,6 +4374,16 @@ export enum CardType {
   Undefined = 'UNDEFINED',
   Visa = 'VISA'
 }
+
+export type ChangeEmailArgs = {
+  email: Scalars['String']['input'];
+};
+
+export type ChangeUserPasswordArgs = {
+  newPassword: Scalars['String']['input'];
+  oldPassword: Scalars['String']['input'];
+  rePassword: Scalars['String']['input'];
+};
 
 export type ChatMessageComplaintInput = {
   chatId: Scalars['ID']['input'];
@@ -3809,14 +4496,17 @@ export type CreateCampaignInput = {
   name: Scalars['String']['input'];
 };
 
-export type DelayedEvents = {
-  activationTime?: InputMaybe<Scalars['String']['input']>;
-  deactivationTime?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type DeleteCampaignInput = {
   /** ID сбора */
   id: Scalars['ID']['input'];
+};
+
+export type DeleteUserArgs = {
+  appleAPIID?: InputMaybe<Scalars['String']['input']>;
+  appleCode?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+  reason?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
 };
 
 export type DocInput = {
@@ -3835,6 +4525,25 @@ export enum DocumentKind {
   Video = 'VIDEO'
 }
 
+export type EditArgs = {
+  /**  О себе  */
+  about?: InputMaybe<Scalars['String']['input']>;
+  /**  Дата рождения  */
+  birthday?: InputMaybe<Scalars['String']['input']>;
+  /**  Имя  */
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  /**  Фамилия  */
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  /**  Отчество  */
+  middleName?: InputMaybe<Scalars['String']['input']>;
+  /**  Псевдоним  */
+  nickname?: InputMaybe<Scalars['String']['input']>;
+  /**  Половая принадлежность  */
+  sex?: InputMaybe<UserSex>;
+  /**  Слаг  */
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type EditCampaignInput = {
   /** Необходимая сумма */
   amount: Scalars['Float']['input'];
@@ -3846,14 +4555,85 @@ export type EditCampaignInput = {
   name: Scalars['String']['input'];
 };
 
+export type EditPublicSocialsArgs = {
+  emailPublic?: InputMaybe<Scalars['String']['input']>;
+  telegramPublic?: InputMaybe<Scalars['String']['input']>;
+  vkPublic?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Источники/редакторы для поста */
 export enum EditSource {
   Admin = 'ADMIN',
   Wysiwyg = 'WYSIWYG'
 }
 
+export type EditUserSettingsArgs = {
+  /**  Уведомления о новых наградах  */
+  achievementNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Уведомления рекламных рассылок  */
+  advertisingToEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Что-то из будущего, видимо связанное с генерацией саммари для моего контента  */
+  aiSummary?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Высылать уведомления об изменениях в бейджах  */
+  badges_notification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Уведомления при ответах на коментарии  */
+  commentsNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Высылать уведомления об ответах на комментарии на email  */
+  commentsNotificationToEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Уведомления об ответах на посты и статусы  */
+  documentCommentsNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Включить получение донатов  */
+  donation?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Отправлять уведомления на почту  */
+  emailNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Фэнтази уведомления за сутки до дедлайна  */
+  fantasyFootballDayBeforeNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Фэнтази уведомления за час до дедлайна  */
+  fantasyFootballHourBeforeNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Фэнтази уведомления об итогах тура  */
+  fantasyFootballRoundResultsNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Уведомления о новых подписчиках  */
+  friendsNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Высылать уведомления о новых друзьях на емэйл  */
+  friendsNotificationToEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Дублировать внутреннюю почту по e-mail  */
+  internalMailToEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Уведомление об упоминании в комментах по слагу  */
+  mentionNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Уведомления по новостям, подборкам и статьям  */
+  newslettersToEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Уведомлять, если поделились статусом  */
+  shareStatusNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать историю пожертвований  */
+  showAllDonations?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать завершённые сборы  */
+  showCompletedDonationCampaigns?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать почту в профиле  */
+  showEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать мои новости  */
+  showMyNews?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать подписчиков  */
+  showSubscribers?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать мои подписки  */
+  showSubscriptions?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать телеграм в профиле  */
+  showTelegram?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать VK в профиле  */
+  showVK?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Показывать уведомления на сайте  */
+  siteNotification?: InputMaybe<Scalars['Boolean']['input']>;
+  /**  Разрешить комментировать статусы только друзьям  */
+  statusCommentsFriendsOnly?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type EntityByUrlInput = {
   url: Scalars['String']['input'];
+};
+
+export type EntityTemplateArgs = {
+  entityID: Scalars['ID']['input'];
+  entityType: PageMetaEntityType;
+  tabHRU: Scalars['String']['input'];
 };
 
 export enum ExpandTournaments {
@@ -3914,6 +4694,7 @@ export enum GraphMedal {
 export enum GraphStageName {
   EightThFinals = 'EIGHT_TH_FINALS',
   Final = 'FINAL',
+  KnockoutRoundPlayOffs = 'KNOCKOUT_ROUND_PLAY_OFFS',
   OneRdQualifyingRound = 'ONE_RD_QUALIFYING_ROUND',
   OneStQualifyingRound = 'ONE_ST_QUALIFYING_ROUND',
   PlayOffs = 'PLAY_OFFS',
@@ -3948,6 +4729,11 @@ export enum HockeyEventType {
   UpdateCurrentTime = 'UPDATE_CURRENT_TIME'
 }
 
+export enum HockeyMatchGroupOrder {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
+
 /** Период */
 export enum HockeyPeriod {
   Intermission_1 = 'INTERMISSION_1',
@@ -3961,6 +4747,19 @@ export enum HockeyPeriod {
   Period_3 = 'PERIOD_3',
   PostMatch = 'POST_MATCH',
   PreMatch = 'PRE_MATCH'
+}
+
+export enum HockeyPhase {
+  AllStar = 'ALL_STAR',
+  None = 'NONE',
+  PlayOff = 'PLAY_OFF',
+  PreSeason = 'PRE_SEASON',
+  RegularSeason = 'REGULAR_SEASON'
+}
+
+export enum HockeyPlayerAttribute {
+  Assist = 'ASSIST',
+  Goal = 'GOAL'
 }
 
 export type HockeySearchInput = {
@@ -3984,6 +4783,11 @@ export enum HockeyTeamStrength {
   Even = 'EVEN',
   Powerplay = 'POWERPLAY',
   Shorthanded = 'SHORTHANDED'
+}
+
+export enum HockeyTournamentStage {
+  PlayOff = 'PLAY_OFF',
+  Regular = 'REGULAR'
 }
 
 /** Типы событий */
@@ -4083,6 +4887,22 @@ export type LogoTournamentInput = {
   url: Scalars['String']['input'];
 };
 
+export enum MarkClass {
+  RatingFair = 'RATING_FAIR',
+  RatingGood = 'RATING_GOOD',
+  RatingPerfect = 'RATING_PERFECT',
+  RatingPoor = 'RATING_POOR',
+  RatingStar = 'RATING_STAR',
+  RatingVeryGood = 'RATING_VERY_GOOD'
+}
+
+export type MatchCenterArgs = {
+  hru: Scalars['String']['input'];
+  page: Scalars['Int']['input'];
+  pageSize: Scalars['Int']['input'];
+  pageURL?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Типы периодов */
 export enum MatchStatus {
   /** The match has been abandoned */
@@ -4127,12 +4947,22 @@ export type MatchesByDateFilter = {
   dayLength?: InputMaybe<Scalars['String']['input']>;
   /** Только матчи с SportsId в Ubersetzer */
   hasSportsId?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * [DEPRECATED] Фильтр по статусу матча
+   * @deprecated используйте status
+   */
+  matchStatus?: InputMaybe<StatMatchStatus>;
   /** Источник id для турниров */
   source?: InputMaybe<StatSourceList>;
   /** Фильтр по статусам матча */
   status?: InputMaybe<Array<MatchStatus>>;
   /** Часовой пояс в формате *±hh:mm* */
   timezone?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * [DEPRECATED] Фильтр по турниру
+   * @deprecated используйте tournamentIds
+   */
+  tournamentId?: InputMaybe<Scalars['ID']['input']>;
   /** Фильтр по списку турниров */
   tournamentIds?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
@@ -4145,6 +4975,17 @@ export enum MatchesByDateSort {
   /** сортировка по убыванию приоритета матчей */
   Priority = 'PRIORITY'
 }
+
+export type McByDateInput = {
+  /** Дата в формате YYYY-MM-DD (относительно указанной таймзоны) */
+  date: Scalars['String']['input'];
+  /** Фильтр по статусам матча */
+  gameStatuses?: InputMaybe<Array<MatchStatus>>;
+  /** Фильтр по видам спорта */
+  sports?: InputMaybe<Array<McKindOfSport>>;
+  /** Сдвиг по таймзоне, например +03:00 для Москвы */
+  tzOffset?: Scalars['String']['input'];
+};
 
 export type McCustomSettingsFilter = {
   /** Фильтр по гео */
@@ -4183,15 +5024,46 @@ export enum McKindOfSport {
   TeaserIcehockey = 'TEASER_ICEHOCKEY'
 }
 
+export type McMatchesPrepare = {
+  loaders?: InputMaybe<Array<StatMatchLoaderStrategy>>;
+};
+
+export type McTournamentsListInput = {
+  /** Фильтр по видам спорта */
+  sports?: InputMaybe<Array<McKindOfSport>>;
+};
+
 export enum MessageAction {
   Add = 'ADD',
   Edit = 'EDIT'
+}
+
+export enum MobileWidgetTabType {
+  BestPlayers = 'BEST_PLAYERS',
+  GroupStage = 'GROUP_STAGE',
+  H2H = 'H2H',
+  Lineups = 'LINEUPS',
+  Match = 'MATCH',
+  PlayoffStage = 'PLAYOFF_STAGE',
+  QualificationStage = 'QUALIFICATION_STAGE',
+  RegularStage = 'REGULAR_STAGE',
+  Review = 'REVIEW',
+  Statistics = 'STATISTICS'
 }
 
 /**  фильтры (ALL - все новости, MAIN - только главные)  */
 export enum NewsFilter {
   All = 'ALL',
   Main = 'MAIN'
+}
+
+export enum NewsQuerySource {
+  /** Все */
+  All = 'ALL',
+  /** Редакторские новости */
+  News = 'NEWS',
+  /** Пользовательские новости */
+  UserNews = 'USER_NEWS'
 }
 
 /** Варианты подбора новости */
@@ -4233,14 +5105,12 @@ export enum ObjectClass {
   Chat = 'CHAT',
   ChatMessage = 'CHAT_MESSAGE',
   Comment = 'COMMENT',
-  Forum = 'FORUM',
   News = 'NEWS',
   Photo = 'PHOTO',
   Poll = 'POLL',
   Post = 'POST',
   Status = 'STATUS',
-  UserNews = 'USER_NEWS',
-  Video = 'VIDEO'
+  UserNews = 'USER_NEWS'
 }
 
 export enum ObjectEditEventAction {
@@ -4251,6 +5121,10 @@ export enum ObjectEditEventAction {
 export enum OrderDirection {
   Asc = 'ASC',
   Desc = 'DESC'
+}
+
+export enum PageMetaEntityType {
+  Tag = 'TAG'
 }
 
 export enum PageSubtype {
@@ -4397,6 +5271,12 @@ export enum PollStatus {
   All = 'ALL'
 }
 
+export enum PostContentType {
+  All = 'ALL',
+  ExcludeGen = 'EXCLUDE_GEN',
+  OnlyPredictions = 'ONLY_PREDICTIONS'
+}
+
 /** Доступные действия над постом */
 export enum PostEnableAction {
   Admin = 'ADMIN',
@@ -4407,6 +5287,13 @@ export enum PostEnableAction {
   Restore = 'RESTORE',
   Show = 'SHOW',
   ShowInSection = 'SHOW_IN_SECTION'
+}
+
+export enum PostSortType {
+  MostComments = 'MOST_COMMENTS',
+  NewFirst = 'NEW_FIRST',
+  OldFirst = 'OLD_FIRST',
+  TopRated = 'TOP_RATED'
 }
 
 /** Вариант отображения (заглушки или фактоиды) */
@@ -4573,6 +5460,22 @@ export enum SearchType {
   /** Стадионы */
   Venue = 'VENUE'
 }
+
+export type SetEntityTemplateArgs = {
+  canonical?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  entityID: Scalars['ID']['input'];
+  entityType: PageMetaEntityType;
+  h1?: InputMaybe<Scalars['String']['input']>;
+  robots?: InputMaybe<Scalars['String']['input']>;
+  tabHRU: Scalars['String']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SetUserMediaArgs = {
+  Type: UserMediaType;
+  URL: Scalars['String']['input'];
+};
 
 export enum SettingsField {
   FieldCommentsFilterSort = 'FIELD_COMMENTS_FILTER_SORT',
@@ -4836,6 +5739,16 @@ export enum StatMlMatchPredictionSort {
   YellowCards = 'YELLOW_CARDS'
 }
 
+/** Стратегия группировки матчей сезона */
+export enum StatMatchGroupBy {
+  /** Автоматически: групповой этап — по игровым дням, плей-офф — по названию стадии */
+  Auto = 'AUTO',
+  /** Группировать по игровым дням (формат даты: YYYY-MM-DD) */
+  ByDay = 'BY_DAY',
+  /** Группировать по стадиям: туры для группового этапа ("1 тур", "2 тур"), раунды для плей-офф ("1/8 финала", "Финал") */
+  ByStage = 'BY_STAGE'
+}
+
 /** Сортировки в пагинации */
 export enum StatMatchListSort {
   /** Возрастание */
@@ -4846,6 +5759,12 @@ export enum StatMatchListSort {
   Desc = 'DESC',
   /** сортировка по убыванию по началу матча */
   DescScheduledAt = 'DESC_SCHEDULED_AT'
+}
+
+export enum StatMatchLoaderStrategy {
+  LiveLoader = 'LIVE_LOADER',
+  ScoreLoader = 'SCORE_LOADER',
+  TeamLoader = 'TEAM_LOADER'
 }
 
 /** Состояние матча */
@@ -5411,7 +6330,8 @@ export enum TransferType {
 
 export type UpdateContentStatusInput = {
   contentID?: InputMaybe<Scalars['String']['input']>;
-  locale: Scalars['String']['input'];
+  /** @deprecated Это древнее зло, отказываемся от него */
+  locale?: InputMaybe<Scalars['String']['input']>;
   statusCurrent: ComplaintContentStatus;
   statusNew: ComplaintContentStatus;
   userID?: InputMaybe<Scalars['String']['input']>;
@@ -5442,6 +6362,13 @@ export enum UserSex {
   Female = 'FEMALE',
   Male = 'MALE',
   NotSelected = 'NOT_SELECTED'
+}
+
+export enum UserStatus {
+  Active = 'ACTIVE',
+  BannedPermanently = 'BANNED_PERMANENTLY',
+  BannedTemporary = 'BANNED_TEMPORARY',
+  Inactive = 'INACTIVE'
 }
 
 export enum UserType {
@@ -5518,7 +6445,8 @@ export type VideoInputTournament = {
 export enum VideoPreviewSize {
   Original = 'ORIGINAL',
   Size_166x94 = 'SIZE_166x94',
-  Size_332x198 = 'SIZE_332x198'
+  Size_332x198 = 'SIZE_332x198',
+  Size_800x450 = 'SIZE_800x450'
 }
 
 export enum VideoSource {
