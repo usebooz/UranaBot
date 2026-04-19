@@ -6,15 +6,30 @@ import {
 } from '../gql/generated/graphql.js';
 import { League, LeagueSquads, Tournament } from '../gql/index.js';
 
+export interface FantasyRepositoryClient {
+  getTournament(webname: string): Promise<Tournament>;
+  getLeague(id: string): Promise<League>;
+  getLeagueSquads(
+    leagueId: string,
+    entityType: FantasyRatingEntityType,
+    entityId: string,
+  ): Promise<LeagueSquads>;
+}
+
 /**
  * Service for working with RPL Fantasy
  * Provides methods to fetch and validate fantasy data
  */
 export class FantasyService {
   protected readonly rplWebname: string;
+  private readonly repository: FantasyRepositoryClient;
 
-  constructor() {
-    this.rplWebname = config.sportsTournamentRpl;
+  constructor(
+    repository: FantasyRepositoryClient = fantasyRepository,
+    rplWebname = config.sportsTournamentRpl,
+  ) {
+    this.repository = repository;
+    this.rplWebname = rplWebname;
   }
 
   /**
@@ -22,7 +37,7 @@ export class FantasyService {
    * @returns Tournament data or null if not available
    */
   async readRplTournament(): Promise<Tournament> {
-    const tournament = await fantasyRepository.getTournament(this.rplWebname);
+    const tournament = await this.repository.getTournament(this.rplWebname);
     return tournament;
   }
 
@@ -41,7 +56,7 @@ export class FantasyService {
    * @returns League data or null if not available
    */
   async readLeague(id: string): Promise<League> {
-    const league = await fantasyRepository.getLeague(id);
+    const league = await this.repository.getLeague(id);
     return league;
   }
 
@@ -76,7 +91,7 @@ export class FantasyService {
     leagueId: string,
     seasonId: string,
   ): Promise<LeagueSquads> {
-    const leagueSquads = await fantasyRepository.getLeagueSquads(
+    const leagueSquads = await this.repository.getLeagueSquads(
       leagueId,
       FantasyRatingEntityType.Season,
       seasonId,

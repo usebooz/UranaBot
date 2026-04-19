@@ -26,35 +26,6 @@ describe('UranaWeb Formatter Factory', () => {
     },
   };
 
-  it('should be able to import the formatter factory', () => {
-    assert.ok(UranaWebFormatterFactory);
-    assert.strictEqual(typeof UranaWebFormatterFactory.create, 'function');
-  });
-
-  it('should create private formatter for private chats', () => {
-    const mockContext = {
-      chat: { type: 'private', id: 123 },
-      me: { username: 'test_bot' },
-    } as MyContext;
-
-    const formatter = UranaWebFormatterFactory.create(mockContext);
-    assert.ok(formatter);
-    assert.ok(typeof formatter.createDebugButton === 'function');
-    assert.ok(typeof formatter.createLeagueButton === 'function');
-  });
-
-  it('should create group formatter for group chats', () => {
-    const mockContext = {
-      chat: { type: 'group', id: -123 },
-      me: { username: 'test_bot' },
-    } as MyContext;
-
-    const formatter = UranaWebFormatterFactory.create(mockContext);
-    assert.ok(formatter);
-    assert.ok(typeof formatter.createDebugButton === 'function');
-    assert.ok(typeof formatter.createLeagueButton === 'function');
-  });
-
   it('should create debug button for private chat', () => {
     const mockContext = {
       chat: { type: 'private', id: 123 },
@@ -71,6 +42,8 @@ describe('UranaWeb Formatter Factory', () => {
     assert.strictEqual(button.inline_keyboard[0][0].text, 'Дебаг Приложения');
     // Check for web_app property (private chat uses WebApp)
     assert.ok('web_app' in button.inline_keyboard[0][0]);
+    const webAppButton = button.inline_keyboard[0][0] as any;
+    assert.ok(webAppButton.web_app?.url.endsWith('debug/'));
   });
 
   it('should create debug button for group chat', () => {
@@ -89,6 +62,8 @@ describe('UranaWeb Formatter Factory', () => {
     assert.strictEqual(button.inline_keyboard[0][0].text, 'Дебаг Приложения');
     // Check for url property (group chat uses URL)
     assert.ok('url' in button.inline_keyboard[0][0]);
+    const urlButton = button.inline_keyboard[0][0] as any;
+    assert.ok(urlButton.url?.endsWith('debug'));
   });
 
   it('should create league button for private chat', () => {

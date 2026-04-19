@@ -1,101 +1,107 @@
-import { describe, it, beforeEach } from 'node:test';
+import { afterEach, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert';
 import { SportsRepository } from '../../../src/repositories/sports.repository.js';
+import type { SportsGraphQLClient } from '../../../src/repositories/sports.repository.js';
+import type { RequestDocument, Variables } from 'graphql-request';
+import { logger } from '../../../src/utils/logger.js';
 
-// Create a test implementation since SportsRepository is abstract
 class TestSportsRepository extends SportsRepository {
-  async testQuery<T>(query: any, variables?: any): Promise<T | null> {
+  constructor(client: SportsGraphQLClient) {
+    super(client);
+  }
+
+  async testQuery<T>(
+    query: RequestDocument,
+    variables?: Variables,
+  ): Promise<T | null> {
     return this.executeQuery<T>(query, variables);
   }
-  
-  testGetOperationName(query: any): string | undefined {
+
+  testGetOperationName(query: RequestDocument): string | undefined {
     return this.getOperationName(query);
   }
 }
 
-describe('Sports Repository', () => {
-  let repository: TestSportsRepository;
+describe('SportsRepository', () => {
+  let originalLogger: typeof logger;
 
   beforeEach(() => {
-    repository = new TestSportsRepository();
-  });
-
-  it('should be able to import the repository', async () => {
-    const { SportsRepository } = await import('../../../src/repositories/sports.repository.js');
-    
-    assert.ok(SportsRepository);
-    assert.strictEqual(typeof SportsRepository, 'function');
-  });
-
-  it('should be able to create repository instance', () => {
-    assert.ok(repository);
-    assert.strictEqual(typeof repository.testQuery, 'function');
-    assert.strictEqual(typeof repository.testGetOperationName, 'function');
-  });
-
-  it('should extract operation name from GraphQL document', () => {
-    const mockQuery = {
-      definitions: [{
-        kind: 'OperationDefinition',
-        name: { value: 'TestQuery' }
-      }]
-    };
-    
-    const operationName = repository.testGetOperationName(mockQuery);
-    assert.strictEqual(operationName, 'TestQuery');
-  });
-
-  it('should handle query without operation name', () => {
-    const mockQuery = {
-      definitions: [{
-        kind: 'OperationDefinition',
-        name: null
-      }]
-    };
-    
-    const operationName = repository.testGetOperationName(mockQuery);
-    assert.strictEqual(operationName, undefined);
-  });
-
-  it('should handle string queries', () => {
-    const stringQuery = 'query TestQuery { test }';
-    
-    const operationName = repository.testGetOperationName(stringQuery);
-    assert.strictEqual(operationName, undefined);
-  });
-
-  it('should handle invalid query structures', () => {
-    const invalidQueries = [
-      null,
-      undefined,
-      {},
-      { definitions: [] },
-      { definitions: [{ kind: 'FragmentDefinition' }] }
-    ];
-    
-    invalidQueries.forEach(query => {
-      const operationName = repository.testGetOperationName(query as any);
-      assert.strictEqual(operationName, undefined);
+    originalLogger = { ...logger };
+    Object.assign(logger, {
+      debug: () => {},
+      error: () => {},
     });
   });
 
-  it('should return promise from executeQuery', () => {
-    const mockQuery = 'query { test }';
-    
-    const result = repository.testQuery(mockQuery);
-    assert.ok(result instanceof Promise);
+  afterEach(() => {
+    Object.assign(logger, originalLogger);
   });
 
-  it('should handle executeQuery errors gracefully', async () => {
-    const invalidQuery = 'invalid graphql';
-    
-    try {
-      const result = await repository.testQuery(invalidQuery);
-      // Should return null on error, not throw
-      assert.strictEqual(result, null);
-    } catch (error) {
-      // If it throws, the error handling might need improvement
-      assert.ok(error instanceof Error);
+  it('extracts operation name from GraphQL document nodes', () => {
+    const repository = new TestSportsRepository({
+      request: async () => ({}) as never,
+    });
+    const query = {
+      definitions: [
+        {
+          kind: 'OperationDefinition',
+          name: { value: 'TestQuery' },
+        },
+      ],
+    } as RequestDocument;
+
+    assert.strictEqual(repository.testGetOperationName(query), 'TestQuery');
+  });
+
+  it('returns undefined when operation name cannot be extracted', () => {
+    const repository = new TestSportsRepository({
+      request: async () => ({}) as never,
+    });
+    const queries = [
+      'query TestQuery { test }',
+      {},
+      { definitions: [] },
+      { definitions: [{ kind: 'FragmentDefinition' }] },
+      { definitions: [{ kind: 'OperationDefinition', name: null }] },
+    ] as RequestDocument[];
+
+    for (const query of queries) {
+      assert.strictEqual(repository.testGetOperationName(query), undefined);
     }
+  });
+
+  it('delegates successful GraphQL requests to the configured client', async () => {
+    const query = 'query TestQuery { test }';
+    const variables = { id: '123' };
+    let requestedQuery: RequestDocument | undefined;
+    let requestedVariables: Variables | undefined;
+    const repository = new TestSportsRepository({
+      request: async <T>(
+        requestQuery: RequestDocument,
+        requestVariables?: Variables,
+      ): Promise<T> => {
+        requestedQuery = requestQuery;
+        requestedVariables = requestVariables;
+        return { data: { ok: true } } as T;
+      },
+    });
+
+    const result = await repository.testQuery(query, variables);
+
+    assert.deepStrictEqual(result, { data: { ok: true } });
+    assert.strictEqual(requestedQuery, query);
+    assert.deepStrictEqual(requestedVariables, variables);
+  });
+
+  it('returns null when the configured client rejects', async () => {
+    const repository = new TestSportsRepository({
+      request: async () => {
+        throw new Error('Network failure');
+      },
+    });
+
+    const result = await repository.testQuery('query TestQuery { test }');
+
+    assert.strictEqual(result, null);
   });
 });
