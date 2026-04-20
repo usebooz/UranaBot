@@ -48,8 +48,13 @@ export default [
       ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
+        AbortController: 'readonly',
         console: 'readonly',
+        clearTimeout: 'readonly',
+        fetch: 'readonly',
         process: 'readonly',
+        setTimeout: 'readonly',
+        URL: 'readonly',
       },
     },
     rules: {
