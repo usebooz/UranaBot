@@ -6,17 +6,17 @@ describe('Config', () => {
   let originalEnv: NodeJS.ProcessEnv;
 
   beforeEach(() => {
-    // Сохраняем оригинальные переменные окружения
+    // Preserve the original environment variables.
     originalEnv = { ...process.env };
   });
 
   afterEach(() => {
-    // Восстанавливаем оригинальные переменные окружения
+    // Restore the original environment variables.
     process.env = originalEnv;
   });
 
   it('should load valid configuration from environment variables', () => {
-    // Устанавливаем тестовые переменные окружения
+    // Set test environment variables.
     process.env.BOT_TOKEN = 'test-bot-token';
     process.env.SPORTS_API_URL = 'https://test-sports-api.com';
     process.env.SPORTS_API_PATH = '/test-api-path';
@@ -41,7 +41,7 @@ describe('Config', () => {
   });
 
   it('should use default values for optional environment variables', () => {
-    // Устанавливаем только обязательные переменные
+    // Set only required environment variables.
     process.env.BOT_TOKEN = 'test-bot-token';
     process.env.SPORTS_API_URL = 'https://test-sports-api.com';
     process.env.SPORTS_API_PATH = '/test-api-path';
@@ -49,7 +49,7 @@ describe('Config', () => {
     process.env.TELEGRAM_URL = 'https://t.me/test_bot';
     process.env.URANAWEB_APP_URL = 'https://test-uranaweb.com';
     process.env.URANAWEB_APP_PATH = '/test-app-path';
-    // NODE_ENV и LOG_LEVEL не устанавливаем
+    // Leave NODE_ENV and LOG_LEVEL unset.
     delete process.env.NODE_ENV;
     delete process.env.LOG_LEVEL;
 
@@ -60,7 +60,7 @@ describe('Config', () => {
   });
 
   it('should throw error when BOT_TOKEN is missing', () => {
-    // Удаляем BOT_TOKEN
+    // Remove BOT_TOKEN.
     delete process.env.BOT_TOKEN;
     process.env.SPORTS_API_URL = 'https://test-sports-api.com';
     process.env.SPORTS_API_PATH = '/test-api-path';
@@ -77,7 +77,7 @@ describe('Config', () => {
 
   it('should throw error when SPORTS_API_URL is missing', () => {
     process.env.BOT_TOKEN = 'test-bot-token';
-    // Удаляем SPORTS_API_URL
+    // Remove SPORTS_API_URL.
     delete process.env.SPORTS_API_URL;
     process.env.SPORTS_API_PATH = '/test-api-path';
     process.env.SPORTS_TOURNAMENT_RPL = 'test-tournament-rpl';
@@ -94,7 +94,7 @@ describe('Config', () => {
   it('should throw error when SPORTS_API_PATH is missing', () => {
     process.env.BOT_TOKEN = 'test-bot-token';
     process.env.SPORTS_API_URL = 'https://test-sports-api.com';
-    // Удаляем SPORTS_API_PATH
+    // Remove SPORTS_API_PATH.
     delete process.env.SPORTS_API_PATH;
     process.env.SPORTS_TOURNAMENT_RPL = 'test-tournament-rpl';
     process.env.TELEGRAM_URL = 'https://t.me/test_bot';
@@ -187,7 +187,7 @@ describe('Config', () => {
   });
 
   it('should load exported config constant', async () => {
-    // Тест для экспортированной константы config
+    // Verify the exported config constant.
     const { config } = await import('../../../src/utils/config.js');
     
     assert.ok(config);

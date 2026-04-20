@@ -16,6 +16,8 @@
 - Use async/await for asynchronous code.
 - Prefer `const` over `let` when reassignment is not needed.
 - Use meaningful variable and function names in English.
+- Write code comments in English.
+- Keep intentional Russian user-facing messages and operational log text in Russian.
 - Avoid `any` unless a narrower type is impractical.
 
 ## Bot Behavior

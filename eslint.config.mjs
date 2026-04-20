@@ -39,7 +39,7 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
       'prefer-const': 'error',
-      '@typescript-eslint/no-var-requires': 'off', // Не нужно в ES модулях
+      '@typescript-eslint/no-var-requires': 'off', // Not needed for ESM.
     },
   },
   {
