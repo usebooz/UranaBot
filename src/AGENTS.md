@@ -18,3 +18,8 @@
 - Put external API calls in repositories.
 - Put user-facing message formatting in formatters.
 - Put reusable request/session/logging behavior in middleware.
+
+## Dependency Injection
+
+- Prefer dependency injection for external clients, repositories, services, and middleware dependencies when it improves testability or separates I/O from business logic.
+- Keep production wiring simple; do not add abstractions only for their own sake.

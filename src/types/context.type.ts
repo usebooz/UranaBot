@@ -1,5 +1,5 @@
 import { Context, SessionFlavor } from 'grammy';
-import { League, Tournament } from '../gql';
+import type { League, Tournament } from '../gql/index.js';
 
 /**
  * Session data interface
