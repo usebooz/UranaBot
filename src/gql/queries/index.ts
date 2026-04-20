@@ -1,5 +1,5 @@
 /**
- * Централизованный экспорт всех GraphQL запросов для Sports.ru API
+ * Centralized exports for Sports.ru GraphQL operation documents.
  */
 
 export * from './tournament.query.js';

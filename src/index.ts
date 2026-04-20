@@ -39,10 +39,10 @@ bot.use(session({ initial }));
 // Attach middleware
 setupMiddlewares(bot);
 
-// Подключаем команды
+// Attach commands.
 setupCommands(bot);
 
-// Обработчик ошибок
+// Handle unexpected bot errors.
 bot.catch(err => {
   const ctx = err.ctx;
   logger.error(
@@ -51,12 +51,12 @@ bot.catch(err => {
   );
 });
 
-// Запуск бота
+// Start the bot.
 async function main(): Promise<void> {
   try {
     logger.info('Starting Uranabot...');
 
-    // Устанавливаем команды бота
+    // Register bot commands.
     await bot.api.setMyCommands([
       { command: 'info', description: 'Информация' },
       { command: 'league', description: 'Лига' },
@@ -64,7 +64,7 @@ async function main(): Promise<void> {
 
     logger.info('Bot commands set successfully');
 
-    // Запускаем бота
+    // Start long polling.
     logger.info('Uranabot is running!');
     await bot.start();
   } catch (error) {
@@ -84,5 +84,5 @@ process.once('SIGTERM', () => {
   bot.stop();
 });
 
-// Запускаем бота
+// Start the application.
 void main();

@@ -4,7 +4,7 @@
   @sportsru path {$URANA_API_PATH}*
 
   route @sportsru {
-    # preflight для CORS
+    # CORS preflight
     @preflight {
       method OPTIONS
       header Origin {$URANAWEB_APP_URL}

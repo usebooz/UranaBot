@@ -1,7 +1,7 @@
 import type { MyContext } from '../types/index.js';
 /**
- * Middleware для инициализации сессии пользователя
- * Создает пустую сессию если она не существует
+ * Initializes user session data.
+ * Creates an empty session when one does not exist.
  */
 export async function sessionInitMiddleware(
   ctx: MyContext,
