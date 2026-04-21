@@ -1,6 +1,7 @@
 # Uranabot
 
-Telegram bot for Sports.ru fantasy data, built with TypeScript and grammY.
+Telegram bot for Sports.ru fantasy data,
+built with TypeScript and grammY.
 
 ## Stack
 
@@ -17,7 +18,8 @@ Telegram bot for Sports.ru fantasy data, built with TypeScript and grammY.
 ## What the Bot Does
 
 - `/info` shows current fantasy tournament information.
-- `/league <id>` shows a fantasy league table and saves the league ID in session.
+- `/league <id>` shows a fantasy league table
+  and saves the league ID in session.
 - `/debug` shows debug information and mini app links.
 
 ## Requirements
@@ -32,10 +34,13 @@ Local development uses `.env`.
 
 Production deployment uses:
 
-- GitHub Secrets for sensitive values such as `BOT_TOKEN`, `HOST`, `USERNAME`, `SSH_PRIVATE_KEY`
-- GitHub Variables for non-secret runtime configuration such as Sports.ru, UranaWeb, and proxy URLs
+- GitHub Secrets for sensitive values such as
+  `BOT_TOKEN`, `HOST`, `USERNAME`, `SSH_PRIVATE_KEY`
+- GitHub Variables for non-secret runtime configuration such as
+  Sports.ru, UranaWeb, and proxy URLs
 
-Available variables are documented in [.env.example](/Users/usebooz/Workspaces/DAS/uranabot/.env.example).
+Available variables are documented in
+[.env.example](/Users/usebooz/Workspaces/DAS/uranabot/.env.example).
 
 ## Local Development
 
@@ -77,15 +82,18 @@ Testing:
 
 GraphQL:
 
-- `npm run schema:update:sports` refreshes `schemas/sports.json` from the live Sports.ru endpoint
+- `npm run schema:update:sports` refreshes
+  `schemas/sports.json` from the live Sports.ru endpoint
 - `npm run codegen` generates GraphQL types and helpers
-- `npm run codegen:fix` runs codegen and then fixes ESM `.js` imports in generated files
+- `npm run codegen:fix` runs codegen and then fixes
+  ESM `.js` imports in generated files
 
 ## GraphQL Workflow
 
 Sports.ru schema handling is intentionally local-first.
 
-- `schemas/sports.json` is the source of truth for schema-based development
+- `schemas/sports.json` is the source of truth
+  for schema-based development
 - GraphQL operation documents live in `src/gql/queries/`
 - Generated files live in `src/gql/generated/`
 - The bot currently uses only the `fantasyQueries` root
@@ -95,9 +103,11 @@ Typical workflow for GraphQL changes:
 1. Inspect `schemas/sports.json` and existing queries.
 2. Update files in `src/gql/queries/`.
 3. Run `npm run codegen:fix`.
-4. Run `npm run test:integration` or the manual GitHub `Integration Tests` workflow.
+4. Run `npm run test:integration`
+   or the manual GitHub `Integration Tests` workflow.
 
-Do not introspect the live Sports.ru schema unless you explicitly want to refresh the local schema snapshot.
+Do not introspect the live Sports.ru schema unless you explicitly want
+to refresh the local schema snapshot.
 
 ## Testing Strategy
 
@@ -115,8 +125,10 @@ Integration tests:
 
 GitHub workflows:
 
-- `.github/workflows/deploy.yml` runs on PRs to `main` and on pushes to `main`
-- `.github/workflows/integration-tests.yml` is manual-only and runs real Sports.ru integration tests
+- `.github/workflows/deploy.yml` runs on PRs to `main`
+  and on pushes to `main`
+- `.github/workflows/integration-tests.yml` is manual-only
+  and runs real Sports.ru integration tests
 
 ## Deployment
 
@@ -128,13 +140,15 @@ Flow:
 2. On `main`, GitHub Actions validates required secrets and variables.
 3. The bot image is built and pushed to GHCR.
 4. The VPS receives `docker-compose.yml`, `Caddyfile`, and generated `.env`.
-5. The server runs `docker compose pull` and `docker compose up -d --remove-orphans`.
+5. The server runs `docker compose pull`
+   and `docker compose up -d --remove-orphans`.
 6. Health checks confirm both the bot and proxy are healthy.
 
 Runtime services:
 
 - `uranabot` container runs the Telegram bot
-- `uranaapi` container runs Caddy as the public proxy for Sports.ru GraphQL requests
+- `uranaapi` container runs Caddy
+  as the public proxy for Sports.ru GraphQL requests
 
 The bot health check calls Telegram `getMe`.
 The proxy health check probes the configured public proxy URL.
@@ -164,4 +178,6 @@ When adding bot features, use both references:
 - Official Telegram Bot API: [core.telegram.org/bots/api](https://core.telegram.org/bots/api)
 - grammY reference: [grammy.dev/ref](https://grammy.dev/ref/)
 
-Telegram Bot API may expose features before grammY adds first-class support. In that case, confirm whether the feature is available through grammY directly, through `ctx.api` / `bot.api`, or needs a temporary workaround.
+Telegram Bot API may expose features before grammY adds first-class support.
+In that case, confirm whether the feature is available through grammY directly,
+through `ctx.api` / `bot.api`, or needs a temporary workaround.
