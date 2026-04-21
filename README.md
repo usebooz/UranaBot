@@ -50,13 +50,13 @@ Available variables are documented in
 npm install
 ```
 
-2. Create local env file:
+1. Create local env file:
 
 ```bash
 cp .env.example .env
 ```
 
-3. Start the bot in watch mode:
+1. Start the bot in watch mode:
 
 ```bash
 npm run dev
@@ -101,9 +101,9 @@ Sports.ru schema handling is intentionally local-first.
 Typical workflow for GraphQL changes:
 
 1. Inspect `schemas/sports.json` and existing queries.
-2. Update files in `src/gql/queries/`.
-3. Run `npm run codegen:fix`.
-4. Run `npm run test:integration`
+1. Update files in `src/gql/queries/`.
+1. Run `npm run codegen:fix`.
+1. Run `npm run test:integration`
    or the manual GitHub `Integration Tests` workflow.
 
 Do not introspect the live Sports.ru schema unless you explicitly want
@@ -137,12 +137,12 @@ Deployment is automated from `main`.
 Flow:
 
 1. GitHub Actions runs lint, type-check, `test:ci`, and build.
-2. On `main`, GitHub Actions validates required secrets and variables.
-3. The bot image is built and pushed to GHCR.
-4. The VPS receives `docker-compose.yml`, `Caddyfile`, and generated `.env`.
-5. The server runs `docker compose pull`
+1. On `main`, GitHub Actions validates required secrets and variables.
+1. The bot image is built and pushed to GHCR.
+1. The VPS receives `docker-compose.yml`, `Caddyfile`, and generated `.env`.
+1. The server runs `docker compose pull`
    and `docker compose up -d --remove-orphans`.
-6. Health checks confirm both the bot and proxy are healthy.
+1. Health checks confirm both the bot and proxy are healthy.
 
 Runtime services:
 
