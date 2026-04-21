@@ -1,7 +1,15 @@
-import { describe, test, beforeEach } from 'node:test';
+import { beforeEach, describe, test } from 'node:test';
 import assert from 'node:assert';
 import { FantasyRepository } from '../../../src/repositories/fantasy.repository.js';
+import { config } from '../../../src/utils/config.js';
 import { FantasyRatingEntityType } from '../../../src/gql/generated/graphql.js';
+
+const VALID_LEAGUE_ID = '29915';
+const VALID_SEASON_ID = '59';
+
+function integrationTestsEnabled(): boolean {
+  return !process.env.SKIP_INTEGRATION_TESTS;
+}
 
 describe('Sports API Integration Tests', () => {
   let repository: FantasyRepository;
@@ -10,176 +18,86 @@ describe('Sports API Integration Tests', () => {
     repository = new FantasyRepository();
   });
 
-  test('should be able to make real API calls', { timeout: 10000 }, async () => {
-    // Skip integration tests in CI or when API is not available
-    if (process.env.SKIP_INTEGRATION_TESTS) {
-      return;
-    }
-    
-    try {
-      // Test with a real tournament ID that might exist
-      const tournament = await repository.getTournament('russia');
-      
-      // We expect this to either return data or throw an error
-      // Both are acceptable in integration tests
-      if (tournament) {
-        assert.ok(tournament);
-        assert.ok(typeof tournament === 'object');
+  test(
+    'executes GetTournament against fantasyQueries.tournament',
+    { timeout: 15000 },
+    async () => {
+      if (!integrationTestsEnabled()) {
+        return;
       }
-    } catch (error) {
-      // API errors are expected in test environment
-      assert.ok(error instanceof Error);
-      assert.ok(error.message.length > 0);
-    }
-  });
 
-  test('should handle invalid tournament IDs gracefully', { timeout: 5000 }, async () => {
-    if (process.env.SKIP_INTEGRATION_TESTS) {
-      return;
-    }
-    
-    try {
-      await repository.getTournament('non-existent-tournament-id-123456');
-      assert.fail('Should have thrown an error for invalid tournament ID');
-    } catch (error) {
-      // Expected behavior - API should return an error for invalid IDs
-      assert.ok(error instanceof Error);
-    }
-  });
+      const tournament = await repository.getTournament(config.sportsTournamentRpl);
 
-  test('should handle network errors gracefully', { timeout: 5000 }, async () => {
-    if (process.env.SKIP_INTEGRATION_TESTS) {
-      return;
-    }
-    
-    // Test repository functionality
-    assert.ok(repository);
-    assert.strictEqual(typeof repository.getTournament, 'function');
-    assert.strictEqual(typeof repository.getLeague, 'function');
-    assert.strictEqual(typeof repository.getLeagueSquads, 'function');
-  });
+      assert.ok(tournament, 'expected tournament data for configured SPORTS_TOURNAMENT_RPL');
+      assert.strictEqual(typeof tournament.id, 'string');
+      assert.strictEqual(typeof tournament.metaTitle, 'string');
+      assert.ok(tournament.metaTitle.length > 0);
+      assert.ok(tournament.currentSeason, 'expected currentSeason for configured tournament');
+      assert.strictEqual(typeof tournament.currentSeason.id, 'string');
+      assert.strictEqual(typeof tournament.currentSeason.isActive, 'boolean');
+      assert.ok(
+        tournament.currentSeason.statObject?.name,
+        'expected currentSeason.statObject.name',
+      );
+    },
+  );
 
-  test('should be able to call getLeague method', { timeout: 10000 }, async () => {
-    if (process.env.SKIP_INTEGRATION_TESTS) {
-      return;
-    }
-    
-    try {
-      // Test with a league ID - expecting an error for invalid format
-      const result = await repository.getLeague('test-league-id');
-      // If no error is thrown, result should be null for invalid ID
-      assert.strictEqual(result, null);
-    } catch (error) {
-      // Expected behavior - API should return an error for invalid IDs
-      assert.ok(error instanceof Error);
-      // Should contain information about the error
-      assert.ok(error.message.includes('int32') || error.message.includes('not found'));
-    }
-  });
-
-  test('should be able to call getLeagueSquads method', { timeout: 10000 }, async () => {
-    if (process.env.SKIP_INTEGRATION_TESTS) {
-      return;
-    }
-    
-    try {
-      // Test with invalid parameters - expecting an error
-      const result = await repository.getLeagueSquads('invalid-league', FantasyRatingEntityType.Season, 'invalid-season');
-      // If no error is thrown, result should be empty array for invalid parameters
-      assert.ok(Array.isArray(result));
-    } catch (error) {
-      // Expected behavior - API should return an error for invalid parameters
-      assert.ok(error instanceof Error);
-      // Should contain information about parsing error
-      assert.ok(error.message.includes('parse') || error.message.includes('invalid'));
-    }
-  });
-
-  test('should validate method signatures', { timeout: 1000 }, async () => {
-    if (process.env.SKIP_INTEGRATION_TESTS) {
-      return;
-    }
-    
-    // Test that all methods exist and are functions
-    assert.strictEqual(typeof repository.getTournament, 'function');
-    assert.strictEqual(typeof repository.getLeague, 'function');
-    assert.strictEqual(typeof repository.getLeagueSquads, 'function');
-    
-    // Test that repository is instance of FantasyRepository
-    assert.ok(repository instanceof FantasyRepository);
-  });
-
-  test('should successfully get league with valid ID', { timeout: 10000 }, async () => {
-    if (process.env.SKIP_INTEGRATION_TESTS) {
-      return;
-    }
-    
-    try {
-      // Test with known valid league ID (29915 is a real league ID from RPL)
-      const result = await repository.getLeague('29915');
-      
-      if (result) {
-        // Validate the structure of returned league data
-        assert.ok(typeof result === 'object');
-        assert.ok(typeof result.id === 'string');
-        assert.ok(typeof result.name === 'string');
-        assert.ok(typeof result.type === 'string');
-        assert.ok(typeof result.totalSquadsCount === 'number');
-        
-        if (result.season) {
-          assert.ok(typeof result.season === 'object');
-          assert.ok(typeof result.season.id === 'string');
-          assert.ok(typeof result.season.isActive === 'boolean');
-        }
-      } else {
-        // League not found is also acceptable
-        assert.strictEqual(result, null);
+  test(
+    'executes GetLeague against fantasyQueries.league',
+    { timeout: 15000 },
+    async () => {
+      if (!integrationTestsEnabled()) {
+        return;
       }
-    } catch (error) {
-      // If there's an API error, ensure it's meaningful
-      assert.ok(error instanceof Error);
-      // Should not be a validation error for valid ID format
-      assert.ok(!error.message.includes('int32'));
-    }
-  });
 
-  test('should successfully get league squads with valid parameters', { timeout: 10000 }, async () => {
-    if (process.env.SKIP_INTEGRATION_TESTS) {
-      return;
-    }
-    
-    try {
-      // Test with known valid parameters from RPL Fantasy
-      // leagueId: 29915, entityType: SEASON, entityId: 59 (season 2024)
-      const result = await repository.getLeagueSquads('29915', FantasyRatingEntityType.Season, '59');
-      
-      if (result && Array.isArray(result)) {
-        // Validate the structure of returned squads data
-        assert.ok(Array.isArray(result));
-        
-        if (result.length > 0) {
-          const firstSquad = result[0];
-          assert.ok(typeof firstSquad === 'object');
-          
-          if (firstSquad.squad) {
-            assert.ok(typeof firstSquad.squad.id === 'string');
-            assert.ok(typeof firstSquad.squad.name === 'string');
-          }
-          
-          if (firstSquad.scoreInfo) {
-            assert.ok(typeof firstSquad.scoreInfo.place === 'number');
-            assert.ok(typeof firstSquad.scoreInfo.score === 'number');
-          }
-        }
-      } else {
-        // Empty array is also acceptable
-        assert.ok(Array.isArray(result) || result === null);
+      const league = await repository.getLeague(VALID_LEAGUE_ID);
+
+      assert.ok(league, `expected league data for fixture id ${VALID_LEAGUE_ID}`);
+      assert.strictEqual(league.id, VALID_LEAGUE_ID);
+      assert.strictEqual(typeof league.name, 'string');
+      assert.ok(league.name.length > 0);
+      assert.strictEqual(typeof league.type, 'string');
+      assert.strictEqual(typeof league.totalSquadsCount, 'number');
+      assert.ok(league.season, 'expected season data for integration fixture league');
+      assert.strictEqual(typeof league.season.id, 'string');
+      assert.strictEqual(typeof league.season.isActive, 'boolean');
+      assert.strictEqual(
+        league.season.tournament?.webName,
+        config.sportsTournamentRpl,
+        'expected league season tournament webName to match configured tournament',
+      );
+      assert.ok(Array.isArray(league.season.tours));
+    },
+  );
+
+  test(
+    'executes GetLeagueSquads against fantasyQueries.rating.squads',
+    { timeout: 15000 },
+    async () => {
+      if (!integrationTestsEnabled()) {
+        return;
       }
-    } catch (error) {
-      // If there's an API error, ensure it's meaningful
-      assert.ok(error instanceof Error);
-      // Should not be a parsing error for valid parameters
-      assert.ok(!error.message.includes('parse entity id'));
-    }
-  });
+
+      const squads = await repository.getLeagueSquads(
+        VALID_LEAGUE_ID,
+        FantasyRatingEntityType.Season,
+        VALID_SEASON_ID,
+      );
+
+      assert.ok(Array.isArray(squads), 'expected squads list array');
+      assert.ok(
+        squads.length > 0,
+        `expected at least one squad for fixture league ${VALID_LEAGUE_ID} and season ${VALID_SEASON_ID}`,
+      );
+
+      const firstSquad = squads[0];
+      assert.ok(firstSquad?.squad, 'expected squad payload');
+      assert.strictEqual(typeof firstSquad.squad.id, 'string');
+      assert.strictEqual(typeof firstSquad.squad.name, 'string');
+      assert.ok(firstSquad.squad.name.length > 0);
+      assert.ok(firstSquad?.scoreInfo, 'expected scoreInfo payload');
+      assert.strictEqual(typeof firstSquad.scoreInfo.place, 'number');
+      assert.strictEqual(typeof firstSquad.scoreInfo.score, 'number');
+    },
+  );
 });
