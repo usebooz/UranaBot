@@ -23,6 +23,9 @@
 ## Bot Behavior
 
 - Use project context types, not `any`, for grammY handlers.
+- Use the official Telegram Bot API docs as the source of truth for `Update` payloads, Telegram object shapes, and available bot methods: https://core.telegram.org/bots/api
+- Check the grammY reference for library capabilities, typing, and idiomatic usage before adding bot features: https://grammy.dev/ref/
+- Telegram Bot API may expose newer features than the current grammY release; verify whether a feature is supported directly by grammY, via raw API calls, or needs a library-level workaround before implementing it.
 - Put shared bot behavior in middleware instead of duplicating it in commands.
 - Escape user-provided and API-provided text before sending Telegram messages with `MarkdownV2`.
 - Use `bot.catch()` for unexpected bot errors.
