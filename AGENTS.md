@@ -50,6 +50,7 @@
 
 - Keep changes small and focused.
 - Keep `.env.example` in sync when required config changes.
+- Keep `README.md` in sync when setup, scripts, environment variables, workflows, deployment, or developer workflow changes.
 - Do not print, modify, or commit `.env` values unless explicitly requested.
 - Do not commit secrets, tokens, production logs, `node_modules`, `dist`, coverage output, or local machine files.
 - Do not revert unrelated user changes.
