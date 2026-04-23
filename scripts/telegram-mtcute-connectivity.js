@@ -1,8 +1,6 @@
 import 'dotenv/config';
-import { mkdirSync } from 'node:fs';
+import { MemoryStorage } from '@mtcute/core';
 import { TelegramClient } from '@mtcute/node';
-
-const STORAGE_PATH = 'tmp/telegram-test-mtcute.session';
 
 const HELP_TEXT = `
 Usage:
@@ -21,8 +19,7 @@ Notes:
   - This is a connectivity probe only, not an e2e command test.
   - It verifies that mtcute can connect and authorize an MTProto user session.
   - It only runs with NODE_ENV=test and then uses Telegram test servers.
-  - Session storage is fixed to ${STORAGE_PATH}.
-  - On the first run it asks for the test login code unless the session already exists.
+  - It uses in-memory session storage and does not write local session files.
 `.trim();
 
 function parseInteger(value) {
@@ -106,19 +103,16 @@ async function main() {
   }
 
   const config = getConfig();
-  mkdirSync('tmp', { recursive: true });
 
   const client = new TelegramClient({
     apiId: config.apiId,
     apiHash: config.apiHash,
-    storage: STORAGE_PATH,
+    storage: new MemoryStorage(),
     testMode: true,
   });
 
   try {
-    console.log(
-      `Starting mtcute connectivity probe (testMode=true, storage=${STORAGE_PATH})`,
-    );
+    console.log('Starting mtcute connectivity probe (testMode=true)');
 
     const self = await client.start(getStartOptions(config));
 
