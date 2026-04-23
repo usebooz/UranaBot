@@ -2,10 +2,6 @@ import 'dotenv/config';
 import { MemoryStorage } from '@mtcute/core';
 import { TelegramClient } from '@mtcute/node';
 
-const DEFAULT_TEST_DC_ID = 2;
-const DEFAULT_TEST_DC_IP = '149.154.167.40';
-const DEFAULT_TEST_DC_PORT = 80;
-
 function parseInteger(value) {
   const parsed = Number.parseInt(value, 10);
 
@@ -65,27 +61,10 @@ async function main() {
     apiHash: config.apiHash,
     storage: new MemoryStorage(),
     testMode: true,
-    defaultDcs: {
-      main: {
-        ipAddress: DEFAULT_TEST_DC_IP,
-        port: DEFAULT_TEST_DC_PORT,
-        id: DEFAULT_TEST_DC_ID,
-        testMode: true,
-      },
-      media: {
-        ipAddress: DEFAULT_TEST_DC_IP,
-        port: DEFAULT_TEST_DC_PORT,
-        id: DEFAULT_TEST_DC_ID,
-        mediaOnly: true,
-        testMode: true,
-      },
-    },
   });
 
   try {
-    console.log(
-      `Starting mtcute connectivity probe (testMode=true, dc=${DEFAULT_TEST_DC_ID}, ${DEFAULT_TEST_DC_IP}:${DEFAULT_TEST_DC_PORT})`,
-    );
+    console.log('Starting mtcute connectivity probe (testMode=true)');
     console.log(`Using Telegram test confirmation code: ${code}`);
 
     const self = await client.start({
