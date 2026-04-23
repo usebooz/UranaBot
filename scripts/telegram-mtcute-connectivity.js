@@ -5,7 +5,7 @@ const DEFAULT_STORAGE = 'telegram-mtcute-connectivity.session';
 
 const HELP_TEXT = `
 Usage:
-  npm run telegram:mtcute:connectivity
+  node scripts/telegram-mtcute-connectivity.js
 
 Required env:
   TELEGRAM_MTCUTE_API_ID
