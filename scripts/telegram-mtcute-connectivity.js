@@ -15,7 +15,7 @@ Required env:
 
 Test phone note:
   Telegram test phone numbers follow the 99966XYYYY pattern, where X is the
-  DC number. The confirmation code is the DC number repeated five or six times.
+  DC number. This probe derives the confirmation code from that number.
 
 Notes:
   - This is a connectivity probe only, not an e2e command test.
@@ -45,6 +45,19 @@ function requiredEnv(name) {
   return value;
 }
 
+function getTestPhoneDc(phone) {
+  const normalized = phone.replace(/\D/g, '');
+  const match = normalized.match(/^99966([1-3])\d{4}$/);
+
+  if (!match) {
+    throw new Error(
+      'TELEGRAM_TEST_PHONE must follow the Telegram test number pattern: 99966XYYYY.',
+    );
+  }
+
+  return match[1];
+}
+
 function getConfig() {
   if (process.env.NODE_ENV !== 'test') {
     throw new Error(
@@ -52,17 +65,37 @@ function getConfig() {
     );
   }
 
+  const phone = requiredEnv('TELEGRAM_TEST_PHONE');
+
   return {
     apiId: parseInteger(requiredEnv('TELEGRAM_TEST_API_ID')),
     apiHash: requiredEnv('TELEGRAM_TEST_API_HASH'),
-    phone: requiredEnv('TELEGRAM_TEST_PHONE'),
+    phone,
+    phoneDc: getTestPhoneDc(phone),
   };
 }
 
-function getStartOptions(client, phone) {
+function getStartOptions(config) {
+  let codeAttempt = 0;
+
   return {
-    phone: async () => phone,
-    code: () => client.input('Code > '),
+    phone: async () => config.phone,
+    code: async () => {
+      codeAttempt += 1;
+
+      if (codeAttempt > 2) {
+        throw new Error(
+          'Telegram rejected both 5-digit and 6-digit test confirmation codes derived from TELEGRAM_TEST_PHONE.',
+        );
+      }
+
+      const codeLength = codeAttempt === 1 ? 5 : 6;
+      const code = config.phoneDc.repeat(codeLength);
+
+      console.log(`Using Telegram test confirmation code: ${code}`);
+
+      return code;
+    },
   };
 }
 
@@ -87,7 +120,7 @@ async function main() {
       `Starting mtcute connectivity probe (testMode=true, storage=${STORAGE_PATH})`,
     );
 
-    const self = await client.start(getStartOptions(client, config.phone));
+    const self = await client.start(getStartOptions(config));
 
     console.log('Connected and authorized successfully.');
     console.log(`Self: id=${self.id} username=${self.username ?? '<none>'}`);
