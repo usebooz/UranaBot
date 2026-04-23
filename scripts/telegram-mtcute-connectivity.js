@@ -2,6 +2,10 @@ import 'dotenv/config';
 import { MemoryStorage } from '@mtcute/core';
 import { TelegramClient } from '@mtcute/node';
 
+const DEFAULT_TEST_DC_ID = 2;
+const DEFAULT_TEST_DC_IP = '149.154.167.40';
+const DEFAULT_TEST_DC_PORT = 80;
+
 const HELP_TEXT = `
 Usage:
   NODE_ENV=test node scripts/telegram-mtcute-connectivity.js
@@ -19,6 +23,7 @@ Notes:
   - This is a connectivity probe only, not an e2e command test.
   - It verifies that mtcute can connect and authorize an MTProto user session.
   - It only runs with NODE_ENV=test and then uses Telegram test servers.
+  - It overrides the default test DC to ${DEFAULT_TEST_DC_IP}:${DEFAULT_TEST_DC_PORT}.
   - It uses in-memory session storage and does not write local session files.
 `.trim();
 
@@ -109,10 +114,27 @@ async function main() {
     apiHash: config.apiHash,
     storage: new MemoryStorage(),
     testMode: true,
+    defaultDcs: {
+      main: {
+        ipAddress: DEFAULT_TEST_DC_IP,
+        port: DEFAULT_TEST_DC_PORT,
+        id: DEFAULT_TEST_DC_ID,
+        testMode: true,
+      },
+      media: {
+        ipAddress: DEFAULT_TEST_DC_IP,
+        port: DEFAULT_TEST_DC_PORT,
+        id: DEFAULT_TEST_DC_ID,
+        mediaOnly: true,
+        testMode: true,
+      },
+    },
   });
 
   try {
-    console.log('Starting mtcute connectivity probe (testMode=true)');
+    console.log(
+      `Starting mtcute connectivity probe (testMode=true, dc=${DEFAULT_TEST_DC_ID}, ${DEFAULT_TEST_DC_IP}:${DEFAULT_TEST_DC_PORT})`,
+    );
 
     const self = await client.start(getStartOptions(config));
 
