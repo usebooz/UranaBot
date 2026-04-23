@@ -22,19 +22,6 @@ function requiredEnv(name) {
   return value;
 }
 
-function getTestPhoneDc(phone) {
-  const normalized = phone.replace(/\D/g, '');
-  const match = normalized.match(/^99966([1-3])\d{4}$/);
-
-  if (!match) {
-    throw new Error(
-      'TELEGRAM_TEST_PHONE must follow the Telegram test number pattern: 99966XYYYY.',
-    );
-  }
-
-  return match[1];
-}
-
 function getConfig() {
   if (process.env.NODE_ENV !== 'test') {
     throw new Error(
@@ -48,13 +35,11 @@ function getConfig() {
     apiId: parseInteger(requiredEnv('TELEGRAM_TEST_API_ID')),
     apiHash: requiredEnv('TELEGRAM_TEST_API_HASH'),
     phone,
-    phoneDc: getTestPhoneDc(phone),
   };
 }
 
 async function main() {
   const config = getConfig();
-  const code = config.phoneDc.repeat(5);
 
   const client = new TelegramClient({
     apiId: config.apiId,
@@ -65,11 +50,10 @@ async function main() {
 
   try {
     console.log('Starting mtcute connectivity probe (testMode=true)');
-    console.log(`Using Telegram test confirmation code: ${code}`);
 
     const self = await client.start({
       phone: config.phone,
-      code,
+      code: () => client.input('Code > '),
     });
 
     console.log('Connected and authorized successfully.');
