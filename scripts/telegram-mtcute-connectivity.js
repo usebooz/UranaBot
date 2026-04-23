@@ -6,27 +6,6 @@ const DEFAULT_TEST_DC_ID = 2;
 const DEFAULT_TEST_DC_IP = '149.154.167.40';
 const DEFAULT_TEST_DC_PORT = 80;
 
-const HELP_TEXT = `
-Usage:
-  NODE_ENV=test node scripts/telegram-mtcute-connectivity.js
-
-Required env:
-  TELEGRAM_TEST_API_ID
-  TELEGRAM_TEST_API_HASH
-  TELEGRAM_TEST_PHONE
-
-Test phone note:
-  Telegram test phone numbers follow the 99966XYYYY pattern, where X is the
-  DC number. This probe derives the confirmation code from that number.
-
-Notes:
-  - This is a connectivity probe only, not an e2e command test.
-  - It verifies that mtcute can connect and authorize an MTProto user session.
-  - It only runs with NODE_ENV=test and then uses Telegram test servers.
-  - It overrides the default test DC to ${DEFAULT_TEST_DC_IP}:${DEFAULT_TEST_DC_PORT}.
-  - It uses in-memory session storage and does not write local session files.
-`.trim();
-
 function parseInteger(value) {
   const parsed = Number.parseInt(value, 10);
 
@@ -77,37 +56,9 @@ function getConfig() {
   };
 }
 
-function getStartOptions(config) {
-  let codeAttempt = 0;
-
-  return {
-    phone: async () => config.phone,
-    code: async () => {
-      codeAttempt += 1;
-
-      if (codeAttempt > 2) {
-        throw new Error(
-          'Telegram rejected both 5-digit and 6-digit test confirmation codes derived from TELEGRAM_TEST_PHONE.',
-        );
-      }
-
-      const codeLength = codeAttempt === 1 ? 5 : 6;
-      const code = config.phoneDc.repeat(codeLength);
-
-      console.log(`Using Telegram test confirmation code: ${code}`);
-
-      return code;
-    },
-  };
-}
-
 async function main() {
-  if (process.argv.includes('--help')) {
-    console.log(HELP_TEXT);
-    return;
-  }
-
   const config = getConfig();
+  const code = config.phoneDc.repeat(5);
 
   const client = new TelegramClient({
     apiId: config.apiId,
@@ -135,8 +86,12 @@ async function main() {
     console.log(
       `Starting mtcute connectivity probe (testMode=true, dc=${DEFAULT_TEST_DC_ID}, ${DEFAULT_TEST_DC_IP}:${DEFAULT_TEST_DC_PORT})`,
     );
+    console.log(`Using Telegram test confirmation code: ${code}`);
 
-    const self = await client.start(getStartOptions(config));
+    const self = await client.start({
+      phone: config.phone,
+      code,
+    });
 
     console.log('Connected and authorized successfully.');
     console.log(`Self: id=${self.id} username=${self.username ?? '<none>'}`);
