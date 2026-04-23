@@ -72,7 +72,7 @@ Testing:
 - `npm test` runs all tests under `tests/`
 - `npm run test:unit` runs isolated unit tests
 - `npm run test:integration` runs real Sports.ru integration tests
-- `npm run test:e2e:telegram:mtcute` runs an experimental MTProto-based Telegram e2e probe against the Telegram test environment
+- `npm run telegram:mtcute:connectivity` probes mtcute MTProto connectivity to Telegram test servers
 - `npm run test:coverage` runs unit-test coverage only
 - `npm run test:ci` skips integration tests for normal CI
 
@@ -119,11 +119,11 @@ GitHub workflows:
 - `.github/workflows/deploy.yml` runs on PRs to `main` and on pushes to `main`
 - `.github/workflows/integration-tests.yml` is manual-only and runs real Sports.ru integration tests
 
-Experimental Telegram e2e probe:
+Experimental Telegram MTProto connectivity probe:
 
-- `scripts/telegram-e2e-mtcute.js` uses an MTProto user session via `@mtcute/node`
-- it is intended for Telegram test-environment checks, not normal PR CI
-- it probes private and group command flows and reports pass/fail per scenario
+- `scripts/telegram-mtcute-connectivity.js` uses an MTProto user session via `@mtcute/node`
+- it is intended to verify Telegram test-server connectivity before adding e2e tests
+- it does not test bot commands; command e2e tests should live under `tests/`
 - first run may require interactive MTProto login code input and then reuses the saved session file
 
 ## Deployment
