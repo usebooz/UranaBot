@@ -64,22 +64,24 @@ Core scripts:
 - `npm run dev` starts the bot with `tsx watch`
 - `npm run build` builds `src/` into `dist/`
 - `npm start` runs the compiled bot
-- `npm run lint` runs ESLint for TypeScript and project scripts
+- `npm run lint` runs ESLint for the repository using project config and ignore rules
+- `npm run format` formats repository files with Prettier using `.prettierignore`
+- `npm run format:check` checks repository formatting with Prettier using `.prettierignore`
 - `npm run type-check` runs TypeScript without emitting files
 
 Testing:
 
-- `npm test` runs all tests under `tests/`
+- `npm test` runs unit and integration tests
 - `npm run test:unit` runs isolated unit tests
 - `npm run test:integration` runs real Sports.ru integration tests
+- `npm run test:e2e` runs Telegram test-environment e2e tests
 - `npm run test:coverage` runs unit-test coverage only
 - `npm run test:ci` skips integration tests for normal CI
 
 GraphQL:
 
-- `npm run schema:update:sports` refreshes `schemas/sports.json` from the live Sports.ru endpoint
-- `npm run codegen` generates GraphQL types and helpers
-- `npm run codegen:fix` runs codegen and then fixes ESM `.js` imports in generated files
+- `npm run codegen` generates GraphQL types and then fixes ESM `.js` imports in generated files
+- `npm run schema:update:sports` refreshes `schemas/sports.json` from the live Sports.ru endpoint and regenerates GraphQL types
 
 ## GraphQL Workflow
 
@@ -94,7 +96,7 @@ Typical workflow for GraphQL changes:
 
 1. Inspect `schemas/sports.json` and existing queries.
 2. Update files in `src/gql/queries/`.
-3. Run `npm run codegen:fix`.
+3. Run `npm run codegen`.
 4. Run `npm run test:integration` or the manual GitHub `Integration Tests` workflow.
 
 Do not introspect the live Sports.ru schema unless you explicitly want to refresh the local schema snapshot.
@@ -113,6 +115,14 @@ Integration tests:
 - may call real Sports.ru services
 - must cover every operation defined in `src/gql/queries/`
 
+Telegram e2e tests:
+
+- live in `tests/e2e/`
+- use Telegram test environment through grammY and mtcute
+- require `TELEGRAM_TEST_API_ID`, `TELEGRAM_TEST_API_HASH`, `TELEGRAM_TEST_PHONE`, and `TELEGRAM_TEST_BOT_NAME`
+- start one local bot process and one MTProto client before the e2e suite
+- are not part of normal PR CI
+
 GitHub workflows:
 
 - `.github/workflows/deploy.yml` runs on PRs to `main` and on pushes to `main`
@@ -124,7 +134,7 @@ Deployment is automated from `main`.
 
 Flow:
 
-1. GitHub Actions runs lint, type-check, `test:ci`, and build.
+1. GitHub Actions runs format-check, lint, type-check, `test:ci`, and build.
 2. On `main`, GitHub Actions validates required secrets and variables.
 3. The bot image is built and pushed to GHCR.
 4. The VPS receives `docker-compose.yml`, `Caddyfile`, and generated `.env`.
@@ -155,6 +165,7 @@ src/
 tests/
   unit/          Isolated unit tests
   integration/   Real Sports.ru integration tests
+  e2e/           Telegram test-environment e2e tests
 ```
 
 ## Telegram API References

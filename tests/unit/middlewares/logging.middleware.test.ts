@@ -70,10 +70,10 @@ describe('LoggingMiddleware', () => {
 
     assert.strictEqual(nextCalled, true);
     assert.strictEqual(logOutput.length, 2);
-    assert.deepStrictEqual(logOutput.map((entry) => entry.level), [
-      'debug',
-      'debug',
-    ]);
+    assert.deepStrictEqual(
+      logOutput.map(entry => entry.level),
+      ['debug', 'debug'],
+    );
     assert.match(logOutput[0].message, /Processing message from user 12345/);
     assert.match(logOutput[1].message, /message processed in \d+ms/);
   });
@@ -119,7 +119,10 @@ describe('LoggingMiddleware', () => {
     await loggingMiddleware(ctx, async () => {});
 
     assert.strictEqual(logOutput.length, 2);
-    assert.match(logOutput[0].message, /Processing inline_query from user 12345/);
+    assert.match(
+      logOutput[0].message,
+      /Processing inline_query from user 12345/,
+    );
     assert.match(logOutput[1].message, /inline_query processed in \d+ms/);
   });
 
@@ -144,7 +147,10 @@ describe('LoggingMiddleware', () => {
     await loggingMiddleware(ctx, async () => {});
 
     assert.strictEqual(logOutput.length, 2);
-    assert.match(logOutput[0].message, /Processing message from user undefined/);
+    assert.match(
+      logOutput[0].message,
+      /Processing message from user undefined/,
+    );
   });
 
   it('logs and rethrows errors from downstream middleware', async () => {

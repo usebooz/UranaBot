@@ -16,7 +16,11 @@ services:
     networks:
       - uranabot-network
     healthcheck:
-      test: ["CMD-SHELL", "node -e \"const https=require('https');const u='https://api.telegram.org/bot'+process.env.BOT_TOKEN+'/getMe'; https.get(u,r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1));\""]
+      test:
+        [
+          'CMD-SHELL',
+          'node -e "const https=require(''https'');const u=''https://api.telegram.org/bot''+process.env.BOT_TOKEN+''/getMe''; https.get(u,r=>process.exit(r.statusCode===200?0:1)).on(''error'',()=>process.exit(1));"',
+        ]
       interval: 30s
       timeout: 3s
       start_period: 5s
@@ -37,13 +41,17 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     restart: unless-stopped
     networks:
       - uranabot-network
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q --timeout=3 --tries=1 ${URANA_API_URL}${URANA_API_PATH}?query=%7B__typename%7D || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'wget --spider -q --timeout=3 --tries=1 ${URANA_API_URL}${URANA_API_PATH}?query=%7B__typename%7D || exit 1',
+        ]
       interval: 30s
       timeout: 3s
       start_period: 5s

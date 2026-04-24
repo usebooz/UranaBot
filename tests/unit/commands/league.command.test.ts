@@ -24,7 +24,9 @@ describe('LeagueCommand', () => {
     const calls: Array<{ leagueId: string; seasonId: string }> = [];
     let replyMessage = '';
     let replyOptions: { parse_mode?: string; reply_markup?: unknown } = {};
-    const replyMarkup = { inline_keyboard: [[{ text: 'Open', url: 'https://example.com' }]] };
+    const replyMarkup = {
+      inline_keyboard: [[{ text: 'Open', url: 'https://example.com' }]],
+    };
     const command = createLeagueCommand({
       fantasyService: {
         readLeagueSquadsWithSeasonRating: async (leagueId, seasonId) => {
@@ -34,8 +36,8 @@ describe('LeagueCommand', () => {
       },
       uranaWebFormatterFactory: {
         create: () => ({
-          createDebugButton: () => replyMarkup,
-          createLeagueButton: commandLeague => {
+          createDebugButton: (): typeof replyMarkup => replyMarkup,
+          createLeagueButton: (commandLeague): typeof replyMarkup => {
             assert.strictEqual(commandLeague, league);
             return replyMarkup;
           },
@@ -72,8 +74,12 @@ describe('LeagueCommand', () => {
       },
       uranaWebFormatterFactory: {
         create: () => ({
-          createDebugButton: () => ({ inline_keyboard: [] }),
-          createLeagueButton: () => ({ inline_keyboard: [] }),
+          createDebugButton: (): { inline_keyboard: never[] } => ({
+            inline_keyboard: [],
+          }),
+          createLeagueButton: (): { inline_keyboard: never[] } => ({
+            inline_keyboard: [],
+          }),
         }),
       },
     });

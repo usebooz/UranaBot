@@ -39,7 +39,7 @@ describe('SportsRepository', () => {
 
   it('extracts operation name from GraphQL document nodes', () => {
     const repository = new TestSportsRepository({
-      request: async () => ({}) as never,
+      request: async <T>(): Promise<T> => ({}) as T,
     });
     const query = {
       definitions: [
@@ -55,7 +55,7 @@ describe('SportsRepository', () => {
 
   it('returns undefined when operation name cannot be extracted', () => {
     const repository = new TestSportsRepository({
-      request: async () => ({}) as never,
+      request: async <T>(): Promise<T> => ({}) as T,
     });
     const queries = [
       'query TestQuery { test }',
@@ -95,7 +95,7 @@ describe('SportsRepository', () => {
 
   it('returns null when the configured client rejects', async () => {
     const repository = new TestSportsRepository({
-      request: async () => {
+      request: async (): Promise<never> => {
         throw new Error('Network failure');
       },
     });

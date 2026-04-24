@@ -12,3 +12,7 @@ coverage/
 .DS_Store
 .vscode/
 .idea/
+src/gql/generated/
+schemas/sports.json
+package-lock.json
+tmp/

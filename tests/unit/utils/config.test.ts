@@ -71,7 +71,7 @@ describe('Config', () => {
 
     assert.throws(
       () => validateConfig(),
-      /BOT_TOKEN environment variable is required/
+      /BOT_TOKEN environment variable is required/,
     );
   });
 
@@ -87,7 +87,7 @@ describe('Config', () => {
 
     assert.throws(
       () => validateConfig(),
-      /SPORTS_API_URL and SPORTS_API_PATH environment variables are required/
+      /SPORTS_API_URL and SPORTS_API_PATH environment variables are required/,
     );
   });
 
@@ -103,7 +103,7 @@ describe('Config', () => {
 
     assert.throws(
       () => validateConfig(),
-      /SPORTS_API_URL and SPORTS_API_PATH environment variables are required/
+      /SPORTS_API_URL and SPORTS_API_PATH environment variables are required/,
     );
   });
 
@@ -118,7 +118,7 @@ describe('Config', () => {
 
     assert.throws(
       () => validateConfig(),
-      /SPORTS_TOURNAMENT_RPL environment variable is required/
+      /SPORTS_TOURNAMENT_RPL environment variable is required/,
     );
   });
 
@@ -133,7 +133,7 @@ describe('Config', () => {
 
     assert.throws(
       () => validateConfig(),
-      /TELEGRAM_URL environment variable is required/
+      /TELEGRAM_URL environment variable is required/,
     );
   });
 
@@ -147,7 +147,7 @@ describe('Config', () => {
 
     assert.throws(
       () => validateConfig(),
-      /URANAWEB_APP_URL and URANAWEB_APP_PATH environment variables are required/
+      /URANAWEB_APP_URL and URANAWEB_APP_PATH environment variables are required/,
     );
   });
 
@@ -168,9 +168,29 @@ describe('Config', () => {
     assert.strictEqual(config.logLevel, 'warn');
   });
 
+  it('should accept test environment value', () => {
+    process.env.BOT_TOKEN = 'test-bot-token';
+    process.env.SPORTS_API_URL = 'https://test-sports-api.com';
+    process.env.SPORTS_API_PATH = '/test-api-path';
+    process.env.SPORTS_TOURNAMENT_RPL = 'test-tournament-rpl';
+    process.env.TELEGRAM_URL = 'https://t.me/test_bot';
+    process.env.URANAWEB_APP_URL = 'https://test-uranaweb.com';
+    process.env.URANAWEB_APP_PATH = '/test-app-path';
+    process.env.NODE_ENV = 'test';
+
+    const config = validateConfig();
+
+    assert.strictEqual(config.environment, 'test');
+  });
+
   it('should handle all log level values', () => {
-    const logLevels: Array<'debug' | 'info' | 'warn' | 'error'> = ['debug', 'info', 'warn', 'error'];
-    
+    const logLevels: Array<'debug' | 'info' | 'warn' | 'error'> = [
+      'debug',
+      'info',
+      'warn',
+      'error',
+    ];
+
     for (const logLevel of logLevels) {
       process.env.BOT_TOKEN = 'test-bot-token';
       process.env.SPORTS_API_URL = 'https://test-sports-api.com';
@@ -189,7 +209,7 @@ describe('Config', () => {
   it('should load exported config constant', async () => {
     // Verify the exported config constant.
     const { config } = await import('../../../src/utils/config.js');
-    
+
     assert.ok(config);
     assert.ok(typeof config.botToken === 'string');
     assert.ok(typeof config.sportsApiUrl === 'string');
@@ -198,7 +218,9 @@ describe('Config', () => {
     assert.ok(typeof config.telegramUrl === 'string');
     assert.ok(typeof config.uranaWebAppUrl === 'string');
     assert.ok(typeof config.uranaWebAppPath === 'string');
-    assert.ok(['development', 'production'].includes(config.environment));
+    assert.ok(
+      ['development', 'test', 'production'].includes(config.environment),
+    );
     assert.ok(['debug', 'info', 'warn', 'error'].includes(config.logLevel));
   });
 });

@@ -83,7 +83,10 @@ describe('FantasyRepository', () => {
 
   it('returns league squads from the rating response', async () => {
     const squads = [
-      { squad: { id: '1', name: 'Squad 1' }, scoreInfo: { place: 1, score: 10 } },
+      {
+        squad: { id: '1', name: 'Squad 1' },
+        scoreInfo: { place: 1, score: 10 },
+      },
     ];
     const repository = createRepository({
       fantasyQueries: { rating: { squads: { list: squads } } },
@@ -119,7 +122,7 @@ describe('FantasyRepository', () => {
 
   it('returns null or empty data when the GraphQL client rejects', async () => {
     const repository = new FantasyRepository({
-      request: async () => {
+      request: async (): Promise<never> => {
         throw new Error('Network failure');
       },
     });

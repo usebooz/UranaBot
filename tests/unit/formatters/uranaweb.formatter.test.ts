@@ -2,7 +2,20 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { UranaWebFormatterFactory } from '../../../src/formatters/uranaweb.formatter.js';
 import { MyContext } from '../../../src/types/context.type.js';
-import { FantasyLeagueType, FantasyTourStatus } from '../../../src/gql/generated/graphql.js';
+import {
+  FantasyLeagueType,
+  FantasyTourStatus,
+} from '../../../src/gql/generated/graphql.js';
+
+type UrlButton = {
+  url?: string;
+};
+
+type WebAppButton = {
+  web_app?: {
+    url?: string;
+  };
+};
 
 describe('UranaWeb Formatter Factory', () => {
   const mockLeague = {
@@ -34,7 +47,7 @@ describe('UranaWeb Formatter Factory', () => {
 
     const formatter = UranaWebFormatterFactory.create(mockContext);
     const button = formatter.createDebugButton();
-    
+
     assert.ok(button);
     assert.ok(button.inline_keyboard);
     assert.strictEqual(button.inline_keyboard.length, 1);
@@ -42,7 +55,7 @@ describe('UranaWeb Formatter Factory', () => {
     assert.strictEqual(button.inline_keyboard[0][0].text, 'Дебаг Приложения');
     // Check for web_app property (private chat uses WebApp)
     assert.ok('web_app' in button.inline_keyboard[0][0]);
-    const webAppButton = button.inline_keyboard[0][0] as any;
+    const webAppButton = button.inline_keyboard[0][0] as WebAppButton;
     assert.ok(webAppButton.web_app?.url.endsWith('debug/'));
   });
 
@@ -54,7 +67,7 @@ describe('UranaWeb Formatter Factory', () => {
 
     const formatter = UranaWebFormatterFactory.create(mockContext);
     const button = formatter.createDebugButton();
-    
+
     assert.ok(button);
     assert.ok(button.inline_keyboard);
     assert.strictEqual(button.inline_keyboard.length, 1);
@@ -62,7 +75,7 @@ describe('UranaWeb Formatter Factory', () => {
     assert.strictEqual(button.inline_keyboard[0][0].text, 'Дебаг Приложения');
     // Check for url property (group chat uses URL)
     assert.ok('url' in button.inline_keyboard[0][0]);
-    const urlButton = button.inline_keyboard[0][0] as any;
+    const urlButton = button.inline_keyboard[0][0] as UrlButton;
     assert.ok(urlButton.url?.endsWith('debug'));
   });
 
@@ -74,7 +87,7 @@ describe('UranaWeb Formatter Factory', () => {
 
     const formatter = UranaWebFormatterFactory.create(mockContext);
     const button = formatter.createLeagueButton(mockLeague);
-    
+
     assert.ok(button);
     assert.ok(button.inline_keyboard);
     assert.strictEqual(button.inline_keyboard.length, 1);
@@ -82,7 +95,7 @@ describe('UranaWeb Formatter Factory', () => {
     assert.strictEqual(button.inline_keyboard[0][0].text, 'Посмотреть Лигу');
     // Check for web_app property and URL content
     assert.ok('web_app' in button.inline_keyboard[0][0]);
-    const webAppButton = button.inline_keyboard[0][0] as any;
+    const webAppButton = button.inline_keyboard[0][0] as WebAppButton;
     assert.ok(webAppButton.web_app?.url.includes('test-league-123'));
   });
 
@@ -94,7 +107,7 @@ describe('UranaWeb Formatter Factory', () => {
 
     const formatter = UranaWebFormatterFactory.create(mockContext);
     const button = formatter.createLeagueButton(mockLeague);
-    
+
     assert.ok(button);
     assert.ok(button.inline_keyboard);
     assert.strictEqual(button.inline_keyboard.length, 1);
@@ -102,7 +115,7 @@ describe('UranaWeb Formatter Factory', () => {
     assert.strictEqual(button.inline_keyboard[0][0].text, 'Посмотреть Лигу');
     // Check for url property and URL content
     assert.ok('url' in button.inline_keyboard[0][0]);
-    const urlButton = button.inline_keyboard[0][0] as any;
+    const urlButton = button.inline_keyboard[0][0] as UrlButton;
     assert.ok(urlButton.url?.includes('startapp=test-league-123'));
   });
 });
