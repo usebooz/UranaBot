@@ -8,7 +8,7 @@
 - The deploy job should sync only deployment files such as `docker-compose.yml`, `Caddyfile`, and generated `.env`.
 - Be careful with workflow changes because `main` deploys through GitHub Actions.
 - Do not print secrets, tokens, or private environment values in logs.
-- CI should run format-check, lint, type-check, `test:ci`, and build before deploy.
+- CI should run `format:check`, lint, type-check, `test:ci`, and build before deploy.
 - For workflow changes, verify locally that referenced npm scripts pass when possible.
 - When deployment environment variables change, update the deploy validation step, `.env.example`, and README together.
 - After workflow or deployment changes are merged to `main`, verify the GitHub Actions run on `main`, including deploy and health-check jobs.

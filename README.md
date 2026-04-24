@@ -74,7 +74,7 @@ Testing:
 - `npm test` runs unit and integration tests
 - `npm run test:unit` runs isolated unit tests
 - `npm run test:integration` runs real Sports.ru integration tests
-- `npm run test:e2e` runs Telegram test-environment e2e tests
+- `npm run test:e2e` runs Telegram test-environment e2e tests with interactive MTProto login
 - `npm run test:coverage` runs unit-test coverage only
 - `npm run test:ci` skips integration tests for normal CI
 
@@ -120,6 +120,7 @@ Telegram e2e tests:
 - live in `tests/e2e/`
 - use Telegram test environment through grammY and mtcute
 - require `TELEGRAM_TEST_API_ID`, `TELEGRAM_TEST_API_HASH`, `TELEGRAM_TEST_PHONE`, and `TELEGRAM_TEST_BOT_NAME`
+- prompt for a Telegram login code and optional 2FA password during MTProto client startup
 - start one local bot process and one MTProto client before the e2e suite
 - are not part of normal PR CI
 
@@ -134,7 +135,7 @@ Deployment is automated from `main`.
 
 Flow:
 
-1. GitHub Actions runs format-check, lint, type-check, `test:ci`, and build.
+1. GitHub Actions runs `format:check`, lint, type-check, `test:ci`, and build.
 2. On `main`, GitHub Actions validates required secrets and variables.
 3. The bot image is built and pushed to GHCR.
 4. The VPS receives `docker-compose.yml`, `Caddyfile`, and generated `.env`.

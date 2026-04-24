@@ -1,5 +1,5 @@
 import { Conversation, type Message } from '@mtcute/node';
-import { getE2eContext } from './setup/telegram-context.js';
+import { getE2eContext } from '../setup/telegram-context.js';
 
 const BOT_RESPONSE_TIMEOUT_MS = 30_000;
 
