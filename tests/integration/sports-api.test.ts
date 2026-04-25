@@ -1,15 +1,8 @@
-import { beforeEach, describe, test } from 'node:test';
+import { beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert';
 import { FantasyRepository } from '../../src/repositories/fantasy.repository.js';
-import { config } from '../../src/utils/config.js';
 import { FantasyRatingEntityType } from '../../src/gql/generated/graphql.js';
-
-const VALID_LEAGUE_ID = '29915';
-const VALID_SEASON_ID = '59';
-
-function integrationTestsEnabled(): boolean {
-  return !process.env.SKIP_INTEGRATION_TESTS;
-}
+import { sportsIntegrationConfig } from './setup/index.js';
 
 describe('Sports API Integration Tests', () => {
   let repository: FantasyRepository;
@@ -18,16 +11,12 @@ describe('Sports API Integration Tests', () => {
     repository = new FantasyRepository();
   });
 
-  test(
+  it(
     'executes GetTournament against fantasyQueries.tournament',
     { timeout: 15000 },
     async () => {
-      if (!integrationTestsEnabled()) {
-        return;
-      }
-
       const tournament = await repository.getTournament(
-        config.sportsTournamentRpl,
+        sportsIntegrationConfig.tournamentWebname,
       );
 
       assert.ok(
@@ -50,21 +39,19 @@ describe('Sports API Integration Tests', () => {
     },
   );
 
-  test(
+  it(
     'executes GetLeague against fantasyQueries.league',
     { timeout: 15000 },
     async () => {
-      if (!integrationTestsEnabled()) {
-        return;
-      }
-
-      const league = await repository.getLeague(VALID_LEAGUE_ID);
+      const league = await repository.getLeague(
+        sportsIntegrationConfig.leagueId,
+      );
 
       assert.ok(
         league,
-        `expected league data for fixture id ${VALID_LEAGUE_ID}`,
+        `expected league data for fixture id ${sportsIntegrationConfig.leagueId}`,
       );
-      assert.strictEqual(league.id, VALID_LEAGUE_ID);
+      assert.strictEqual(league.id, sportsIntegrationConfig.leagueId);
       assert.strictEqual(typeof league.name, 'string');
       assert.ok(league.name.length > 0);
       assert.strictEqual(typeof league.type, 'string');
@@ -77,31 +64,36 @@ describe('Sports API Integration Tests', () => {
       assert.strictEqual(typeof league.season.isActive, 'boolean');
       assert.strictEqual(
         league.season.tournament?.webName,
-        config.sportsTournamentRpl,
+        sportsIntegrationConfig.tournamentWebname,
         'expected league season tournament webName to match configured tournament',
       );
       assert.ok(Array.isArray(league.season.tours));
     },
   );
 
-  test(
+  it(
     'executes GetLeagueSquads against fantasyQueries.rating.squads',
     { timeout: 15000 },
     async () => {
-      if (!integrationTestsEnabled()) {
-        return;
-      }
+      const tournament = await repository.getTournament(
+        sportsIntegrationConfig.tournamentWebname,
+      );
+
+      assert.ok(
+        tournament?.currentSeason?.id,
+        'expected currentSeason.id for configured tournament fixture',
+      );
 
       const squads = await repository.getLeagueSquads(
-        VALID_LEAGUE_ID,
+        sportsIntegrationConfig.leagueId,
         FantasyRatingEntityType.Season,
-        VALID_SEASON_ID,
+        tournament.currentSeason.id,
       );
 
       assert.ok(Array.isArray(squads), 'expected squads list array');
       assert.ok(
         squads.length > 0,
-        `expected at least one squad for fixture league ${VALID_LEAGUE_ID} and season ${VALID_SEASON_ID}`,
+        `expected at least one squad for fixture league ${sportsIntegrationConfig.leagueId} and current season ${tournament.currentSeason.id}`,
       );
 
       const firstSquad = squads[0];

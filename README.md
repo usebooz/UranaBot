@@ -33,7 +33,7 @@ Local development uses `.env`.
 Production deployment uses:
 
 - GitHub Secrets for sensitive values such as `BOT_TOKEN`, `HOST`, `USERNAME`, `SSH_PRIVATE_KEY`
-- GitHub Variables for non-secret runtime configuration such as Sports.ru, UranaWeb, and proxy URLs
+- GitHub Variables for non-secret runtime configuration such as Sports.ru, UranaWeb, Telegram Bot API, and proxy URLs
 
 Available variables are documented in [.env.example](/Users/usebooz/Workspaces/DAS/uranabot/.env.example).
 
@@ -76,7 +76,7 @@ Testing:
 - `npm run test:integration` runs real Sports.ru integration tests
 - `npm run test:e2e` runs Telegram test-environment e2e tests with interactive MTProto login
 - `npm run test:coverage` runs unit-test coverage only
-- `npm run test:ci` skips integration tests for normal CI
+- `npm run test:ci` runs the unit-test subset used in normal CI
 
 GraphQL:
 
@@ -114,14 +114,17 @@ Integration tests:
 - live in `tests/integration/`
 - may call real Sports.ru services
 - must cover every operation defined in `src/gql/queries/`
+- use `SPORTS_TOURNAMENT_RPL` and `SPORTS_TEST_LEAGUE_ID` as real API fixtures
 
 Telegram e2e tests:
 
 - live in `tests/e2e/`
 - use Telegram test environment through grammY and mtcute
-- require `TELEGRAM_TEST_API_ID`, `TELEGRAM_TEST_API_HASH`, `TELEGRAM_TEST_PHONE`, and `TELEGRAM_TEST_BOT_NAME`
+- require `BOT_TOKEN`, `TELEGRAM_TEST_API_ID`, `TELEGRAM_TEST_API_HASH`, `TELEGRAM_TEST_PHONE`, and `SPORTS_TEST_LEAGUE_ID`
+- use `SPORTS_TEST_LEAGUE_ID` as a manual current-season Sports.ru fixture for `/league` coverage
 - prompt for a Telegram login code and optional 2FA password during MTProto client startup
 - start one local bot process and one MTProto client before the e2e suite
+- read the bot username from Telegram `getMe` through grammY `Api` during bot readiness checks
 - are not part of normal PR CI
 
 GitHub workflows:
@@ -147,7 +150,7 @@ Runtime services:
 - `uranabot` container runs the Telegram bot
 - `uranaapi` container runs Caddy as the public proxy for Sports.ru GraphQL requests
 
-The bot health check calls Telegram `getMe`.
+The bot health check calls Telegram `getMe` using `BOT_API_URL`, `BOT_TOKEN`, and `BOT_API_GETME`.
 The proxy health check probes the configured public proxy URL.
 
 ## Project Layout

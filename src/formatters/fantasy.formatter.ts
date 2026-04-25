@@ -1,3 +1,4 @@
+import { FormattedString } from '@grammyjs/parse-mode';
 import type { League, LeagueSquads, Tournament } from '../gql/index.js';
 
 /**
@@ -25,21 +26,26 @@ export class FantasyFormatter {
   formatLeagueToLeagueCommand(
     league: NonNullable<League>,
     squads: LeagueSquads,
-  ): string {
+  ): FormattedString {
     const finishedTourscount = league.season.tours.filter(
       tour => tour.status === 'FINISHED',
     ).length;
     const totalToursCount = league.season.tours.length;
     const header =
-      `📊 ${league?.name}` +
+      `📊 ${league.name}` +
       '\n' +
       `👥 Команд: ${league?.totalSquadsCount}` +
       '\n' +
       `⏳ ${finishedTourscount}/${totalToursCount} туров завершено`;
-
     const list = this.formatSquadsToList(squads);
 
-    return header + '\n\n' + list;
+    if (list.length === 0) {
+      return new FormattedString(header);
+    }
+
+    return new FormattedString(header)
+      .plain('\n\n')
+      .concat(FormattedString.join(list, '\n'));
   }
 
   /**
@@ -48,19 +54,17 @@ export class FantasyFormatter {
    * @param squads - Array of squad data to format
    * @returns Formatted string with aligned squad information
    */
-  formatSquadsToList(squads: LeagueSquads): string {
-    return squads
-      .map(squad => {
-        const place = squad.scoreInfo.place.toString().padStart(3, ' ');
-        const name =
-          squad.squad.name.length > 19
-            ? squad.squad.name.slice(0, 16) + '...'
-            : squad.squad.name.padEnd(19, ' ');
-        const score = squad.scoreInfo.score.toString().padStart(4, ' ');
+  formatSquadsToList(squads: LeagueSquads): FormattedString[] {
+    return squads.map(squad => {
+      const place = squad.scoreInfo.place.toString().padStart(3, ' ');
+      const name =
+        squad.squad.name.length > 19
+          ? squad.squad.name.slice(0, 16) + '...'
+          : squad.squad.name.padEnd(19, ' ');
+      const score = squad.scoreInfo.score.toString().padStart(4, ' ');
 
-        return `\`${place} ${name} ${score}\``;
-      })
-      .join('\n');
+      return FormattedString.code(`${place} ${name} ${score}`);
+    });
   }
 }
 

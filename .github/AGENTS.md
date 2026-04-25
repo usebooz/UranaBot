@@ -10,5 +10,5 @@
 - Do not print secrets, tokens, or private environment values in logs.
 - CI should run `format:check`, lint, type-check, `test:ci`, and build before deploy.
 - For workflow changes, verify locally that referenced npm scripts pass when possible.
-- When deployment environment variables change, update the deploy validation step, `.env.example`, and README together.
+- When environment variables or secrets change, update code, workflow validation, generated deploy `.env`, `.env.example`, README, docker-compose, and GitHub repository settings together.
 - After workflow or deployment changes are merged to `main`, verify the GitHub Actions run on `main`, including deploy and health-check jobs.

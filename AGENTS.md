@@ -29,7 +29,7 @@
 - Check the grammY reference for library capabilities, typing, and idiomatic usage before adding bot features: https://grammy.dev/ref/
 - Telegram Bot API may expose newer features than the current grammY release; verify whether a feature is supported directly by grammY, via raw API calls, or needs a library-level workaround before implementing it.
 - Put shared bot behavior in middleware instead of duplicating it in commands.
-- Escape user-provided and API-provided text before sending Telegram messages with `MarkdownV2`.
+- Use `@grammyjs/parse-mode` for formatted Telegram messages: https://grammy.dev/ref/parse-mode/
 - Use `bot.catch()` for unexpected bot errors.
 - For expected failures, log the issue and send a user-friendly reply.
 - Do not expose internal errors, stack traces, secrets, tokens, or raw API errors to users.
@@ -52,7 +52,7 @@
 ## Working Rules
 
 - Keep changes small and focused.
-- Keep `.env.example` in sync when required config changes.
+- When adding, removing, or changing environment variables, update `.env.example`, `README.md`, related config readers, and deployment/workflow validation together.
 - Keep `README.md` in sync when setup, scripts, environment variables, workflows, deployment, or developer workflow changes.
 - Ask for confirmation before creating or merging a PR.
 - Ask before changing any `AGENTS.md` file so project instructions can be updated intentionally.

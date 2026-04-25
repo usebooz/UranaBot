@@ -8,7 +8,8 @@
 - Integration tests may call real external services such as Sports.ru.
 - Telegram e2e tests may call the Telegram test environment and must stay out of normal PR CI.
 - Keep e2e bot/client startup in `tests/e2e/setup/`; test files should only describe scenarios.
-- Keep shared e2e test helpers in `tests/e2e/utils/`.
+- For Telegram e2e client methods and types, use the mtcute reference: `https://ref.mtcute.dev/modules/_mtcute_node`
+- When Telegram command behavior changes, update the relevant e2e tests too.
 - Run `npm run test:integration` or the manual `Integration Tests` workflow after Sports.ru API, GraphQL schema/query, repository, or codegen changes.
 - Prefer tests that verify observable behavior, not only imports or function signatures.
 - Add or update tests when changing behavior.

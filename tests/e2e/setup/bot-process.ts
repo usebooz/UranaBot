@@ -1,22 +1,15 @@
 import { spawn, type ChildProcessByStdio } from 'node:child_process';
 import type { Readable } from 'node:stream';
 
-const BOT_READY_LOG = 'API call: getUpdates';
-const DEFAULT_TIMEOUT_MS = 30_000;
-
 export interface BotProcessHandle {
-  waitForReady(): Promise<void>;
+  getOutput(): string;
+  hasExited(): boolean;
   stop(): Promise<void>;
 }
 
 export function startBotProcess(): BotProcessHandle {
   let output = '';
-  let exit:
-    | {
-        code: number | null;
-        signal: NodeJS.Signals | null;
-      }
-    | undefined;
+  let exited = false;
 
   const childProcess = spawn(
     process.execPath,
@@ -38,74 +31,22 @@ export function startBotProcess(): BotProcessHandle {
 
   childProcess.stdout.on('data', appendOutput);
   childProcess.stderr.on('data', appendOutput);
-  childProcess.once('exit', (code, signal) => {
-    exit = { code, signal };
+  childProcess.once('exit', () => {
+    exited = true;
   });
 
   return {
-    waitForReady: () =>
-      waitForOutput(
-        childProcess,
-        () => output,
-        () => exit,
-      ),
-    stop: () => stopBotProcess(childProcess, () => exit),
+    getOutput: () => output,
+    hasExited: () => exited,
+    stop: () => stopBotProcess(childProcess, () => exited),
   };
-}
-
-function waitForOutput(
-  childProcess: BotChildProcess,
-  getOutput: () => string,
-  getExit: () =>
-    | {
-        code: number | null;
-        signal: NodeJS.Signals | null;
-      }
-    | undefined,
-): Promise<void> {
-  const deadline = Date.now() + DEFAULT_TIMEOUT_MS;
-
-  return new Promise((resolve, reject) => {
-    const interval = setInterval(() => {
-      const exit = getExit();
-
-      if (exit) {
-        clearInterval(interval);
-        reject(
-          new Error(
-            `Bot process exited with code ${exit.code} and signal ${exit.signal}.\n${getOutput()}`,
-          ),
-        );
-        return;
-      }
-
-      if (getOutput().includes(BOT_READY_LOG)) {
-        clearInterval(interval);
-        resolve();
-        return;
-      }
-
-      if (Date.now() > deadline) {
-        childProcess.kill('SIGTERM');
-        clearInterval(interval);
-        reject(
-          new Error(`Timed out waiting for bot readiness.\n${getOutput()}`),
-        );
-      }
-    }, 100);
-  });
 }
 
 async function stopBotProcess(
   childProcess: BotChildProcess,
-  getExit: () =>
-    | {
-        code: number | null;
-        signal: NodeJS.Signals | null;
-      }
-    | undefined,
+  hasExited: () => boolean,
 ): Promise<void> {
-  if (childProcess.killed || getExit()) {
+  if (childProcess.killed || hasExited()) {
     return;
   }
 
@@ -113,7 +54,7 @@ async function stopBotProcess(
 
   await new Promise<void>(resolve => {
     const timeout = setTimeout(() => {
-      if (!getExit()) {
+      if (!hasExited()) {
         childProcess.kill('SIGKILL');
       }
 

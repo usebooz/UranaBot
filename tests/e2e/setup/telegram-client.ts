@@ -1,8 +1,13 @@
 import { MemoryStorage, TelegramClient } from '@mtcute/node';
-import type { TelegramTestConfig } from './telegram-config.js';
+
+export interface TelegramClientConfig {
+  apiHash: string;
+  apiId: number;
+  phone: string;
+}
 
 export async function startTelegramClient(
-  config: TelegramTestConfig,
+  config: TelegramClientConfig,
 ): Promise<TelegramClient> {
   const client = new TelegramClient({
     apiId: config.apiId,
