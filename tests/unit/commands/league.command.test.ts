@@ -6,7 +6,7 @@ import type { MyContext } from '../../../src/types/index.js';
 describe('LeagueCommand', () => {
   const league = {
     id: 'league-1',
-    name: 'Test League',
+    name: '#Test League',
     totalSquadsCount: 2,
     season: {
       id: 'season-1',
@@ -20,11 +20,17 @@ describe('LeagueCommand', () => {
     },
   ];
 
-  it('reads league squads and replies with formatted MarkdownV2 message', async () => {
+  it('reads league squads and replies with formatted text entities', async () => {
     const calls: Array<{ leagueId: string; seasonId: string }> = [];
     let replyMessage = '';
-    let replyOptions: { parse_mode?: string; reply_markup?: unknown } = {};
-    const replyMarkup = { inline_keyboard: [[{ text: 'Open', url: 'https://example.com' }]] };
+    let replyOptions: {
+      entities?: unknown;
+      parse_mode?: string;
+      reply_markup?: unknown;
+    } = {};
+    const replyMarkup = {
+      inline_keyboard: [[{ text: 'Open', url: 'https://example.com' }]],
+    };
     const command = createLeagueCommand({
       fantasyService: {
         readLeagueSquadsWithSeasonRating: async (leagueId, seasonId) => {
@@ -34,8 +40,8 @@ describe('LeagueCommand', () => {
       },
       uranaWebFormatterFactory: {
         create: () => ({
-          createDebugButton: () => replyMarkup,
-          createLeagueButton: commandLeague => {
+          createDebugButton: (): typeof replyMarkup => replyMarkup,
+          createLeagueButton: (commandLeague): typeof replyMarkup => {
             assert.strictEqual(commandLeague, league);
             return replyMarkup;
           },
@@ -56,9 +62,10 @@ describe('LeagueCommand', () => {
     assert.deepStrictEqual(calls, [
       { leagueId: 'league-1', seasonId: 'season-1' },
     ]);
-    assert.match(replyMessage, /Test League/);
+    assert.match(replyMessage, /#Test League/);
     assert.match(replyMessage, /Squad One/);
-    assert.strictEqual(replyOptions.parse_mode, 'MarkdownV2');
+    assert.ok(Array.isArray(replyOptions.entities));
+    assert.strictEqual(replyOptions.parse_mode, undefined);
     assert.strictEqual(replyOptions.reply_markup, replyMarkup);
   });
 
@@ -72,8 +79,12 @@ describe('LeagueCommand', () => {
       },
       uranaWebFormatterFactory: {
         create: () => ({
-          createDebugButton: () => ({ inline_keyboard: [] }),
-          createLeagueButton: () => ({ inline_keyboard: [] }),
+          createDebugButton: (): { inline_keyboard: never[] } => ({
+            inline_keyboard: [],
+          }),
+          createLeagueButton: (): { inline_keyboard: never[] } => ({
+            inline_keyboard: [],
+          }),
         }),
       },
     });

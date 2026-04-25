@@ -15,7 +15,7 @@ logger.info(
 logger.info('🤖 Creating bot instance...');
 const bot = new Bot<MyContext>(config.botToken, {
   client: {
-    environment: config.environment === 'development' ? 'test' : 'prod',
+    environment: config.environment === 'production' ? 'prod' : 'test',
   },
 });
 

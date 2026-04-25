@@ -14,25 +14,25 @@ const generatedDir = path.join(__dirname, '..', 'src', 'gql', 'generated');
  */
 function fixImports() {
   const files = fs.readdirSync(generatedDir);
-  
+
   for (const file of files) {
     if (!file.endsWith('.ts')) continue;
-    
+
     const filePath = path.join(generatedDir, file);
     let content = fs.readFileSync(filePath, 'utf-8');
-    
+
     // Add .js extensions to relative imports.
     content = content.replace(
       /from ['"](\.\/.+?)(?<!\.js)['"];/g,
-      "from '$1.js';"
+      "from '$1.js';",
     );
-    
+
     // Add .js extensions to relative exports.
     content = content.replace(
       /export \* from ['"](\.\/.+?)(?<!\.js)['"];/g,
-      "export * from '$1.js';"
+      "export * from '$1.js';",
     );
-    
+
     fs.writeFileSync(filePath, content);
     console.log(`✅ Fixed imports in ${file}`);
   }

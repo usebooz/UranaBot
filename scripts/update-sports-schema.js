@@ -79,7 +79,9 @@ async function updateSportsSchema() {
     }
 
     if (!payload.data?.__schema) {
-      throw new Error('Sports.ru schema response did not include data.__schema');
+      throw new Error(
+        'Sports.ru schema response did not include data.__schema',
+      );
     }
 
     await mkdir(path.dirname(outputPath), { recursive: true });
@@ -90,13 +92,15 @@ async function updateSportsSchema() {
     console.log('- inspect the schema diff');
     console.log('- run npm run codegen:fix');
     console.log('- run npm run test:unit');
-    console.log('- run npm run test:integration or the manual Integration Tests workflow');
+    console.log(
+      '- run npm run test:integration or the manual Integration Tests workflow',
+    );
   } finally {
     clearTimeout(timeout);
   }
 }
 
-updateSportsSchema().catch((error) => {
+updateSportsSchema().catch(error => {
   if (error instanceof Error && error.name === 'AbortError') {
     console.error('Sports.ru schema request timed out');
   } else {

@@ -123,8 +123,7 @@ describe('LeagueMiddleware', () => {
       const middleware = createUserLeagueReadMiddleware({
         readLeague: async () => testCase.league as never,
         isUserLeague: () => testCase.isUserLeague,
-        isLeagueFromActiveRplSeason: () =>
-          testCase.isLeagueFromActiveRplSeason,
+        isLeagueFromActiveRplSeason: () => testCase.isLeagueFromActiveRplSeason,
       });
       const ctx = createContext({
         match: testCase.name,

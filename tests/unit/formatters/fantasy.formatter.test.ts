@@ -25,7 +25,7 @@ describe('FantasyFormatter', () => {
   it('formats league header and squad rows for the league command', () => {
     const result = formatter.formatLeagueToLeagueCommand(
       {
-        name: 'Test League',
+        name: '#Test League',
         totalSquadsCount: 2,
         season: {
           tours: [{ status: 'FINISHED' }, { status: 'OPENED' }],
@@ -44,19 +44,42 @@ describe('FantasyFormatter', () => {
     );
 
     assert.strictEqual(
-      result,
+      result.text,
       [
-        '📊 Test League',
+        '📊 #Test League',
         '👥 Команд: 2',
         '⏳ 1/2 туров завершено',
         '',
-        '`  1 Short Name           100`',
-        '` 12 Very Long Squad ...    7`',
+        '  1 Short Name           100',
+        ' 12 Very Long Squad ...    7',
       ].join('\n'),
     );
+    const firstLineOffset = result.text.indexOf('  1 Short Name           100');
+    const secondLineOffset = result.text.indexOf(
+      ' 12 Very Long Squad ...    7',
+    );
+
+    assert.deepStrictEqual(result.entities, [
+      { type: 'code', offset: firstLineOffset, length: 28 },
+      { type: 'code', offset: secondLineOffset, length: 28 },
+    ]);
+  });
+
+  it('keeps MarkdownV2-sensitive symbols as plain text inside code entities', () => {
+    const result = formatter.formatSquadsToList([
+      {
+        squad: { name: 'Name`With\\Chars' },
+        scoreInfo: { place: 1, score: 100 },
+      },
+    ] as never);
+
+    assert.strictEqual(result[0]?.text, '  1 Name`With\\Chars      100');
+    assert.deepStrictEqual(result[0]?.entities, [
+      { type: 'code', offset: 0, length: 28 },
+    ]);
   });
 
   it('formats an empty squads list as an empty string', () => {
-    assert.strictEqual(formatter.formatSquadsToList([]), '');
+    assert.deepStrictEqual(formatter.formatSquadsToList([]), []);
   });
 });

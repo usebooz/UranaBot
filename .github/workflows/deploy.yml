@@ -25,11 +25,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "24"
-          cache: "npm"
+          node-version: '24'
+          cache: 'npm'
 
       - name: Install deps
         run: npm ci
+
+      - name: Format check
+        run: npm run format:check
 
       - name: Lint
         run: npm run lint
@@ -58,6 +61,8 @@ jobs:
           SPORTS_API_URL: ${{ vars.SPORTS_API_URL }}
           SPORTS_API_PATH: ${{ vars.SPORTS_API_PATH }}
           SPORTS_TOURNAMENT_RPL: ${{ vars.SPORTS_TOURNAMENT_RPL }}
+          BOT_API_URL: ${{ vars.BOT_API_URL }}
+          BOT_API_GETME: ${{ vars.BOT_API_GETME }}
           TELEGRAM_URL: ${{ vars.TELEGRAM_URL }}
           URANAWEB_APP_URL: ${{ vars.URANAWEB_APP_URL }}
           URANAWEB_APP_PATH: ${{ vars.URANAWEB_APP_PATH }}
@@ -69,6 +74,7 @@ jobs:
           for name in \
             BOT_TOKEN HOST USERNAME SSH_PRIVATE_KEY \
             SPORTS_API_URL SPORTS_API_PATH SPORTS_TOURNAMENT_RPL \
+            BOT_API_URL BOT_API_GETME \
             TELEGRAM_URL URANAWEB_APP_URL URANAWEB_APP_PATH \
             URANA_API_URL URANA_API_PATH
           do
@@ -131,6 +137,8 @@ jobs:
           NODE_ENV=production
           LOG_LEVEL=info
           BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+          BOT_API_URL=${{ vars.BOT_API_URL }}
+          BOT_API_GETME=${{ vars.BOT_API_GETME }}
 
           SPORTS_API_URL=${{ vars.SPORTS_API_URL }}
           SPORTS_API_PATH=${{ vars.SPORTS_API_PATH }}

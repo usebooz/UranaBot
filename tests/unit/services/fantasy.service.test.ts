@@ -1,7 +1,10 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
 import { FantasyService } from '../../../src/services/fantasy.service.js';
-import { FantasyLeagueType, FantasyRatingEntityType } from '../../../src/gql/generated/graphql.js';
+import {
+  FantasyLeagueType,
+  FantasyRatingEntityType,
+} from '../../../src/gql/generated/graphql.js';
 import type { FantasyRepositoryClient } from '../../../src/services/fantasy.service.js';
 
 describe('FantasyService', () => {
@@ -21,7 +24,12 @@ describe('FantasyService', () => {
       },
       getLeagueSquads: async (...args) => {
         calls.push({ method: 'getLeagueSquads', args });
-        return [{ squad: { id: '1', name: 'Squad' }, scoreInfo: { place: 1, score: 10 } }] as never;
+        return [
+          {
+            squad: { id: '1', name: 'Squad' },
+            scoreInfo: { place: 1, score: 10 },
+          },
+        ] as never;
       },
       ...overrides,
     };
@@ -76,7 +84,10 @@ describe('FantasyService', () => {
       },
     });
 
-    const result = await service.readLeagueSquadsWithSeasonRating('29915', '59');
+    const result = await service.readLeagueSquadsWithSeasonRating(
+      '29915',
+      '59',
+    );
 
     assert.strictEqual(result, squads);
     assert.deepStrictEqual(calls, [

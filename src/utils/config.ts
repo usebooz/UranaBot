@@ -5,7 +5,7 @@ dotenv.config();
 
 export interface Config {
   botToken: string;
-  environment: 'development' | 'production';
+  environment: 'development' | 'test' | 'production';
   logLevel: 'debug' | 'info' | 'warn' | 'error';
   sportsApiUrl: string;
   sportsApiPath: string;
@@ -48,7 +48,8 @@ function validateConfig(): Config {
   }
 
   const environment =
-    (process.env.NODE_ENV as 'development' | 'production') || 'development';
+    (process.env.NODE_ENV as 'development' | 'test' | 'production') ||
+    'development';
   const logLevel =
     (process.env.LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'info';
 

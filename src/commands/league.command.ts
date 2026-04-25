@@ -35,8 +35,8 @@ export function createLeagueCommand(
       squads,
     );
     const uranaWebFormatter = dependencies.uranaWebFormatterFactory.create(ctx);
-    await ctx.reply(message, {
-      parse_mode: 'MarkdownV2',
+    await ctx.reply(message.text, {
+      entities: message.entities,
       reply_markup: uranaWebFormatter.createLeagueButton(ctx.league),
     });
   };
